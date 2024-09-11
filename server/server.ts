@@ -2,16 +2,16 @@ import express, { Application } from "express";
 import cors from "cors";
 
 //importing routes
-import userRoutes from "../routes/users";
-import adminRoutes from "../routes/administrators";
-import studentRoutes from "../routes/students";
-import studentCareerRoutes from "../routes/students-careers";
-import careerRoutes from "../routes/careers";
-import subjectRoutes from "../routes/subjects";
-import scoreRoutes from "../routes/scores";
+import userRoutes from "./routes/users";
+import adminRoutes from "./routes/administrators";
+import studentRoutes from "./routes/students";
+import studentCareerRoutes from "./routes/students-careers";
+import careerRoutes from "./routes/careers";
+import subjectRoutes from "./routes/subjects";
+import scoreRoutes from "./routes/scores";
 
 //importing db
-import db from "../database/connection";
+import db from "./database/connection";
 
 //main class to set up and run the server
 class Server {
