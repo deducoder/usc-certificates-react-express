@@ -1,41 +1,76 @@
 import { Request, Response } from "express";
+import Admin from "../models/admin";
 
-export const getAdmins = (req: Request, res: Response) => {
-  res.json({
-    msg: "getAdmins",
-  });
+//function to get all DB administrators
+export const getAdmins = async (req: Request, res: Response) => {
+  const admins = await Admin.findAll(); //searching all admins
+  res.json({ admins }); //sending json with all admins as object
 };
 
-export const getAdmin = (req: Request, res: Response) => {
-  const { id } = req.params;
-  res.json({
-    msg: "getAdmin",
-    id,
-  });
+//function to get one DB administrator by ID
+export const getAdmin = async (req: Request, res: Response) => {
+  const { id } = req.params; //getting ID
+  const admin = await Admin.findByPk(id); //searching for one admin by ID
+  if (admin) {
+    //validate if admin exist
+    res.json({ admin }); //sending json with admin as object
+  } else {
+    res.status(404).json({
+      msg: `don't exist an admin with id: ${id}`,
+    });
+  }
 };
 
-export const postAdmin = (req: Request, res: Response) => {
-  const { body } = req;
-  res.json({
-    msg: "postAdmin",
-    body,
-  });
+//function to create a new administrator
+export const postAdmin = async (req: Request, res: Response) => {
+  const { body } = req; //getting body
+  try {
+    const admin = await Admin.create(body); //post data from body
+    res.json(admin);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      msg: "can't create a new admin",
+    });
+  }
 };
 
-export const putAdmin = (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { body } = req;
-  res.json({
-    msg: "putAdmin",
-    id,
-    body,
-  });
+//function to update one DB administrator by ID
+export const putAdmin = async (req: Request, res: Response) => {
+  const { id } = req.params; //getting ID
+  const { body } = req; //getting body
+  try {
+    const admin = await Admin.findByPk(id);
+    //validate if exist an admin with the ID
+    if (!admin) {
+      return res.status(404).json({
+        msg: `don't exist an admin with id: ${id}`,
+      });
+    } else {
+      //updating admin
+      await admin.update(body);
+      res.json(admin); //sending json with new admin values as object
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      msg: `can't update admin with id: ${id}`,
+    });
+  }
 };
 
-export const deleteAdmin = (req: Request, res: Response) => {
-  const { id } = req.params;
-  res.json({
-    msg: "deleteAdmin",
-    id,
-  });
+//functino to delete one DB administrator by ID
+export const deleteAdmin = async (req: Request, res: Response) => {
+  const { id } = req.params; //getting ID
+  const admin = await Admin.findByPk(id);
+  //validate if exist an admin with the ID
+  if (!admin) {
+    return res.status(404).json({
+      msg: `don't exist an admin with id: ${id}`,
+    });
+  } else {
+    //deleting admin (STATUS: 1=ACTIVE/0=INACTIVE)
+    await admin.update({ ADMIN_STATUS: 0 });
+    res.json(admin);
+  }
 };

@@ -7,6 +7,7 @@ export const getUsers = async (req: Request, res: Response) => {
   res.json({ users }); //sending json with all users as object
 };
 
+//function to get one DB user by ID
 export const getUser = async (req: Request, res: Response) => {
   const { id } = req.params; //getting ID
   const user = await User.findByPk(id); //searching for one user by ID
@@ -20,7 +21,7 @@ export const getUser = async (req: Request, res: Response) => {
   }
 };
 
-//function to get one DB user by ID
+//function to create a new user
 export const postUser = async (req: Request, res: Response) => {
   const { body } = req; //getting body
   try {
@@ -29,15 +30,16 @@ export const postUser = async (req: Request, res: Response) => {
         USER_EMAIL: body.USER_EMAIL,
       },
     });
-    //validate if exist a previous user with the body.emai
+    //validate if exist a previous user with the body.email
     if (existEmail) {
       return res.status(400).json({
         msg: `already exist a user with email: ` + body.USER_EMAIL,
       });
+    } else {
+      //creating a new user
+      const user = await User.create(body); //post data from body
+      res.json(user); //sending json with user values as object
     }
-    //creating a new user
-    const user = await User.create(body); //post data from body
-    res.json(user); //sending json with user values as object
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -57,10 +59,11 @@ export const putUser = async (req: Request, res: Response) => {
       return res.status(404).json({
         msg: `don't exist a user with id: ${id}`,
       });
+    } else {
+      //updating user
+      await user.update(body);
+      res.json(user); //sending json with new user values as object
     }
-    //updating user
-    await user.update(body);
-    res.json(user); //sending json with new user values as object
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -78,8 +81,9 @@ export const deleteUser = async (req: Request, res: Response) => {
     return res.status(404).json({
       msg: `don't exist a user with id: ${id}`,
     });
+  } else {
+    //deleting user (STATUS: 1=ACTIVE/0=INACTIVE)
+    await user.update({ USER_STATUS: 0 });
+    res.json(user);
   }
-  //deleting user (STATUS: 1=ACTIVE/0=INACTIVE)
-  await user.update({ USER_STATUS: 0 });
-  res.json(user);
 };

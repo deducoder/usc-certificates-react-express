@@ -1,41 +1,89 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
+import StudentCareer from "../models/student-career";
 
-export const getStudentsCareers = (req: Request, res: Response) => {
-  res.json({
-    msg: "getStudentsCareers",
-  });
+//function to get all DB student-career relations
+export const getStudentsCareers = async (req: Request, res: Response) => {
+  const studentsCareers = await StudentCareer.findAll(); //searching all relations
+  res.json({ studentsCareers }); //sending json with all relations as object
 };
 
-export const getStudentCareer = (req: Request, res: Response) => {
+// function to get one DB student-career relation
+export const getStudentCareer = async (req: Request, res: Response) => {
+  const { id } = req.params; //gettin ID
+  const studentCareer = await StudentCareer.findByPk(id); //searching for one relation by ID
+  if (studentCareer) {
+    //validate if relation exist
+    res.json({ studentCareer }); //sending json with relation as object
+  } else {
+    res.status(404).json({
+      msg: `don't exist a relation with id: ${id}`,
+    });
+  }
+};
+
+//function to create a new student-career relation
+export const postStudentCareer = async (req: Request, res: Response) => {
+  const { body } = req; //getting body
+  try {
+    const existStudentCareer = await StudentCareer.findOne({
+      where: {
+        STUDENT_ID: body.STUDENT_ID,
+      },
+    });
+    //validate if exist a previous student with the body.id
+    if (existStudentCareer) {
+      return res.status(400).json({
+        msg: `already exist relation to this student: ` + body.STUDENT_ID,
+      });
+    } else {
+      //creating a new student-career
+      const studentCareer = await StudentCareer.create(body); //post data from body
+      res.json(studentCareer); //sending json with user values as object
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      msg: "can't create a new relation",
+    });
+  }
+};
+
+//function to update one DB student-career relation by ID
+export const putStudentCareer = async (req: Request, res: Response) => {
   const { id } = req.params;
-  res.json({
-    msg: "getStudentCareer",
-    id,
-  });
-};
-
-export const postStudentCareer = (req: Request, res: Response) => {
   const { body } = req;
-  res.json({
-    msg: "posStudentCareer",
-    body,
-  });
+  try {
+    const studentCareer = await StudentCareer.findByPk(id);
+    //validate if exist a relation with the ID
+    if (!studentCareer) {
+      return res.status(404).json({
+        msg: `don't exist a relation with id: ${id}`,
+      });
+    } else {
+      //updating relation
+      await studentCareer.update(body);
+      res.json(studentCareer); //sending json with new relation values as object
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      msg: `can't update relation with id: ${id}`,
+    });
+  }
 };
 
-export const putStudentCareer = (req: Request, res: Response) => {
+//function to delete one DB student-career relation by ID
+export const deleteStudentCareer = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { body } = req;
-  res.json({
-    msg: "putStudentCareer",
-    id,
-    body,
-  });
-};
-
-export const deleteStudentCareer = (req: Request, res: Response) => {
-  const { id } = req.params;
-  res.json({
-    msg: "deleteStudentCareer",
-    id,
-  });
+  const studentCareer = await StudentCareer.findByPk(id);
+  //validate if exist a relation with the ID
+  if (!studentCareer) {
+    return res.status(404).json({
+      msg: `don't exist a relation with id: ${id}`,
+    });
+  } else {
+    //deleting user (STATUS: 1=ACTIVE/0=INACTIVE)
+    await studentCareer.update({ RELATION_STATUS: 0 });
+    res.json(studentCareer);
+  }
 };

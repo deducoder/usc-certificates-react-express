@@ -22,7 +22,7 @@ class Server {
     users: "/api/users", //passed Postman test
     admins: "/api/admins", //passed Postman test
     students: "/api/students", //passed Postman test
-    studentsCareers: "/api/studentsCareers", //passed Postman test
+    studentsCareers: "/api/students-careers", //passed Postman test
     careers: "/api/careers", //passed Postman test
     subjects: "/api/subjects", //passed Postman test
     scores: "/api/scores", //passed Postman test

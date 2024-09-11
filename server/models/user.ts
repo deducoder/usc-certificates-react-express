@@ -7,7 +7,6 @@ const User = db.define(
     USER_ID: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
       autoIncrement: true,
       primaryKey: true,
     },
@@ -27,7 +26,7 @@ const User = db.define(
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isIn: [["admin"]],
+        isIn: [["admin", "superAdmin"]],
       },
     },
     USER_STATUS: {
@@ -40,6 +39,7 @@ const User = db.define(
     },
   },
   {
+    tableName: "USERS",
     createdAt: "USER_CREATION",
     updatedAt: "USER_LAST_UPDATE",
   }
