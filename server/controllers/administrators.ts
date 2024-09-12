@@ -59,7 +59,7 @@ export const putAdmin = async (req: Request, res: Response) => {
   }
 };
 
-//functino to delete one DB administrator by ID
+//function to delete one DB administrator by ID
 export const deleteAdmin = async (req: Request, res: Response) => {
   const { id } = req.params; //getting ID
   const admin = await Admin.findByPk(id);

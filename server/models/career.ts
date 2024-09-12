@@ -26,6 +26,14 @@ const Career = db.define(
     },
   },
   {
+    hooks: {
+      //uppercae before save or update
+      beforeSave: (career: any) => {
+        if (career.CAREER_NAME) {
+          career.CAREER_NAME = career.CAREER_NAME.toUpperCase();
+        }
+      },
+    },
     tableName: "CAREERS",
     createdAt: "CAREER_CREATION",
     updatedAt: "CAREER_LAST_UPDATE",

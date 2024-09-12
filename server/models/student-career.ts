@@ -73,7 +73,6 @@ StudentCareer.belongsTo(Career, {
   onUpdate: "CASCADE",
 });
 
-// Establecer asociaciones inversas en Student y Career
 Student.hasMany(StudentCareer, {
   foreignKey: "STUDENT_ID",
 });
