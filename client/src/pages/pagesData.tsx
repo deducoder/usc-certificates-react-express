@@ -2,22 +2,28 @@ import { routerType } from "../types/router.types";
 import HomePage from "./HomePage";
 import RegisterPage from "./RegisterPage";
 import AdministratePage from "./AdministratePage";
+import AdministrateStudents from "./AdministrateStudents";
 
 const pagesData: routerType[] = [
   {
     path: "/",
     element: <HomePage />,
-    title: "home",
+    title: "inicio",
   },
   {
-    path: "register",
+    path: "registrar",
     element: <RegisterPage />,
-    title: "register",
+    title: "registrar",
   },
   {
-    path: "administrate",
+    path: "administrar",
     element: <AdministratePage />,
-    title: "administrate",
+    title: "administrar",
+  },
+  {
+    path: "estudiantes",
+    element: <AdministrateStudents />,
+    title: "estudiantes",
   },
 ];
 

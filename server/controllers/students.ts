@@ -4,7 +4,7 @@ import Student from "../models/student";
 //function to get all DB students
 export const getStudents = async (req: Request, res: Response) => {
   const students = await Student.findAll(); //searching all students
-  res.json({ students }); //sending json with all students as object
+  res.json(students); //sending json with all students as object WATNING: don't send response as an object
 };
 
 //function to get one DB student by ID
@@ -13,7 +13,7 @@ export const getStudent = async (req: Request, res: Response) => {
   const student = await Student.findByPk(id); //searching for one student by ID
   if (student) {
     //validate if student exist
-    res.json({ student }); //sending json with student as object
+    res.json(student); //sending json with student as object
   } else {
     res.status(404).json({
       msg: `don't exist a student with id: ${id}`,
