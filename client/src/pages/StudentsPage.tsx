@@ -16,7 +16,7 @@ interface student {
   STUDENT_STATUS: boolean;
 }
 
-function AdministrateStudents() {
+function Students() {
   const [students, setStudents] = useState<student[]>([]);
   //fetching students list from server
   useEffect(() => {
@@ -111,4 +111,4 @@ function AdministrateStudents() {
   );
 }
 
-export default AdministrateStudents;
+export default Students;

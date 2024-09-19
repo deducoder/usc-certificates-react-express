@@ -2,9 +2,14 @@ import { routerType } from "../types/router.types";
 import HomePage from "./HomePage";
 import RegisterPage from "./RegisterPage";
 import AdministratePage from "./AdministratePage";
-import AdministrateStudents from "./AdministrateStudents";
+import StudentsPage from "./StudentsPage";
+import AdministratorsPage from "./AdministratorsPage";
+import CareersPage from "./CareersPage";
+import SubjectsPage from "./SubjectsPage";
+import RegStudentPage from "./RegStudentPage";
+import RegAdministratorPage from "./RegAdministratorPage";
 
-const pagesData: routerType[] = [
+const PagesData: routerType[] = [
   {
     path: "/",
     element: <HomePage />,
@@ -21,10 +26,35 @@ const pagesData: routerType[] = [
     title: "administrar",
   },
   {
-    path: "estudiantes",
-    element: <AdministrateStudents />,
-    title: "estudiantes",
+    path: "administrar/alumnos",
+    element: <StudentsPage />,
+    title: "alumnos",
+  },
+  {
+    path: "administrar/administrativos",
+    element: <AdministratorsPage />,
+    title: "administrativos",
+  },
+  {
+    path: "administrar/carreras",
+    element: <CareersPage />,
+    title: "carreras",
+  },
+  {
+    path: "administrar/materias",
+    element: <SubjectsPage />,
+    title: "materias",
+  },
+  {
+    path: "registrar/alumno",
+    element: <RegStudentPage />,
+    title: "alumno",
+  },
+  {
+    path: "registrar/administrativo",
+    element: <RegAdministratorPage />,
+    title: "administrativo",
   },
 ];
 
-export default pagesData;
+export default PagesData;

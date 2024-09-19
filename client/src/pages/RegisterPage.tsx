@@ -1,12 +1,62 @@
 //importing components
-import { Container } from "@mui/material";
+import { NavLink } from "react-router-dom";
+import {
+  Button,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Container,
+  Grid2,
+  Paper,
+  Typography,
+} from "@mui/material";
+//importing component
 import NavBar from "../components/NavBar";
+import CardItem from "../components/CardItem";
+
+//cards items for mapping
+const cards: items[] = [
+  {
+    image:
+      "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
+    alt: "students group",
+    title: "ALUMNO",
+    caption: "Da de alta un alumno en la base de datos",
+    path: "alumno",
+  },
+  {
+    image:
+      "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
+    alt: "students group",
+    title: "ADMINISTRATIVO",
+    caption: "Da de alta un alumno en la base de datos",
+    path: "administrativo",
+  },
+];
 
 function RegisterPage() {
   return (
     <>
       <NavBar></NavBar>
-      <h1>REGISTRAR</h1>
+      <Container sx={{ padding: "2rem" }} disableGutters maxWidth={false}>
+        <Paper sx={{ padding: "2rem", margin: "2 rem" }}>
+          <Typography variant="h6">REGISTRAR</Typography>
+          <Grid2 container spacing={3}>
+            {cards.map((card) => (
+              <CardItem
+                key={card.title}
+                title={card.title}
+                caption={card.caption}
+                image={card.image}
+                alt={card.alt}
+                path={card.path}
+              />
+            ))}
+          </Grid2>
+        </Paper>
+      </Container>
     </>
   );
 }
