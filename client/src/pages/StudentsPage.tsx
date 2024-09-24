@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ReplayIcon from "@mui/icons-material/Replay";
 
 //student definition
 interface student {
@@ -33,15 +34,19 @@ function Students() {
   const [students, setStudents] = useState<student[]>([]);
   const [selectedRowEdit, setSelectedRowEdit] = useState<Student | null>(null);
   const [selectedRowDel, setSelectedRowDel] = useState<Student | null>(null);
+  const [selectedRowActive, setSelectedRowActive] = useState<Student | null>(
+    null
+  );
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDelDialog, setOpenDelDialog] = useState(false);
+  const [openActivateDialog, setOpenActivateDialog] = useState(false);
   //fetching students list from server
   useEffect(() => {
     const fetchStudents = async () => {
       try {
         const response = await fetch("http://localhost:8000/api/students");
         const data = await response.json();
-        console.log(data);
+        //console.log(data);
         setStudents(data);
       } catch (error) {
         console.error("error fetching students: ", error);
@@ -93,11 +98,26 @@ function Students() {
       width: 150,
       renderCell: (params) => (
         <>
-          <IconButton color="primary" onClick={() => handleEditRow(params.row)}>
+          <IconButton
+            color="primary"
+            onClick={() => handleEditRow(params.row)}
+            disabled={params.row.STUDENT_STATUS === 0}
+          >
             <EditIcon></EditIcon>
           </IconButton>
-          <IconButton color="error" onClick={() => handleDeleteRow(params.row)}>
+          <IconButton
+            color="error"
+            onClick={() => handleDeleteRow(params.row)}
+            disabled={params.row.STUDENT_STATUS === 0}
+          >
             <DeleteIcon></DeleteIcon>
+          </IconButton>
+          <IconButton
+            color="success"
+            onClick={() => handleActivateRow(params.row, 1)}
+            disabled={params.row.STUDENT_STATUS === 1}
+          >
+            <ReplayIcon></ReplayIcon>
           </IconButton>
         </>
       ),
@@ -135,7 +155,7 @@ function Students() {
         STUDENT_MA_LAST_NAME: updatedRow.STUDENT_MA_LAST_NAME,
       };
       const url = `http://localhost:8000/api/students/${dataToSend.STUDENT_ID}`;
-      console.log("Fetching URL:", url); // Log the full URL
+      //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
         method: "PUT",
@@ -150,7 +170,7 @@ function Students() {
       }
 
       const data = await response.json();
-      console.log("Update response:", data);
+      //console.log("Update response:", data);
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
@@ -177,7 +197,7 @@ function Students() {
         STUDENT_STATUS: 0,
       };
       const url = `http://localhost:8000/api/students/${dataToSend.STUDENT_ID}`;
-      console.log("Fetching URL:", url); // Log the full URL
+      //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
         method: "DELETE",
@@ -191,7 +211,7 @@ function Students() {
       }
 
       const data = await response.json();
-      console.log("deleted response", data);
+      //console.log("deleted response", data);
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
@@ -204,21 +224,70 @@ function Students() {
     }
   };
 
+  //activate
+  const handleActivateRow = (row: student) => {
+    setSelectedRowActive(row);
+    setOpenActivateDialog(true);
+  };
+
+  const handleActivateSubmit = async (activatedRow: Row) => {
+    console.log(activatedRow.id);
+    try {
+      const dataToSend = {
+        STUDENT_ID: activatedRow.id,
+        STUDENT_STATUS: 1,
+      };
+      const url = `http://localhost:8000/api/students/${dataToSend.STUDENT_ID}`;
+      //console.log("Fetching URL:", url); // Log the full URL
+
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend), // Send the new object
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to activate student: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      //console.log("deleted response", data);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
+      // Handle successful update, e.g., refresh the list or update local state
+    } catch (error) {
+      console.error("Error activating student:", error);
+    } finally {
+      setOpenActivateDialog(false); //close dialog
+      setSelectedRowActive(null); //return row value to null
+    }
+  };
+
   useEffect(() => {
     if (selectedRowEdit) {
-      console.log("Selected row edited:", selectedRowEdit);
+      //console.log("Selected row edited:", selectedRowEdit);
     } else {
-      console.log("Selected row is null.");
+      //console.log("Selected row is null.");
     }
   }, [selectedRowEdit]);
 
   useEffect(() => {
     if (selectedRowDel) {
-      console.log("Selected row deleted:", selectedRowDel);
+      //console.log("Selected row deleted:", selectedRowDel);
     } else {
-      console.log("Selected row is null.");
+      //console.log("Selected row is null.");
     }
   }, [selectedRowDel]);
+
+  useEffect(() => {
+    if (selectedRowActive) {
+      //console.log("Selected row deleted:", selectedRowDel);
+    } else {
+      //console.log("Selected row is null.");
+    }
+  }, [selectedRowActive]);
 
   return (
     <>
@@ -232,7 +301,16 @@ function Students() {
             initialState={{ pagination: { paginationModel } }}
             pageSizeOptions={[5, 10]}
             checkboxSelection
-            sx={{ border: 0 }}
+            getRowClassName={(params) =>
+              params.row.STUDENT_STATUS === 0 ? "inactive-row" : ""
+            }
+            sx={{
+              border: 0,
+              "& .inactive-row": {
+                backgroundColor: "#f0f0f0", // Color más oscuro para inactivos
+                color: "#999", // Color del texto
+              },
+            }}
           />
         </Paper>
         <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
@@ -324,7 +402,13 @@ function Students() {
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setOpenDelDialog(false)}>Cancelar</Button>
+            <Button
+              onClick={() => setOpenDelDialog(false)}
+              color="primary"
+              variant="contained"
+            >
+              Cancelar
+            </Button>
             <Button
               onClick={() =>
                 selectedRowDel && handleDeleteSubmit(selectedRowDel)
@@ -333,6 +417,35 @@ function Students() {
               color="error"
             >
               Eliminar
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={openActivateDialog}
+          onClose={() => setOpenActivateDialog(false)}
+        >
+          <DialogTitle>Reactivar Estudiante</DialogTitle>
+          <DialogContent>
+            <Typography>
+              ¿Está seguro de que desea reactivar este estudiante?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setOpenActivateDialog(false)}
+              color="error"
+              variant="contained"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() =>
+                selectedRowActive && handleActivateSubmit(selectedRowActive)
+              }
+              variant="contained"
+              color="success"
+            >
+              Reactivar
             </Button>
           </DialogActions>
         </Dialog>
