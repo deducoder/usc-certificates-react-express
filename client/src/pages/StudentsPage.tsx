@@ -31,8 +31,10 @@ interface student {
 
 function Students() {
   const [students, setStudents] = useState<student[]>([]);
-  const [selectedRow, setSelectedRow] = useState<Student | null>(null);
+  const [selectedRowEdit, setSelectedRowEdit] = useState<Student | null>(null);
+  const [selectedRowDel, setSelectedRowDel] = useState<Student | null>(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openDelDialog, setOpenDelDialog] = useState(false);
   //fetching students list from server
   useEffect(() => {
     const fetchStudents = async () => {
@@ -118,9 +120,8 @@ function Students() {
 
   //edit
   const handleEditRow = (row: student) => {
-    setSelectedRow(row);
+    setSelectedRowEdit(row);
     setOpenEditDialog(true);
-    console.log("Edit row:", selectedRow);
   };
 
   const handleEditSubmit = async (updatedRow: Row) => {
@@ -158,23 +159,66 @@ function Students() {
       console.error("Error updating student:", error);
     } finally {
       setOpenEditDialog(false); //close dialog
-      setSelectedRow(null); //return row value to null
+      setSelectedRowEdit(null); //return row value to null
     }
   };
 
   //delete
   const handleDeleteRow = (row: student) => {
-    setSelectedRow(row);
-    console.log("Delete row:", selectedRow);
+    setSelectedRowDel(row);
+    setOpenDelDialog(true);
+  };
+
+  const handleDeleteSubmit = async (deletedRow: Row) => {
+    console.log(deletedRow.id);
+    try {
+      const dataToSend = {
+        STUDENT_ID: deletedRow.id,
+        STUDENT_STATUS: 0,
+      };
+      const url = `http://localhost:8000/api/students/${dataToSend.STUDENT_ID}`;
+      console.log("Fetching URL:", url); // Log the full URL
+
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend), // Send the new object
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to delete student: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("deleted response", data);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
+      // Handle successful update, e.g., refresh the list or update local state
+    } catch (error) {
+      console.error("Error deleting student:", error);
+    } finally {
+      setOpenDelDialog(false); //close dialog
+      setSelectedRowDel(null); //return row value to null
+    }
   };
 
   useEffect(() => {
-    if (selectedRow) {
-      console.log("Selected row deleted:", selectedRow);
+    if (selectedRowEdit) {
+      console.log("Selected row edited:", selectedRowEdit);
     } else {
       console.log("Selected row is null.");
     }
-  }, [selectedRow]);
+  }, [selectedRowEdit]);
+
+  useEffect(() => {
+    if (selectedRowDel) {
+      console.log("Selected row deleted:", selectedRowDel);
+    } else {
+      console.log("Selected row is null.");
+    }
+  }, [selectedRowDel]);
 
   return (
     <>
@@ -194,17 +238,17 @@ function Students() {
         <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
           <DialogTitle>Editar Estudiante</DialogTitle>
           <DialogContent>
-            {selectedRow && (
+            {selectedRowEdit && (
               <>
                 <TextField
                   margin="dense"
                   label="Nombre"
                   fullWidth
                   variant="outlined"
-                  value={selectedRow.STUDENT_NAME}
+                  value={selectedRowEdit.STUDENT_NAME}
                   onChange={(e) =>
-                    setSelectedRow({
-                      ...selectedRow,
+                    setSelectedRowEdit({
+                      ...selectedRowEdit,
                       STUDENT_NAME: e.target.value,
                     })
                   }
@@ -214,10 +258,10 @@ function Students() {
                   label="Apellido Paterno"
                   fullWidth
                   variant="outlined"
-                  value={selectedRow.STUDENT_PA_LAST_NAME}
+                  value={selectedRowEdit.STUDENT_PA_LAST_NAME}
                   onChange={(e) =>
-                    setSelectedRow({
-                      ...selectedRow,
+                    setSelectedRowEdit({
+                      ...selectedRowEdit,
                       STUDENT_PA_LAST_NAME: e.target.value,
                     })
                   }
@@ -227,10 +271,10 @@ function Students() {
                   label="Apellido Materno"
                   fullWidth
                   variant="outlined"
-                  value={selectedRow.STUDENT_MA_LAST_NAME}
+                  value={selectedRowEdit.STUDENT_MA_LAST_NAME}
                   onChange={(e) =>
-                    setSelectedRow({
-                      ...selectedRow,
+                    setSelectedRowEdit({
+                      ...selectedRowEdit,
                       STUDENT_MA_LAST_NAME: e.target.value,
                     })
                   }
@@ -241,10 +285,10 @@ function Students() {
                   label="Matrícula"
                   fullWidth
                   variant="outlined"
-                  value={selectedRow.STUDENT_TUITION}
+                  value={selectedRowEdit.STUDENT_TUITION}
                   onChange={(e) =>
-                    setSelectedRow({
-                      ...selectedRow,
+                    setSelectedRowEdit({
+                      ...selectedRowEdit,
                       STUDENT_TUITION: Number(e.target.value),
                     })
                   }
@@ -262,11 +306,33 @@ function Students() {
               Cancelar
             </Button>
             <Button
-              onClick={() => selectedRow && handleEditSubmit(selectedRow)}
+              onClick={() =>
+                selectedRowEdit && handleEditSubmit(selectedRowEdit)
+              }
               variant="contained"
               color="primary"
             >
               Guardar
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog open={openDelDialog} onClose={() => setOpenDelDialog(false)}>
+          <DialogTitle>Eliminar Estudiante</DialogTitle>
+          <DialogContent>
+            <Typography>
+              ¿Está seguro de que desea eliminar este estudiante?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDelDialog(false)}>Cancelar</Button>
+            <Button
+              onClick={() =>
+                selectedRowDel && handleDeleteSubmit(selectedRowDel)
+              }
+              variant="contained"
+              color="error"
+            >
+              Eliminar
             </Button>
           </DialogActions>
         </Dialog>
