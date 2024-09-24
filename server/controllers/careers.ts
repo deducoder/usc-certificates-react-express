@@ -4,7 +4,7 @@ import Career from "../models/career";
 //function to get all DB careers
 export const getCareers = async (req: Request, res: Response) => {
   const careers = await Career.findAll(); //searching all careers
-  res.json({ careers }); //sending json with all career as object
+  res.json(careers); //sending json with all career as object
 };
 
 //function to get one DB career by ID

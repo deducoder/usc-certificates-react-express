@@ -24,7 +24,7 @@ function Students() {
       try {
         const response = await fetch("http://localhost:8000/api/students");
         const data = await response.json();
-        console.log(data);
+        console.log(data); //log response
         setStudents(data);
       } catch (error) {
         console.error("error fetching students: ", error);

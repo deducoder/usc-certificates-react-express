@@ -21,6 +21,23 @@ export const getStudent = async (req: Request, res: Response) => {
   }
 };
 
+//function to get lastest student in DB
+export const getLastStudent = async (req: Request, res: Response) => {
+  try {
+    const lastStudent = await Student.findOne({
+      order: [["STUDENT_ID", "DESC"]],
+    });
+    if (!lastStudent) {
+      res.status(404).json({ msg: "don't exist students" });
+    } else {
+      res.json(lastStudent.STUDENT_TUITION);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ msg: "error getting last student" });
+  }
+};
+
 //function to create a new student
 export const postStudent = async (req: Request, res: Response) => {
   const { body } = req; //getting body

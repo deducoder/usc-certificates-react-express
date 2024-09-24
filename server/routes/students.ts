@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   deleteStudent,
+  getLastStudent,
   getStudent,
   getStudents,
   postStudent,
@@ -10,6 +11,7 @@ import {
 const router = Router();
 
 router.get("/", getStudents);
+router.get("/latest", getLastStudent);
 router.get("/:id", getStudent);
 router.post("/", postStudent);
 router.put("/:id", putStudent);
