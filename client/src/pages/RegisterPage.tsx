@@ -23,7 +23,7 @@ const cards: items[] = [
       "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
     alt: "students group",
     title: "ALUMNO",
-    caption: "Da de alta un alumno en la base de datos",
+    caption: "Da de alta un alumno",
     path: "alumno",
   },
   {
@@ -31,8 +31,16 @@ const cards: items[] = [
       "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
     alt: "students group",
     title: "ADMINISTRATIVO",
-    caption: "Da de alta un alumno en la base de datos",
+    caption: "Da de alta un administrativo",
     path: "administrativo",
+  },
+  {
+    image:
+      "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
+    alt: "students group",
+    title: "CARRERAS Y  MATERIAS",
+    caption: "Da de alta una carrera o materia",
+    path: "carrera-materia",
   },
 ];
 

@@ -8,6 +8,7 @@ import CareersPage from "./CareersPage";
 import SubjectsPage from "./SubjectsPage";
 import RegStudentPage from "./RegStudentPage";
 import RegAdministratorPage from "./RegAdministratorPage";
+import RegCareerSubjectPage from "./RegCareerSubjectPage";
 
 const PagesData: routerType[] = [
   {
@@ -54,6 +55,11 @@ const PagesData: routerType[] = [
     path: "registrar/administrativo",
     element: <RegAdministratorPage />,
     title: "administrativo",
+  },
+  {
+    path: "registrar/carrera-materia",
+    element: <RegCareerSubjectPage />,
+    title: "carreras",
   },
 ];
 

@@ -189,9 +189,9 @@ const RegStudentPage: React.FC = () => {
                   }}
                 >
                   <FormControl sx={{ mt: 4 }} fullWidth>
-                    <InputLabel id="carrera-label">CARRERA</InputLabel>
+                    <InputLabel id="career-label">CARRERA</InputLabel>
                     <Select
-                      labelId="carrera-label"
+                      labelId="career-label"
                       label="CARRERA"
                       value={selectedCareer}
                       onChange={handleCareerChange}
