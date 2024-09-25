@@ -17,11 +17,19 @@ interface Career {
   CAREER_NAME: string;
 }
 
+interface Subject {
+  CAREER_ID: number;
+  SUBJECT_NAME: string;
+  SUBJECT_PERIOD: number;
+}
+
 const RegCareerSubjectPage: React.FC = () => {
   const [careerName, setCarrerName] = useState<string>("");
   //subjects consts
   const [selectedCareer, setSelectedCareer] = useState<number | "">("");
   const [careers, setCareers] = useState<Career[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<number | "">("");
+  const [subjectName, setSubjectName] = useState<string>("");
 
   const handleSubmitCareer = async (event: React.FormEvent<HTMLElement>) => {
     event.preventDefault();
@@ -62,6 +70,64 @@ const RegCareerSubjectPage: React.FC = () => {
     console.log("Selected Career ID:", careerId);
   };
 
+  const handlePeriodChange = (e: React.ChangeEvent<{ value: unknown }>) => {
+    const periodNum = e.target.value as number;
+    setSelectedPeriod(periodNum);
+    console.log("Selected Period:", periodNum);
+  };
+
+  const periods: item[] = [
+    {
+      value: 1,
+    },
+    {
+      value: 2,
+    },
+    {
+      value: 3,
+    },
+    {
+      value: 4,
+    },
+    {
+      value: 5,
+    },
+    {
+      value: 6,
+    },
+    {
+      value: 7,
+    },
+    {
+      value: 8,
+    },
+  ];
+
+  const handleSubmitSubject = async (event: React.FormEvent<HTMLElement>) => {
+    event.preventDefault();
+    const subjectData: Subject = {
+      CAREER_ID: selectedCareer,
+      SUBJECT_NAME: subjectName,
+      SUBJECT_PERIOD: selectedPeriod,
+    };
+    console.log(subjectData);
+    try {
+      const subjectResponse = await fetch(
+        "http://localhost:8000/api/subjects",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(subjectData),
+        }
+      );
+      if (!subjectResponse.ok) throw new Error("Failed to register subject");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
       <NavBar></NavBar>
@@ -84,7 +150,6 @@ const RegCareerSubjectPage: React.FC = () => {
                     variant="contained"
                     sx={{
                       maxWidth: "15rem",
-                      mt: 4,
                       mb: 4,
                       minHeight: "3.4rem",
                       minWidth: "10rem",
@@ -97,10 +162,15 @@ const RegCareerSubjectPage: React.FC = () => {
               </form>
             </Grid2>
             <Grid2 size={6} key="subject">
-              <form>
+              <form onSubmit={handleSubmitSubject}>
                 <Typography variant="h6">DATOS DE LA MATERIA</Typography>
                 <FormControl sx={{ mt: 4 }} fullWidth>
-                  <TextField variant="outlined" label="NOMBRE DE LA MATERIA" />
+                  <TextField
+                    variant="outlined"
+                    label="NOMBRE DE LA MATERIA"
+                    value={subjectName}
+                    onChange={(e) => setSubjectName(e.target.value)}
+                  />
                 </FormControl>
                 <FormControl sx={{ mt: 4 }} fullWidth>
                   <InputLabel id="career-label">CARRERA</InputLabel>
@@ -109,7 +179,6 @@ const RegCareerSubjectPage: React.FC = () => {
                     label="CARRERA"
                     value={selectedCareer}
                     onChange={handleCareerChange}
-                    sx={{ mb: 4 }}
                   >
                     {careers.map((career) => (
                       <MenuItem key={career.CAREER_ID} value={career.CAREER_ID}>
@@ -117,6 +186,23 @@ const RegCareerSubjectPage: React.FC = () => {
                       </MenuItem>
                     ))}
                   </Select>
+                </FormControl>
+                <FormControl sx={{ mt: 4 }} fullWidth>
+                  <InputLabel id="period-label">PERIODO</InputLabel>
+                  <Select
+                    labelId="period-label"
+                    label="CARRERA"
+                    value={selectedPeriod}
+                    onChange={handlePeriodChange}
+                  >
+                    {periods.map((period) => (
+                      <MenuItem key={period.value} value={period.value}>
+                        {period.value}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl>
                   <Button
                     variant="contained"
                     sx={{
