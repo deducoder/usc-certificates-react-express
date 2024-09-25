@@ -82,14 +82,14 @@ function Careers() {
           <IconButton
             color="primary"
             onClick={() => handleEditRow(params.row)}
-            disabled={params.row.STUDENT_STATUS === 0}
+            disabled={params.row.CAREER_STATUS === 0}
           >
             <EditIcon></EditIcon>
           </IconButton>
           <IconButton
             color="error"
             onClick={() => handleDeleteRow(params.row)}
-            disabled={params.row.STUDENT_STATUS === 0}
+            disabled={params.row.CAREER_STATUS === 0}
           >
             <DeleteIcon></DeleteIcon>
           </IconButton>

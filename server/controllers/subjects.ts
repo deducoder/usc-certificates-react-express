@@ -4,7 +4,7 @@ import Subject from "../models/subjects";
 //functino to get all DB subjects
 export const getSubjects = async (req: Request, res: Response) => {
   const subjects = await Subject.findAll(); //searching all subjects
-  res.json({ subjects }); //sending json with all subjects as object
+  res.json(subjects); //sending json with all subjects as object
 };
 
 //function to get one DB subject by ID
@@ -13,7 +13,7 @@ export const getSubject = async (req: Request, res: Response) => {
   const subject = await Subject.findByPk(id);
   if (subject) {
     //validate if subject exist
-    res.json({ subject }); //sending json with subject as object
+    res.json(subject); //sending json with subject as object
   } else {
     res.status(404).json({
       msg: `don't exist a subject with id: ${id}`,
