@@ -13,7 +13,7 @@ export const getCareer = async (req: Request, res: Response) => {
   const career = await Career.findByPk(id); //searching for one career by ID
   if (career) {
     //validate if career exist
-    res.json({ career }); //sending json with career as object
+    res.json(career); //sending json with career as object
   } else {
     res.status(404).json({
       msg: `don't exist a career with id: ${id}`,

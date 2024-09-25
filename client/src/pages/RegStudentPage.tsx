@@ -176,6 +176,18 @@ const RegStudentPage: React.FC = () => {
                     value={maternalLastName}
                     onChange={(e) => setMaternalLastName(e.target.value)}
                   />
+                  <Button
+                    variant="contained"
+                    type="submit"
+                    sx={{
+                      maxWidth: "15rem",
+                      mt: 4,
+                      mb: 4,
+                      minHeight: "3.4rem",
+                    }}
+                  >
+                    REGISTER
+                  </Button>
                 </FormControl>
               </Grid2>
               <Grid2 size={4} key="schoolar">
@@ -252,9 +264,6 @@ const RegStudentPage: React.FC = () => {
                 />
               </Grid2>
             </Grid2>
-            <Button variant="contained" type="submit" sx={{ mt: 4 }}>
-              REGISTER
-            </Button>
           </form>
         </Paper>
       </Container>

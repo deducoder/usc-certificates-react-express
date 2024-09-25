@@ -24,6 +24,7 @@ const User = db.define(
     },
     USER_ROLE: {
       type: DataTypes.STRING,
+      defaultValue: "admin",
       allowNull: false,
       validate: {
         isIn: [["admin", "superAdmin"]],
