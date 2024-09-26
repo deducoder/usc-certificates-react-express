@@ -35,8 +35,12 @@ function Subjects() {
   const [selectedCareer, setSelectedCareer] = useState<number | "">("");
   const [careers, setCareers] = useState<Career[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<number | "">("");
+  const [careerDictionary, setCareerDictionary] = useState<{
+    [key: number]: string;
+  }>({});
 
   useEffect(() => {
+    // Fetch subjects
     const fetchSubjects = async () => {
       try {
         const response = await fetch("http://localhost:8000/api/subjects");
@@ -46,7 +50,30 @@ function Subjects() {
         console.error(error);
       }
     };
+
+    // Fetch careers
+    const fetchCareers = async () => {
+      try {
+        const response = await fetch("http://localhost:8000/api/careers");
+        if (!response.ok) throw new Error("Network response was not ok");
+        const data = await response.json();
+
+        setCareers(data);
+
+        // Create a dictionary mapping CAREER_ID to CAREER_NAME
+        const careerDict: { [key: number]: string } = {};
+        data.forEach((career: Career) => {
+          careerDict[career.CAREER_ID] = career.CAREER_NAME;
+        });
+
+        setCareerDictionary(careerDict); // Set the dictionary
+      } catch (error) {
+        console.error("Error fetching careers: ", error);
+      }
+    };
+
     fetchSubjects();
+    fetchCareers();
   }, []);
 
   //periodos
@@ -77,21 +104,6 @@ function Subjects() {
     },
   ];
 
-  //carreras
-  useEffect(() => {
-    const fetchCareers = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/api/careers");
-        if (!response.ok) throw new Error("Network response was not ok");
-        const data = await response.json();
-        setCareers(data);
-      } catch (error) {
-        console.error("Error fetching careers: ", error);
-      }
-    };
-    fetchCareers();
-  }, []);
-
   const handleCareerChange = (e: React.ChangeEvent<{ value: unknown }>) => {
     const careerId = e.target.value as number;
     setSelectedCareer(careerId);
@@ -118,17 +130,18 @@ function Subjects() {
     {
       field: "SUBJECT_NAME",
       headerName: "NOMBRE",
-      width: 250,
+      width: 200,
     },
     {
       field: "CAREER_ID",
       headerName: "CARRERA ASOCIADA",
-      width: 300,
+      width: 400,
+      renderCell: (params) => careerDictionary[params.value] || "Unknown", // Map CAREER_ID to CAREER_NAME
     },
     {
       field: "SUBJECT_PERIOD",
       headerName: "PERIODO",
-      width: 100,
+      width: 80,
     },
     {
       field: "SUBJECT_CREATION",
@@ -191,28 +204,32 @@ function Subjects() {
   const paginationModel = { page: 0, pageSize: 10 };
 
   //edit
-  const handleEditRow = (row: career) => {
+  const handleEditRow = (row: subject) => {
     setSelectedRowEdit(row);
+    setSelectedCareer(row.CAREER_ID); // Set the selected career
+    setSelectedPeriod(row.SUBJECT_PERIOD); // Set the selected period
     setOpenEditDialog(true);
   };
 
   const handleEditSubmit = async (updatedRow: Row) => {
     console.log(updatedRow.id);
     try {
-      // Create a new object with the required structure
+      // Crear un nuevo objeto con la estructura requerida
       const dataToSend = {
-        SUBJECT_ID: updatedRow.id, // Renaming 'id' to 'STUDENT_ID'
-        SUBJECT_NAME: updatedRow.CAREER_NAME,
+        SUBJECT_ID: updatedRow.id, // ID de la materia
+        SUBJECT_NAME: updatedRow.SUBJECT_NAME, // Nombre de la materia
+        CAREER_ID: selectedCareer, // Carrera seleccionada
+        SUBJECT_PERIOD: selectedPeriod, // Periodo seleccionado
       };
+
       const url = `http://localhost:8000/api/subjects/${dataToSend.SUBJECT_ID}`;
-      //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend), // Send the new object
+        body: JSON.stringify(dataToSend), // Enviar los datos actualizados
       });
 
       if (!response.ok) {
@@ -220,16 +237,14 @@ function Subjects() {
       }
 
       const data = await response.json();
-      //console.log("Update response:", data);
       setTimeout(() => {
         window.location.reload();
-      }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
-      // Handle successful update, e.g., refresh the list or update local state
+      }, 1000); // Actualiza la página después de 1 segundo
     } catch (error) {
       console.error("Error updating subject:", error);
     } finally {
-      setOpenEditDialog(false); //close dialog
-      setSelectedRowEdit(null); //return row value to null
+      setOpenEditDialog(false); // Cerrar el diálogo de edición
+      setSelectedRowEdit(null); // Restablecer el estado de la fila seleccionada
     }
   };
 
@@ -382,13 +397,14 @@ function Subjects() {
                   }
                   sx={{ minWidth: "30rem" }}
                 />
+
                 <FormControl sx={{ mt: 4 }} fullWidth>
                   <InputLabel id="career-label">CARRERA</InputLabel>
                   <Select
                     labelId="career-label"
                     label="CARRERA"
-                    value={selectedCareer}
-                    onChange={handleCareerChange}
+                    value={selectedCareer} // Valor de la carrera seleccionada
+                    onChange={handleCareerChange} // Función que cambia el valor de selectedCareer
                   >
                     {careers.map((career) => (
                       <MenuItem key={career.CAREER_ID} value={career.CAREER_ID}>
@@ -397,12 +413,13 @@ function Subjects() {
                     ))}
                   </Select>
                 </FormControl>
+
                 <FormControl sx={{ mt: 4 }} fullWidth>
                   <InputLabel id="period-label">PERIODO</InputLabel>
                   <Select
                     labelId="period-label"
-                    label="CARRERA"
-                    value={selectedPeriod}
+                    label="PERIODO"
+                    value={selectedPeriod} // Use the selectedPeriod state
                     onChange={handlePeriodChange}
                   >
                     {periods.map((period) => (
