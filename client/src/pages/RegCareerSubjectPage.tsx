@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
+import AlertMessage from "../components/AlertMessage";
 
 interface Career {
   CAREER_NAME: string;
@@ -30,6 +31,12 @@ const RegCareerSubjectPage: React.FC = () => {
   const [careers, setCareers] = useState<Career[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<number | "">("");
   const [subjectName, setSubjectName] = useState<string>("");
+  // alerta
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
   const handleSubmitCareer = async (event: React.FormEvent<HTMLElement>) => {
     event.preventDefault();
@@ -45,8 +52,19 @@ const RegCareerSubjectPage: React.FC = () => {
         body: JSON.stringify(careerData),
       });
       if (!careerResponse.ok) throw new Error("Failed to register career");
+      // datos de la alertra
+      setAlertMessage("Carrera creada correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error(error);
+      // datos de la alertra
+      setAlertMessage("Error al crear la carrera correctamente");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     }
   };
 
@@ -67,13 +85,13 @@ const RegCareerSubjectPage: React.FC = () => {
   const handleCareerChange = (e: React.ChangeEvent<{ value: unknown }>) => {
     const careerId = e.target.value as number;
     setSelectedCareer(careerId);
-    console.log("Selected Career ID:", careerId);
+    //console.log("Selected Career ID:", careerId);
   };
 
   const handlePeriodChange = (e: React.ChangeEvent<{ value: unknown }>) => {
     const periodNum = e.target.value as number;
     setSelectedPeriod(periodNum);
-    console.log("Selected Period:", periodNum);
+    //console.log("Selected Period:", periodNum);
   };
 
   const periods: item[] = [
@@ -110,7 +128,7 @@ const RegCareerSubjectPage: React.FC = () => {
       SUBJECT_NAME: subjectName,
       SUBJECT_PERIOD: selectedPeriod,
     };
-    console.log(subjectData);
+    //console.log(subjectData);
     try {
       const subjectResponse = await fetch(
         "http://localhost:8000/api/subjects",
@@ -123,10 +141,24 @@ const RegCareerSubjectPage: React.FC = () => {
         }
       );
       if (!subjectResponse.ok) throw new Error("Failed to register subject");
+      // datos de la alertra
+      setAlertMessage("Materia creada correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error(error);
+      // datos de la alertra
+      setAlertMessage("Error al crear la materia");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     }
   };
+
+  //cerrar alerta
+  const handleAlertClose = () => setAlertOpen(false);
 
   return (
     <>
@@ -221,6 +253,12 @@ const RegCareerSubjectPage: React.FC = () => {
             </Grid2>
           </Grid2>
         </Paper>
+        <AlertMessage
+          message={alertMessage}
+          severity={alertSeverity}
+          open={alertOpen}
+          onClose={handleAlertClose}
+        />
       </Container>
     </>
   );

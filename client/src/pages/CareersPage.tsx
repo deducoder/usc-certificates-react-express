@@ -16,6 +16,7 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ReplayIcon from "@mui/icons-material/Replay";
+import AlertMessage from "../components/AlertMessage";
 
 function Careers() {
   const [careers, setCareers] = useState<career[]>([]);
@@ -27,6 +28,12 @@ function Careers() {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDelDialog, setOpenDelDialog] = useState(false);
   const [openActivateDialog, setOpenActivateDialog] = useState(false);
+  // alerta
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
   useEffect(() => {
     const fetchCareers = async () => {
@@ -96,7 +103,7 @@ function Careers() {
           <IconButton
             color="success"
             onClick={() => handleActivateRow(params.row, 1)}
-            disabled={params.row.STUDENT_STATUS === 1}
+            disabled={params.row.CAREER_STATUS === 1}
           >
             <ReplayIcon></ReplayIcon>
           </IconButton>
@@ -122,7 +129,7 @@ function Careers() {
   };
 
   const handleEditSubmit = async (updatedRow: Row) => {
-    console.log(updatedRow.id);
+    //console.log(updatedRow.id);
     try {
       // Create a new object with the required structure
       const dataToSend = {
@@ -146,12 +153,19 @@ function Careers() {
 
       const data = await response.json();
       //console.log("Update response:", data);
+      // datos de la alertra
+      setAlertMessage("Carrera actualizada correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
+      // tiempo de refresco
       setTimeout(() => {
         window.location.reload();
-      }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
-      // Handle successful update, e.g., refresh the list or update local state
+      }, 1000);
     } catch (error) {
       console.error("Error updating career:", error);
+      setAlertMessage("Error al actualizar la carrera");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenEditDialog(false); //close dialog
       setSelectedRowEdit(null); //return row value to null
@@ -165,7 +179,7 @@ function Careers() {
   };
 
   const handleDeleteSubmit = async (deletedRow: Row) => {
-    console.log(deletedRow.id);
+    //console.log(deletedRow.id);
     try {
       const dataToSend = {
         CAREER_ID: deletedRow.id,
@@ -187,12 +201,18 @@ function Careers() {
 
       const data = await response.json();
       //console.log("deleted response", data);
+      // datos de la alertra
+      setAlertMessage("Carrera eliminada correctamente");
+      setAlertSeverity("error");
+      setAlertOpen(true);
       setTimeout(() => {
         window.location.reload();
-      }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
-      // Handle successful update, e.g., refresh the list or update local state
+      }, 1000);
     } catch (error) {
       console.error("Error deleting career:", error);
+      setAlertMessage("Error al eliminar la carrera");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenDelDialog(false); //close dialog
       setSelectedRowDel(null); //return row value to null
@@ -206,7 +226,7 @@ function Careers() {
   };
 
   const handleActivateSubmit = async (activatedRow: Row) => {
-    console.log(activatedRow.id);
+    //console.log(activatedRow.id);
     try {
       const dataToSend = {
         CAREER_ID: activatedRow.id,
@@ -228,12 +248,18 @@ function Careers() {
 
       const data = await response.json();
       //console.log("deleted response", data);
+      // datos de la alertra
+      setAlertMessage("Carrera reactivada correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
       setTimeout(() => {
         window.location.reload();
-      }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
-      // Handle successful update, e.g., refresh the list or update local state
+      }, 1000);
     } catch (error) {
       console.error("Error activating career:", error);
+      setAlertMessage("Error al reactivar la carrera");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenActivateDialog(false); //close dialog
       setSelectedRowActive(null); //return row value to null
@@ -264,6 +290,9 @@ function Careers() {
     }
   }, [selectedRowActive]);
 
+  //cerrar alerta
+  const handleAlertClose = () => setAlertOpen(false);
+
   return (
     <>
       <NavBar></NavBar>
@@ -288,6 +317,12 @@ function Careers() {
             }}
           ></DataGrid>
         </Paper>
+        <AlertMessage
+          message={alertMessage}
+          severity={alertSeverity}
+          open={alertOpen}
+          onClose={handleAlertClose}
+        />
         <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
           <DialogTitle>Editar Carrera</DialogTitle>
           <DialogContent>

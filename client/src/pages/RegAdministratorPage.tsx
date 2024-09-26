@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import NavBar from "../components/NavBar";
 import { useState } from "react";
+import AlertMessage from "../components/AlertMessage";
 
 function RegAdministrator() {
   const [name, setName] = useState<string>("");
@@ -16,6 +17,12 @@ function RegAdministrator() {
   const [maternalLastName, setMaternalLastName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [passWord, setPassWord] = useState<string>("");
+  // alerta
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
   const generatePassword = () => {
     const characters =
@@ -72,14 +79,27 @@ function RegAdministrator() {
         const errorData = await adminResponse.json();
         throw new Error(errorData.msg || "Error registering admin");
       }
-
-      // Si todo salió bien, puedes hacer algo aquí (por ejemplo, mostrar un mensaje de éxito)
-      alert("Administrator registered successfully!");
+      // datos de la alertra
+      setAlertMessage("Administrador creado correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      // datos de la alertra
+      setAlertMessage("Error al crear el administrador");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
   };
+
+  //cerrar alerta
+  const handleAlertClose = () => setAlertOpen(false);
 
   return (
     <>
@@ -168,6 +188,12 @@ function RegAdministrator() {
             </Grid2>
           </form>
         </Paper>
+        <AlertMessage
+          message={alertMessage}
+          severity={alertSeverity}
+          open={alertOpen}
+          onClose={handleAlertClose}
+        />
       </Container>
     </>
   );

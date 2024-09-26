@@ -16,6 +16,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ReplayIcon from "@mui/icons-material/Replay";
+import AlertMessage from "../components/AlertMessage";
 
 function Administrators() {
   const [admins, setAdmins] = useState<admins[]>([]);
@@ -28,6 +29,12 @@ function Administrators() {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDelDialog, setOpenDelDialog] = useState(false);
   const [openActivateDialog, setOpenActivateDialog] = useState(false);
+  // alerta
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
   useEffect(() => {
     const fetchAdmins = async () => {
@@ -35,7 +42,7 @@ function Administrators() {
         const response = await fetch("http://localhost:8000/api/admins");
         const data = await response.json();
         setAdmins(data);
-        console.log(data);
+        //console.log(data);
       } catch (error) {
         console.error(error);
       }
@@ -46,7 +53,7 @@ function Administrators() {
         const response = await fetch("http://localhost:8000/api/users");
         const data = await response.json();
         setUsers(data);
-        console.log(data);
+        //console.log(data);
       } catch (error) {
         console.error(error);
       }
@@ -166,7 +173,7 @@ function Administrators() {
   };
 
   const handleEditSubmit = async (updatedRow: any) => {
-    console.log(updatedRow.id);
+    //console.log(updatedRow.id);
     try {
       // Crear objeto para actualizar el administrador
       const adminDataToSend = {
@@ -213,13 +220,19 @@ function Administrators() {
       if (!userResponse.ok) {
         throw new Error(`Failed to update user: ${userResponse.statusText}`);
       }
-
+      // datos de la alertra
+      setAlertMessage("Administrator actualizado correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
       // Recargar la página para mostrar los cambios
       setTimeout(() => {
         window.location.reload();
       }, 1000);
     } catch (error) {
       console.error("Error updating admin or user:", error);
+      setAlertMessage("Error al actualizar el administrador");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenEditDialog(false); // Cerrar el diálogo
       setSelectedRowEdit(null); // Limpiar el estado seleccionado
@@ -233,7 +246,7 @@ function Administrators() {
   };
 
   const handleDeleteSubmit = async (deletedRow: any) => {
-    console.log(deletedRow.id);
+    //console.log(deletedRow.id);
     try {
       // Actualizar el estado del administrador a 0
       const adminDataToSend = {
@@ -277,13 +290,19 @@ function Administrators() {
           `Failed to update user status: ${userResponse.statusText}`
         );
       }
-
+      // datos de la alertra
+      setAlertMessage("Administrator eliminado correctamente");
+      setAlertSeverity("error");
+      setAlertOpen(true);
       // Recargar la página después de la actualización
       setTimeout(() => {
         window.location.reload();
       }, 1000);
     } catch (error) {
       console.error("Error updating admin or user status:", error);
+      setAlertMessage("Error al eliminar el administrador");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenDelDialog(false); // Cerrar el diálogo
       setSelectedRowDel(null); // Limpiar la fila seleccionada
@@ -297,7 +316,7 @@ function Administrators() {
   };
 
   const handleActivateSubmit = async (activatedRow: any) => {
-    console.log(activatedRow.id);
+    //console.log(activatedRow.id);
     try {
       // Actualizar el estado del administrador a 1
       const adminDataToSend = {
@@ -339,13 +358,19 @@ function Administrators() {
       if (!userResponse.ok) {
         throw new Error(`Failed to activate user: ${userResponse.statusText}`);
       }
-
+      // datos de la alertra
+      setAlertMessage("Administrator reactivado correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
       // Recargar la página después de la actualización
       setTimeout(() => {
         window.location.reload();
       }, 1000);
     } catch (error) {
       console.error("Error activating admin or user:", error);
+      setAlertMessage("Error al reactivar el administrador");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenActivateDialog(false); // Cerrar el diálogo
       setSelectedRowActive(null); // Limpiar la fila seleccionada
@@ -376,6 +401,9 @@ function Administrators() {
     }
   }, [selectedRowActive]);
 
+  //cerrar alerta
+  const handleAlertClose = () => setAlertOpen(false);
+
   return (
     <>
       <NavBar></NavBar>
@@ -400,6 +428,12 @@ function Administrators() {
             }}
           ></DataGrid>
         </Paper>
+        <AlertMessage
+          message={alertMessage}
+          severity={alertSeverity}
+          open={alertOpen}
+          onClose={handleAlertClose}
+        />
         <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
           <DialogTitle>Editar Estudiante</DialogTitle>
           <DialogContent>

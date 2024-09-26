@@ -17,6 +17,7 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ReplayIcon from "@mui/icons-material/Replay";
+import AlertMessage from "../components/AlertMessage";
 
 //student definition
 interface student {
@@ -40,6 +41,13 @@ function Students() {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDelDialog, setOpenDelDialog] = useState(false);
   const [openActivateDialog, setOpenActivateDialog] = useState(false);
+  // alerta
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
+    "success"
+  );
+
   //fetching students list from server
   useEffect(() => {
     const fetchStudents = async () => {
@@ -145,7 +153,7 @@ function Students() {
   };
 
   const handleEditSubmit = async (updatedRow: Row) => {
-    console.log(updatedRow.id);
+    //console.log(updatedRow.id);
     try {
       // Create a new object with the required structure
       const dataToSend = {
@@ -171,12 +179,19 @@ function Students() {
 
       const data = await response.json();
       //console.log("Update response:", data);
+      // datos de la alertra
+      setAlertMessage("Estudiante actualizado correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
       // Handle successful update, e.g., refresh the list or update local state
     } catch (error) {
       console.error("Error updating student:", error);
+      setAlertMessage("Error al actualizar el estudiante");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenEditDialog(false); //close dialog
       setSelectedRowEdit(null); //return row value to null
@@ -190,7 +205,7 @@ function Students() {
   };
 
   const handleDeleteSubmit = async (deletedRow: Row) => {
-    console.log(deletedRow.id);
+    //console.log(deletedRow.id);
     try {
       const dataToSend = {
         STUDENT_ID: deletedRow.id,
@@ -212,12 +227,19 @@ function Students() {
 
       const data = await response.json();
       //console.log("deleted response", data);
+      // datos de la alertra
+      setAlertMessage("Estudiante eliminado correctamente");
+      setAlertSeverity("error");
+      setAlertOpen(true);
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
       // Handle successful update, e.g., refresh the list or update local state
     } catch (error) {
       console.error("Error deleting student:", error);
+      setAlertMessage("Error al eliminar el estudiante");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenDelDialog(false); //close dialog
       setSelectedRowDel(null); //return row value to null
@@ -231,7 +253,7 @@ function Students() {
   };
 
   const handleActivateSubmit = async (activatedRow: Row) => {
-    console.log(activatedRow.id);
+    //console.log(activatedRow.id);
     try {
       const dataToSend = {
         STUDENT_ID: activatedRow.id,
@@ -253,12 +275,19 @@ function Students() {
 
       const data = await response.json();
       //console.log("deleted response", data);
+      // datos de la alertra
+      setAlertMessage("Estudiante reactivado correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
       // Handle successful update, e.g., refresh the list or update local state
     } catch (error) {
       console.error("Error activating student:", error);
+      setAlertMessage("Error al reactivar el estudiante");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenActivateDialog(false); //close dialog
       setSelectedRowActive(null); //return row value to null
@@ -289,6 +318,9 @@ function Students() {
     }
   }, [selectedRowActive]);
 
+  //cerrar alerta
+  const handleAlertClose = () => setAlertOpen(false);
+
   return (
     <>
       <NavBar></NavBar>
@@ -313,6 +345,12 @@ function Students() {
             }}
           />
         </Paper>
+        <AlertMessage
+          message={alertMessage}
+          severity={alertSeverity}
+          open={alertOpen}
+          onClose={handleAlertClose}
+        />
         <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
           <DialogTitle>Editar Estudiante</DialogTitle>
           <DialogContent>

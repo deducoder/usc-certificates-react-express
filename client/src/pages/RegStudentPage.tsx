@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
+import AlertMessage from "../components/AlertMessage";
 
 // Define interfaces for the student and career data
 interface StudentData {
@@ -37,6 +38,12 @@ const RegStudentPage: React.FC = () => {
   const [studentName, setStudentName] = useState<string>("");
   const [paternalLastName, setPaternalLastName] = useState<string>("");
   const [maternalLastName, setMaternalLastName] = useState<string>("");
+  // alerta
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
   // Fetch careers from the backend on component mount
   useEffect(() => {
@@ -57,7 +64,7 @@ const RegStudentPage: React.FC = () => {
   const handleCareerChange = (e: React.ChangeEvent<{ value: unknown }>) => {
     const careerId = e.target.value as number;
     setSelectedCareer(careerId);
-    console.log("Selected Career ID:", careerId);
+    //console.log("Selected Career ID:", careerId);
   };
 
   // Generate the tuition number based on the latest one
@@ -137,12 +144,29 @@ const RegStudentPage: React.FC = () => {
 
       if (!careerResponse.ok)
         throw new Error("Failed to register student career");
+      // datos de la alertra
+      setAlertMessage("Alumno creado correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
 
-      console.log("Student and career registered successfully!");
+      //console.log("Student and career registered successfully!");
     } catch (error) {
       console.error("Error during registration: ", error);
+      // datos de la alertra
+      setAlertMessage("Error al crear el alumno");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     }
   };
+
+  //cerrar alerta
+  const handleAlertClose = () => setAlertOpen(false);
 
   return (
     <>
@@ -266,6 +290,12 @@ const RegStudentPage: React.FC = () => {
             </Grid2>
           </form>
         </Paper>
+        <AlertMessage
+          message={alertMessage}
+          severity={alertSeverity}
+          open={alertOpen}
+          onClose={handleAlertClose}
+        />
       </Container>
     </>
   );

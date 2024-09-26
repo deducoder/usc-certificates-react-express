@@ -20,6 +20,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import AlertMessage from "../components/AlertMessage";
 
 function Subjects() {
   const [subjects, setSubjects] = useState<subject[]>([]);
@@ -38,6 +39,12 @@ function Subjects() {
   const [careerDictionary, setCareerDictionary] = useState<{
     [key: number]: string;
   }>({});
+  // alerta
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
+    "success"
+  );
 
   useEffect(() => {
     // Fetch subjects
@@ -107,13 +114,13 @@ function Subjects() {
   const handleCareerChange = (e: React.ChangeEvent<{ value: unknown }>) => {
     const careerId = e.target.value as number;
     setSelectedCareer(careerId);
-    console.log("Selected Career ID:", careerId);
+    //console.log("Selected Career ID:", careerId);
   };
 
   const handlePeriodChange = (e: React.ChangeEvent<{ value: unknown }>) => {
     const periodNum = e.target.value as number;
     setSelectedPeriod(periodNum);
-    console.log("Selected Period:", periodNum);
+    //console.log("Selected Period:", periodNum);
   };
 
   const formDate = (isoDate: string) => {
@@ -212,7 +219,7 @@ function Subjects() {
   };
 
   const handleEditSubmit = async (updatedRow: Row) => {
-    console.log(updatedRow.id);
+    //console.log(updatedRow.id);
     try {
       // Crear un nuevo objeto con la estructura requerida
       const dataToSend = {
@@ -237,11 +244,18 @@ function Subjects() {
       }
 
       const data = await response.json();
+      // datos de la alertra
+      setAlertMessage("Materia actualizada correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
       setTimeout(() => {
         window.location.reload();
       }, 1000); // Actualiza la página después de 1 segundo
     } catch (error) {
       console.error("Error updating subject:", error);
+      setAlertMessage("Error al eliminar la materia");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenEditDialog(false); // Cerrar el diálogo de edición
       setSelectedRowEdit(null); // Restablecer el estado de la fila seleccionada
@@ -255,7 +269,7 @@ function Subjects() {
   };
 
   const handleDeleteSubmit = async (deletedRow: Row) => {
-    console.log(deletedRow.id);
+    //console.log(deletedRow.id);
     try {
       const dataToSend = {
         SUBJECT_ID: deletedRow.id,
@@ -277,12 +291,19 @@ function Subjects() {
 
       const data = await response.json();
       //console.log("deleted response", data);
+      // datos de la alertra
+      setAlertMessage("Materia eliminada correctamente");
+      setAlertSeverity("error");
+      setAlertOpen(true);
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
       // Handle successful update, e.g., refresh the list or update local state
     } catch (error) {
       console.error("Error deleting subject:", error);
+      setAlertMessage("Error al eliminar la materia");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenDelDialog(false); //close dialog
       setSelectedRowDel(null); //return row value to null
@@ -296,7 +317,7 @@ function Subjects() {
   };
 
   const handleActivateSubmit = async (activatedRow: Row) => {
-    console.log(activatedRow.id);
+    //console.log(activatedRow.id);
     try {
       const dataToSend = {
         SUBJECT_ID: activatedRow.id,
@@ -318,12 +339,19 @@ function Subjects() {
 
       const data = await response.json();
       //console.log("deleted response", data);
+      // datos de la alertra
+      setAlertMessage("Materia reactivada correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
       // Handle successful update, e.g., refresh the list or update local state
     } catch (error) {
       console.error("Error activating subject:", error);
+      setAlertMessage("Error al eliminar la materia");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     } finally {
       setOpenActivateDialog(false); //close dialog
       setSelectedRowActive(null); //return row value to null
@@ -354,6 +382,9 @@ function Subjects() {
     }
   }, [selectedRowActive]);
 
+  //cerrar alerta
+  const handleAlertClose = () => setAlertOpen(false);
+
   return (
     <>
       <NavBar></NavBar>
@@ -378,6 +409,12 @@ function Subjects() {
             }}
           ></DataGrid>
         </Paper>
+        <AlertMessage
+          message={alertMessage}
+          severity={alertSeverity}
+          open={alertOpen}
+          onClose={handleAlertClose}
+        />
         <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
           <DialogTitle>Editar Materia</DialogTitle>
           <DialogContent>
