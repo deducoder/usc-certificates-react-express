@@ -4,7 +4,7 @@ import Admin from "../models/admin";
 //function to get all DB administrators
 export const getAdmins = async (req: Request, res: Response) => {
   const admins = await Admin.findAll(); //searching all admins
-  res.json({ admins }); //sending json with all admins as object
+  res.json(admins); //sending json with all admins as object
 };
 
 //function to get one DB administrator by ID
@@ -13,7 +13,7 @@ export const getAdmin = async (req: Request, res: Response) => {
   const admin = await Admin.findByPk(id); //searching for one admin by ID
   if (admin) {
     //validate if admin exist
-    res.json({ admin }); //sending json with admin as object
+    res.json(admin); //sending json with admin as object
   } else {
     res.status(404).json({
       msg: `don't exist an admin with id: ${id}`,

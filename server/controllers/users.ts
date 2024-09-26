@@ -4,7 +4,7 @@ import User from "../models/user";
 //function to get all DB users
 export const getUsers = async (req: Request, res: Response) => {
   const users = await User.findAll(); //searching all users
-  res.json({ users }); //sending json with all users as object
+  res.json(users); //sending json with all users as object
 };
 
 //function to get one DB user by ID
@@ -13,7 +13,7 @@ export const getUser = async (req: Request, res: Response) => {
   const user = await User.findByPk(id); //searching for one user by ID
   if (user) {
     //validate if user exist
-    res.json({ user }); //sending json with user as object
+    res.json(user); //sending json with user as object
   } else {
     res.status(404).json({
       msg: `don't exist a user with id: ${id}`,
