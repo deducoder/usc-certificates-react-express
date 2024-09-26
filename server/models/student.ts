@@ -14,6 +14,7 @@ const Student = db.define(
     STUDENT_TUITION: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      unique: true,
     },
     STUDENT_NAME: {
       type: DataTypes.STRING,

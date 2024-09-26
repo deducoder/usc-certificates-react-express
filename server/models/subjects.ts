@@ -15,7 +15,6 @@ const Subject = db.define(
     CAREER_ID: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true,
       references: {
         //foreignkey references to careers table
         model: Career,
