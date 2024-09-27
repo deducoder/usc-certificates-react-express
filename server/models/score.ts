@@ -32,7 +32,8 @@ const Score = db.define(
       },
     },
     SCORE: {
-      type: DataTypes.DECIMAL(3, 1),
+      //type: DataTypes.DECIMAL(3, 1),
+      type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
         max: 10.0,

@@ -46,7 +46,7 @@ function ScoresPage() {
   const [career, setCareer] = useState<Career | null>(null); // Changed to null initially
   const [subjects, setSubjects] = useState<subject[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<number | "">(1); // Default period is set to 1
-  const [scores, setScores] = useState<score[]>([]);
+  const [scores, setScores] = useState<Score[]>([]);
   const [selectedRowAdd, setSelectedRowAdd] = useState<Student | null>(null);
 
   useEffect(() => {
@@ -119,10 +119,17 @@ function ScoresPage() {
           `http://localhost:8000/api/scores/student/${studentId}`
         );
         const scoreData = await scoreResponse.json();
-        console.log(scoreData);
-        setScores(scoreData);
+
+        // Ensure scoreData is an array before setting it
+        if (Array.isArray(scoreData)) {
+          setScores(scoreData);
+        } else {
+          console.error("Scores data is not an array", scoreData);
+          setScores([]); // or handle it as needed
+        }
       } catch (error) {
         console.error(error);
+        setScores([]); // Ensure scores is reset on error
       }
     };
 
