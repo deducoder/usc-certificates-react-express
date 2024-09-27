@@ -9,12 +9,19 @@ import {
   MenuItem,
   InputLabel,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
 import { GridColDef } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
+import AlertMessage from "../components/AlertMessage";
+import EditIcon from "@mui/icons-material/Edit";
 
 interface Student {
   STUDENT_NAME: string;
@@ -48,6 +55,15 @@ function ScoresPage() {
   const [selectedPeriod, setSelectedPeriod] = useState<number | "">(1); // Default period is set to 1
   const [scores, setScores] = useState<Score[]>([]);
   const [selectedRowAdd, setSelectedRowAdd] = useState<Student | null>(null);
+  // alerta
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
+    "success"
+  );
+  //editar
+  const [selectedRowEdit, setSelectedRowEdit] = useState<Student | null>(null);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
 
   useEffect(() => {
     //fetching student info
@@ -106,7 +122,7 @@ function ScoresPage() {
           `http://localhost:8000/api/subjects/career/${careerId}`
         );
         const subjectData = await subjectResponse.json();
-        console.log(subjectData);
+        //console.log(subjectData);
         setSubjects(subjectData);
       } catch (error) {
         console.error(error);
@@ -122,6 +138,7 @@ function ScoresPage() {
 
         // Ensure scoreData is an array before setting it
         if (Array.isArray(scoreData)) {
+          console.log(scores);
           setScores(scoreData);
         } else {
           console.error("Scores data is not an array", scoreData);
@@ -167,6 +184,13 @@ function ScoresPage() {
           >
             <AddIcon></AddIcon>
           </IconButton>
+          <IconButton
+            color="primary"
+            onClick={() => handleEditRow(params.row)}
+            disabled={params.row.CAREER_STATUS === 0}
+          >
+            <EditIcon></EditIcon>
+          </IconButton>
         </>
       ),
     },
@@ -195,8 +219,71 @@ function ScoresPage() {
         throw new Error(`Failed to update career: ${response.statusText}`);
       }
       const data = await response.json();
+      // datos de la alertra
+      setAlertMessage("Calificación agregada correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
+      // tiempo de refresco
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error(error);
+      // datos de la alertra
+      setAlertMessage("Error al agregar calificación");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+    }
+  };
+
+  //edit
+  const handleEditRow = (row: score) => {
+    setSelectedRowEdit(row);
+    setOpenEditDialog(true);
+  };
+
+  const handleEditSubmit = async (score: Score) => {
+    if (!score.SCORE_ID) {
+      console.error("SCORE_ID is not defined");
+      return;
+    }
+
+    try {
+      const dataToSend = {
+        SCORE_ID: score.SCORE_ID,
+        STUDENT_ID: studentId,
+        SUBJECT_ID: score.id,
+        SCORE: score.SCORE,
+      };
+
+      const url = `http://localhost:8000/api/scores/${score.SCORE_ID}`; // Use SCORE_ID from score object
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend), // Send the updated score data
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update score: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      // datos de la alerta
+      setAlertMessage("Calificación actualizada correctamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
+      // tiempo de refresco
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      console.error(error);
+      // datos de la alerta
+      setAlertMessage("Error al actualizar calificación");
+      setAlertSeverity("error");
+      setAlertOpen(true);
     }
   };
 
@@ -217,8 +304,11 @@ function ScoresPage() {
       SUBJECT_NAME: subject.SUBJECT_NAME,
       SUBJECT_PERIOD: subject.SUBJECT_PERIOD,
       SCORE: score ? score.SCORE : null, // Set SCORE_VALUE or null if not found
+      SCORE_ID: score ? score.SCORE_ID : null,
     };
   });
+
+  const handleAlertClose = () => setAlertOpen(false);
 
   return (
     <>
@@ -271,6 +361,53 @@ function ScoresPage() {
             }}
           ></DataGrid>
         </Paper>
+        <AlertMessage
+          message={alertMessage}
+          severity={alertSeverity}
+          open={alertOpen}
+          onClose={handleAlertClose}
+        />
+        <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
+          <DialogTitle>Editar Calificación</DialogTitle>
+          <DialogContent>
+            {selectedRowEdit && (
+              <>
+                <TextField
+                  margin="dense"
+                  label="Calificación"
+                  fullWidth
+                  variant="outlined"
+                  value={selectedRowEdit.SCORE}
+                  onChange={(e) =>
+                    setSelectedRowEdit({
+                      ...selectedRowEdit,
+                      SCORE: e.target.value,
+                    })
+                  }
+                  sx={{ minWidth: "30rem" }}
+                />
+              </>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setOpenEditDialog(false)}
+              variant="contained"
+              color="error"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() =>
+                selectedRowEdit && handleEditSubmit(selectedRowEdit)
+              }
+              variant="contained"
+              color="primary"
+            >
+              Guardar
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     </>
   );
