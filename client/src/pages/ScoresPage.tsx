@@ -8,11 +8,13 @@ import {
   Select,
   MenuItem,
   InputLabel,
+  IconButton,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
 import { GridColDef } from "@mui/x-data-grid";
+import AddIcon from "@mui/icons-material/Add";
 
 interface Student {
   STUDENT_NAME: string;
@@ -45,6 +47,7 @@ function ScoresPage() {
   const [subjects, setSubjects] = useState<subject[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<number | "">(1); // Default period is set to 1
   const [scores, setScores] = useState<score[]>([]);
+  const [selectedRowAdd, setSelectedRowAdd] = useState<Student | null>(null);
 
   useEffect(() => {
     //fetching student info
@@ -143,10 +146,52 @@ function ScoresPage() {
       field: "SCORE",
       headerName: "CALIFICACIÓN",
       width: 120,
+      editable: true,
+    },
+    {
+      field: "ACTIONS",
+      headerName: "ACCIONES",
+      width: 150,
+      renderCell: (params) => (
+        <>
+          <IconButton
+            color="primary"
+            onClick={() => handleScoreSubmit(params.row)}
+          >
+            <AddIcon></AddIcon>
+          </IconButton>
+        </>
+      ),
     },
   ];
 
   const paginationModel = { page: 0, pageSize: 10 };
+
+  //add score
+  const handleScoreSubmit = async (score: Row) => {
+    console.log(score);
+    try {
+      const dataToSend = {
+        STUDENT_ID: studentId,
+        SUBJECT_ID: score.id,
+        SCORE: score.SCORE,
+      };
+      const url = `http://localhost:8000/api/scores`;
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dataToSend), // Send the new object
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to update career: ${response.statusText}`);
+      }
+      const data = await response.json();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handlePeriodChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSelectedPeriod(event.target.value as number);
