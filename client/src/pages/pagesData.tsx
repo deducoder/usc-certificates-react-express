@@ -10,6 +10,7 @@ import RegStudentPage from "./RegStudentPage";
 import RegAdministratorPage from "./RegAdministratorPage";
 import RegCareerSubjectPage from "./RegCareerSubjectPage";
 import ScoresPage from "./ScoresPage";
+import CertificatePage from "./certificatePage";
 
 const PagesData: routerType[] = [
   {
@@ -36,6 +37,11 @@ const PagesData: routerType[] = [
     path: "administrar/alumnos/calificaciones/:studentId",
     element: <ScoresPage />,
     title: "calificaciones",
+  },
+  {
+    path: "administrar/alumnos/certificado/:studentId",
+    element: <CertificatePage />,
+    title: "certificados",
   },
   {
     path: "administrar/administrativos",

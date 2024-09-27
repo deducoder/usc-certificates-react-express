@@ -122,13 +122,17 @@ function Students() {
               <PinIcon></PinIcon>
             </IconButton>
           </NavLink>
-          <IconButton
-            color="primary"
-            onClick={() => handleSelectedStudent(params.row)}
-            disabled={params.row.STUDENT_STATUS === 0}
+          <NavLink
+            to={`/administrar/alumnos/certificado/${params.row.id}`} // Passing the student ID in the URL
+            style={{ textDecoration: "none" }}
           >
-            <ArticleIcon></ArticleIcon>
-          </IconButton>
+            <IconButton
+              color="primary"
+              disabled={params.row.STUDENT_STATUS === 0}
+            >
+              <ArticleIcon></ArticleIcon>
+            </IconButton>
+          </NavLink>
         </>
       ),
     },
