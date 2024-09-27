@@ -187,7 +187,7 @@ function ScoresPage() {
           <IconButton
             color="primary"
             onClick={() => handleEditRow(params.row)}
-            disabled={params.row.CAREER_STATUS === 0}
+            disabled={params.row.SCORE === null}
           >
             <EditIcon></EditIcon>
           </IconButton>
