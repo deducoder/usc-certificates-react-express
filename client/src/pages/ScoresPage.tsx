@@ -1,8 +1,18 @@
 import { useParams } from "react-router-dom";
-import { Container, Paper, Typography, Button } from "@mui/material";
+import {
+  Container,
+  Paper,
+  Typography,
+  Button,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
+import { GridColDef } from "@mui/x-data-grid";
 
 interface Student {
   STUDENT_NAME: string;
@@ -22,6 +32,7 @@ interface Career {
 interface Subject {
   SUBJECT_ID: number;
   SUBJECT_NAME: string;
+  SUBJECT_PERIOD: Number;
 }
 
 function ScoresPage() {
@@ -31,7 +42,8 @@ function ScoresPage() {
     null
   ); // Changed to null initially
   const [career, setCareer] = useState<Career | null>(null); // Changed to null initially
-  const [subjects, setSubjects] = useState<Subject[] | null>(null);
+  const [subjects, setSubjects] = useState<subject[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<number | "">(1); // Default period is set to 1
 
   useEffect(() => {
     //fetching student info
@@ -100,6 +112,41 @@ function ScoresPage() {
     fetchStudentCareer();
   }, [studentId]); // Add studentId as a dependency
 
+  const columns: GridColDef[] = [
+    { field: "id", headerName: "ID", width: 70 },
+    {
+      field: "SUBJECT_NAME",
+      headerName: "MATERIA",
+      width: 500,
+    },
+    {
+      field: "SUBJECT_PERIOD",
+      headerName: "PERIODO",
+      width: 120,
+    },
+    {
+      field: "SCORE",
+      headerName: "CALIFICACIÓN",
+      width: 120,
+    },
+  ];
+
+  const paginationModel = { page: 0, pageSize: 10 };
+
+  const handlePeriodChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSelectedPeriod(event.target.value as number);
+  };
+
+  const filteredRows = subjects.filter(
+    (subject) => subject.SUBJECT_PERIOD === selectedPeriod
+  );
+
+  const rows = filteredRows.map((subject) => ({
+    id: subject.SUBJECT_ID,
+    SUBJECT_NAME: subject.SUBJECT_NAME,
+    SUBJECT_PERIOD: subject.SUBJECT_PERIOD,
+  }));
+
   return (
     <>
       <NavBar />
@@ -116,6 +163,40 @@ function ScoresPage() {
           <Typography variant="body1">
             {`MATRÍCULA: ${student?.STUDENT_TUITION ?? "N/A"}`}
           </Typography>
+        </Paper>
+        <Paper sx={{ padding: "2rem", margin: "2rem" }}>
+          <FormControl sx={{ mt: 4, mb: 4 }} fullWidth>
+            <InputLabel id="period-select-label">CUATRIMESTRE</InputLabel>
+            <Select
+              labelId="period-select-label"
+              label="CUATRIMESTRE"
+              value={selectedPeriod}
+              onChange={handlePeriodChange}
+            >
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((period) => (
+                <MenuItem key={period} value={period}>
+                  {period}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            initialState={{ pagination: { paginationModel } }}
+            pageSizeOptions={[5, 10]}
+            checkboxSelection
+            getRowClassName={(params) =>
+              params.row.SUBJECT_STATUS === 0 ? "inactive-row" : ""
+            }
+            sx={{
+              border: 0,
+              "& .inactive-row": {
+                backgroundColor: "#f0f0f0", // Color más oscuro para inactivos
+                color: "#999", // Color del texto
+              },
+            }}
+          ></DataGrid>
         </Paper>
       </Container>
     </>
