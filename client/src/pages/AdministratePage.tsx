@@ -32,7 +32,7 @@ const cards: items[] = [
   },
   {
     title: "MATERIAS",
-    caption: "Consulta, edita o elimina carreras",
+    caption: "Consulta, edita o elimina materias",
     image:
       "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
     alt: "students group",

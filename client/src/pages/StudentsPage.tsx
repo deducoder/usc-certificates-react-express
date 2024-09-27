@@ -18,6 +18,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ReplayIcon from "@mui/icons-material/Replay";
 import AlertMessage from "../components/AlertMessage";
+import PinIcon from "@mui/icons-material/Pin";
+import ArticleIcon from "@mui/icons-material/Article";
+import { NavLink } from "react-router-dom";
 
 //student definition
 interface student {
@@ -47,6 +50,8 @@ function Students() {
   const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
     "success"
   );
+  //score
+  const [selectedStuent, setSelectedStudent] = useState<Student | null>(null);
 
   //fetching students list from server
   useEffect(() => {
@@ -99,6 +104,33 @@ function Students() {
       headerName: "ESTADO",
       width: 100,
       renderCell: (params) => (params.value ? "Activo" : "Inactivo"),
+    },
+    {
+      field: "SCHOOLAR",
+      headerName: "ESCOLAR",
+      width: 100,
+      renderCell: (params) => (
+        <>
+          <NavLink
+            to={`/administrar/alumnos/calificaciones/${params.row.id}`} // Passing the student ID in the URL
+            style={{ textDecoration: "none" }}
+          >
+            <IconButton
+              color="warning"
+              disabled={params.row.STUDENT_STATUS === 0}
+            >
+              <PinIcon></PinIcon>
+            </IconButton>
+          </NavLink>
+          <IconButton
+            color="primary"
+            onClick={() => handleSelectedStudent(params.row)}
+            disabled={params.row.STUDENT_STATUS === 0}
+          >
+            <ArticleIcon></ArticleIcon>
+          </IconButton>
+        </>
+      ),
     },
     {
       field: "ACTIONS",
@@ -321,6 +353,12 @@ function Students() {
   //cerrar alerta
   const handleAlertClose = () => setAlertOpen(false);
 
+  //scores
+  const handleSelectedStudent = (row: Student) => {
+    setSelectedStudent(row.id);
+    console.log(row.id);
+  };
+
   return (
     <>
       <NavBar></NavBar>
@@ -395,21 +433,6 @@ function Students() {
                     })
                   }
                 />
-                {/* 
-                <TextField
-                  margin="dense"
-                  label="Matrícula"
-                  fullWidth
-                  variant="outlined"
-                  value={selectedRowEdit.STUDENT_TUITION}
-                  onChange={(e) =>
-                    setSelectedRowEdit({
-                      ...selectedRowEdit,
-                      STUDENT_TUITION: Number(e.target.value),
-                    })
-                  }
-                />
-                */}
               </>
             )}
           </DialogContent>

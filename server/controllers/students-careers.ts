@@ -4,7 +4,7 @@ import StudentCareer from "../models/student-career";
 //function to get all DB student-career relations
 export const getStudentsCareers = async (req: Request, res: Response) => {
   const studentsCareers = await StudentCareer.findAll(); //searching all relations
-  res.json({ studentsCareers }); //sending json with all relations as object
+  res.json(studentsCareers); //sending json with all relations as object
 };
 
 // function to get one DB student-career relation
@@ -13,7 +13,7 @@ export const getStudentCareer = async (req: Request, res: Response) => {
   const studentCareer = await StudentCareer.findByPk(id); //searching for one relation by ID
   if (studentCareer) {
     //validate if relation exist
-    res.json({ studentCareer }); //sending json with relation as object
+    res.json(studentCareer); //sending json with relation as object
   } else {
     res.status(404).json({
       msg: `don't exist a relation with id: ${id}`,

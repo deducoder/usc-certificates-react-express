@@ -21,7 +21,30 @@ export const getSubject = async (req: Request, res: Response) => {
   }
 };
 
-//functino to create a new subject
+//function to fetch all subjects by careerID
+export const getSubjectsByCareerId = async (req: Request, res: Response) => {
+  const { careerId } = req.params;
+  try {
+    const subjects = await Subject.findAll({
+      where: {
+        CAREER_ID: careerId,
+      },
+    });
+    if (subjects.length === 0) {
+      return res.status(404).json({
+        msg: `No subjects found for career ID: ${careerId}`,
+      });
+    }
+    res.json(subjects);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      msg: "error fetching subjects by careerID",
+    });
+  }
+};
+
+//function to create a new subject
 export const postSubject = async (req: Request, res: Response) => {
   const { body } = req; //getting body
   try {

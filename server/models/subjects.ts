@@ -24,7 +24,6 @@ const Subject = db.define(
     SUBJECT_NAME: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
     },
     SUBJECT_PERIOD: {
       type: DataTypes.INTEGER,
