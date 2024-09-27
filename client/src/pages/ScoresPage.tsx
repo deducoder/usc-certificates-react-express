@@ -138,7 +138,7 @@ function ScoresPage() {
 
         // Ensure scoreData is an array before setting it
         if (Array.isArray(scoreData)) {
-          console.log(scores);
+          //console.log(scores);
           setScores(scoreData);
         } else {
           console.error("Scores data is not an array", scoreData);
@@ -233,6 +233,9 @@ function ScoresPage() {
       setAlertMessage("Error al agregar calificación");
       setAlertSeverity("error");
       setAlertOpen(true);
+    } finally {
+      setOpenEditDialog(false); //close dialog
+      setSelectedRowEdit(null); //return row value to null
     }
   };
 
