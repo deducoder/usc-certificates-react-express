@@ -44,6 +44,7 @@ function ScoresPage() {
   const [career, setCareer] = useState<Career | null>(null); // Changed to null initially
   const [subjects, setSubjects] = useState<subject[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<number | "">(1); // Default period is set to 1
+  const [scores, setScores] = useState<score[]>([]);
 
   useEffect(() => {
     //fetching student info
@@ -74,6 +75,7 @@ function ScoresPage() {
         if (studentCareerData.CAREER_ID) {
           fetchCareer(studentCareerData.CAREER_ID); // Pass the career ID to fetchCareer
           fetchSubjects(studentCareerData.CAREER_ID);
+          fetchScores(studentCareerData.STUDENT_ID);
         }
       } catch (error) {
         console.error(error);
@@ -103,6 +105,19 @@ function ScoresPage() {
         const subjectData = await subjectResponse.json();
         console.log(subjectData);
         setSubjects(subjectData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const fetchScores = async (studentId: number) => {
+      try {
+        const scoreResponse = await fetch(
+          `http://localhost:8000/api/scores/student/${studentId}`
+        );
+        const scoreData = await scoreResponse.json();
+        console.log(scoreData);
+        setScores(scoreData);
       } catch (error) {
         console.error(error);
       }
@@ -141,11 +156,17 @@ function ScoresPage() {
     (subject) => subject.SUBJECT_PERIOD === selectedPeriod
   );
 
-  const rows = filteredRows.map((subject) => ({
-    id: subject.SUBJECT_ID,
-    SUBJECT_NAME: subject.SUBJECT_NAME,
-    SUBJECT_PERIOD: subject.SUBJECT_PERIOD,
-  }));
+  const rows = filteredRows.map((subject) => {
+    // Find the score for the current subject
+    const score = scores.find((s) => s.SUBJECT_ID === subject.SUBJECT_ID);
+
+    return {
+      id: subject.SUBJECT_ID,
+      SUBJECT_NAME: subject.SUBJECT_NAME,
+      SUBJECT_PERIOD: subject.SUBJECT_PERIOD,
+      SCORE: score ? score.SCORE : null, // Set SCORE_VALUE or null if not found
+    };
+  });
 
   return (
     <>

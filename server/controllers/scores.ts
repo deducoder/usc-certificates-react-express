@@ -8,7 +8,7 @@ export const getScores = async (req: Request, res: Response) => {
   res.json({ scores });
 };
 
-//functino to get one DB score by ID
+//function to get one DB score by ID
 export const getScore = async (req: Request, res: Response) => {
   const { id } = req.params;
   const score = await Score.findByPk(id);
@@ -17,6 +17,29 @@ export const getScore = async (req: Request, res: Response) => {
   } else {
     res.status(404).json({
       msg: `don't exist a score with id: ${id}`,
+    });
+  }
+};
+
+//function to fetch all subjects by careerID
+export const getScoressByStudentId = async (req: Request, res: Response) => {
+  const { studentId } = req.params;
+  try {
+    const scores = await Score.findAll({
+      where: {
+        STUDENT_ID: studentId,
+      },
+    });
+    if (scores.length === 0) {
+      return res.status(404).json({
+        msg: `No scores found for student ID: ${studentId}`,
+      });
+    }
+    res.json(scores);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      msg: "error fetching scores by studentID",
     });
   }
 };
