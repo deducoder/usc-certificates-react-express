@@ -13,6 +13,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Grid2,
 } from "@mui/material";
 import NavBar from "../components/NavBar";
 import AlertMessage from "../components/AlertMessage";
@@ -209,42 +210,7 @@ const CertificatePage: React.FC = () => {
     fetchFields();
   }, []);
 
-  //creating table for people
-  const columnsFields: GridColDef[] = [
-    {
-      field: "id",
-      headerName: "ID",
-      width: 50,
-    },
-    {
-      field: "FIELD_NAME",
-      headerName: "CAMPO",
-      width: 100,
-    },
-    {
-      field: "FIELD_VALUE",
-      headerName: "VALOR",
-      width: 400,
-    },
-    {
-      field: "ACTIONS",
-      headerName: "ACCIONES",
-      width: 100,
-      renderCell: (params) => (
-        <>
-          <IconButton color="primary" onClick={() => handleEditRow(params.row)}>
-            <EditIcon></EditIcon>
-          </IconButton>
-        </>
-      ),
-    },
-  ];
-
-  const rowsFields = fields.map((field) => ({
-    id: field.FIELD_ID,
-    FIELD_NAME: field.FIELD_NAME,
-    FIELD_VALUE: field.FIELD_VALUE,
-  }));
+  const renderFieldIds = [1, 2, 3, 4, 5, 6, 7];
 
   const paginationModel = { page: 0, pageSize: 10 };
 
@@ -340,16 +306,52 @@ const CertificatePage: React.FC = () => {
           </Typography>
         </Paper>
         <Paper sx={{ padding: "2rem", margin: "2rem" }}>
-          <Typography variant="h6">INFORMACIÓN</Typography>
-          <DataGrid
-            rows={rowsFields}
-            columns={columnsFields}
-            initialState={{ pagination: { paginationModel } }}
-            pageSizeOptions={[5, 10]}
-          ></DataGrid>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            INFORMACIÓN
+          </Typography>
+          <Grid2 container spacing={2}>
+            <Grid2 size={6} key="values">
+              {fields
+                .filter((field) => renderFieldIds.includes(field.FIELD_ID)) // Filtra los campos según el FIELD_ID
+                .map((field) => (
+                  <TextField
+                    key={field.FIELD_ID} // Añadido key para cada TextField
+                    label={field.FIELD_NAME}
+                    value={field.FIELD_VALUE}
+                    variant="outlined"
+                    fullWidth
+                    InputProps={{
+                      readOnly: true, // Hacerlo de solo lectura
+                    }}
+                    sx={{ mb: 2 }} // Espaciado inferior
+                  />
+                ))}
+            </Grid2>
+            <Grid2 size={6} key="paragraph">
+              {fields
+                .filter((field) => field.FIELD_ID === 8) // Filtra solo el campo con FIELD_ID de 8
+                .map((field) => (
+                  <TextField
+                    key={field.FIELD_ID} // Añadido key para cada TextField
+                    label={field.FIELD_NAME}
+                    value={field.FIELD_VALUE}
+                    variant="outlined"
+                    fullWidth
+                    multiline // Hacerlo multilínea
+                    rows={10} // Establece el número de filas (altura) del TextField
+                    InputProps={{
+                      readOnly: true, // Hacerlo de solo lectura
+                    }}
+                    sx={{ mb: 2 }} // Espaciado inferior
+                  />
+                ))}
+            </Grid2>
+          </Grid2>
         </Paper>
         <Paper sx={{ padding: "2rem", margin: "2rem" }}>
-          <Typography variant="h6">RESPONSABLES</Typography>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            RESPONSABLES
+          </Typography>
           <DataGrid
             rows={rows}
             columns={columns}
