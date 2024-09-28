@@ -51,6 +51,12 @@ interface People {
   PEOPLE_GENDER: Boolean;
 }
 
+interface Field {
+  FIELD_ID: Number;
+  FIELD_NAME: String;
+  FIELD_VALUE: String;
+}
+
 const CertificatePage: React.FC = () => {
   const { studentId } = useParams(); //student ID
   const [student, setStudent] = useState<Student | null>(null); //student values
@@ -68,6 +74,8 @@ const CertificatePage: React.FC = () => {
   const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
     "success"
   );
+  //fields
+  const [fields, setFields] = useState<career[]>([]); //people values
 
   //fetching student information
   useEffect(() => {
@@ -184,6 +192,60 @@ const CertificatePage: React.FC = () => {
     PEOPLE_GENDER: person.PEOPLE_GENDER,
   }));
 
+  //fetchingCertificateFields
+  useEffect(() => {
+    const fetchFields = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8000/api/certificate-fields"
+        );
+        const data = await response.json();
+        //console.log(data);
+        setFields(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchFields();
+  }, []);
+
+  //creating table for people
+  const columnsFields: GridColDef[] = [
+    {
+      field: "id",
+      headerName: "ID",
+      width: 50,
+    },
+    {
+      field: "FIELD_NAME",
+      headerName: "CAMPO",
+      width: 100,
+    },
+    {
+      field: "FIELD_VALUE",
+      headerName: "VALOR",
+      width: 400,
+    },
+    {
+      field: "ACTIONS",
+      headerName: "ACCIONES",
+      width: 100,
+      renderCell: (params) => (
+        <>
+          <IconButton color="primary" onClick={() => handleEditRow(params.row)}>
+            <EditIcon></EditIcon>
+          </IconButton>
+        </>
+      ),
+    },
+  ];
+
+  const rowsFields = fields.map((field) => ({
+    id: field.FIELD_ID,
+    FIELD_NAME: field.FIELD_NAME,
+    FIELD_VALUE: field.FIELD_VALUE,
+  }));
+
   const paginationModel = { page: 0, pageSize: 10 };
 
   //edit
@@ -279,6 +341,12 @@ const CertificatePage: React.FC = () => {
         </Paper>
         <Paper sx={{ padding: "2rem", margin: "2rem" }}>
           <Typography variant="h6">INFORMACIÓN</Typography>
+          <DataGrid
+            rows={rowsFields}
+            columns={columnsFields}
+            initialState={{ pagination: { paginationModel } }}
+            pageSizeOptions={[5, 10]}
+          ></DataGrid>
         </Paper>
         <Paper sx={{ padding: "2rem", margin: "2rem" }}>
           <Typography variant="h6">RESPONSABLES</Typography>

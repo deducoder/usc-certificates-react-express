@@ -10,6 +10,7 @@ import careerRoutes from "./routes/careers";
 import subjectRoutes from "./routes/subjects";
 import scoreRoutes from "./routes/scores";
 import peopleRoutes from "./routes/people";
+import certificateFieldRoutes from "./routes/certificate-fields";
 
 //importing db
 import db from "./database/connection";
@@ -28,6 +29,7 @@ class Server {
     subjects: "/api/subjects", //passed Postman test
     scores: "/api/scores", //passed Postman test
     people: "/api/people",
+    certificateFields: "/api/certificate-fields",
   };
 
   constructor() {
@@ -66,6 +68,7 @@ class Server {
     this.app.use(this.apiRoutes.subjects, subjectRoutes); //subjects related routes
     this.app.use(this.apiRoutes.scores, scoreRoutes); //scores related routes
     this.app.use(this.apiRoutes.people, peopleRoutes); //people related routes
+    this.app.use(this.apiRoutes.certificateFields, certificateFieldRoutes);
   }
 
   //method to start the server and lsiten for requests
