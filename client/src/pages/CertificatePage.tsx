@@ -77,6 +77,9 @@ const CertificatePage: React.FC = () => {
   );
   //fields
   const [fields, setFields] = useState<career[]>([]); //people values
+  const [selectedFieldEdit, setSelectedFieldEdit] = useState<Field | null>(
+    null
+  );
 
   //fetching student information
   useEffect(() => {
@@ -214,6 +217,41 @@ const CertificatePage: React.FC = () => {
 
   const paginationModel = { page: 0, pageSize: 10 };
 
+  //edit fields
+  const handleEditField = async (fieldId, updatedValue) => {
+    console.log(`Campo actualizado: ${fieldId}, Nuevo valor: ${updatedValue}`);
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/certificate-fields/${fieldId}`,
+        {
+          method: "PUT", // Método para actualizar
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ FIELD_VALUE: updatedValue }), // Envía el valor actualizado
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error en la actualización del campo");
+      }
+
+      const data = await response.json(); // Procesa la respuesta si es necesario
+      console.log("Campo actualizado exitosamente:", data);
+      setAlertMessage("Campo actualizado exitosamente");
+      setAlertSeverity("success");
+      setAlertOpen(true);
+
+      // Aquí puedes hacer algo con la respuesta si es necesario, como actualizar el estado o mostrar un mensaje de éxito
+    } catch (error) {
+      console.error("Error al actualizar el campo:", error);
+      setAlertMessage("Error al actualizar el campo");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+    }
+  };
+
   //edit
   const handleEditRow = (row: person) => {
     //console.log(row);
@@ -312,17 +350,28 @@ const CertificatePage: React.FC = () => {
           <Grid2 container spacing={2}>
             <Grid2 size={6} key="values">
               {fields
-                .filter((field) => renderFieldIds.includes(field.FIELD_ID)) // Filtra los campos según el FIELD_ID
+                .filter((field) => renderFieldIds.includes(field.FIELD_ID))
                 .map((field) => (
                   <TextField
                     key={field.FIELD_ID} // Añadido key para cada TextField
                     label={field.FIELD_NAME}
-                    value={field.FIELD_VALUE}
+                    value={
+                      selectedFieldEdit?.[field.FIELD_ID] || field.FIELD_VALUE
+                    }
+                    onChange={(e) => {
+                      const updatedValue = e.target.value;
+
+                      // Actualiza el estado local
+                      setSelectedFieldEdit({
+                        ...selectedFieldEdit,
+                        [field.FIELD_ID]: updatedValue, // Actualiza solo el campo editado
+                      });
+
+                      // Llama a handleEditField con el FIELD_ID y el nuevo valor
+                      handleEditField(field.FIELD_ID, updatedValue); // Esto debería funcionar
+                    }}
                     variant="outlined"
                     fullWidth
-                    InputProps={{
-                      readOnly: true, // Hacerlo de solo lectura
-                    }}
                     sx={{ mb: 2 }} // Espaciado inferior
                   />
                 ))}
@@ -334,14 +383,25 @@ const CertificatePage: React.FC = () => {
                   <TextField
                     key={field.FIELD_ID} // Añadido key para cada TextField
                     label={field.FIELD_NAME}
-                    value={field.FIELD_VALUE}
+                    value={
+                      selectedFieldEdit?.[field.FIELD_ID] || field.FIELD_VALUE
+                    }
+                    onChange={(e) => {
+                      const updatedValue = e.target.value;
+
+                      // Actualiza el estado local
+                      setSelectedFieldEdit({
+                        ...selectedFieldEdit,
+                        [field.FIELD_ID]: updatedValue, // Actualiza solo el campo editado
+                      });
+
+                      // Llama a handleEditField con el FIELD_ID y el nuevo valor
+                      handleEditField(field.FIELD_ID, updatedValue); // Esto debería funcionar
+                    }}
                     variant="outlined"
                     fullWidth
-                    multiline // Hacerlo multilínea
-                    rows={10} // Establece el número de filas (altura) del TextField
-                    InputProps={{
-                      readOnly: true, // Hacerlo de solo lectura
-                    }}
+                    multiline
+                    rows={10}
                     sx={{ mb: 2 }} // Espaciado inferior
                   />
                 ))}
