@@ -62,9 +62,6 @@ const CertificatePage: React.FC = () => {
   //edit
   const [selectedRowEdit, setSelectedRowEdit] = useState<Student | null>(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  //delete
-  const [selectedRowDel, setSelectedRowDel] = useState<Student | null>(null);
-  const [openDelDialog, setOpenDelDialog] = useState(false);
   // alert
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -128,7 +125,7 @@ const CertificatePage: React.FC = () => {
       try {
         const response = await fetch("http://localhost:8000/api/people");
         const data = await response.json();
-        console.log(data);
+        //console.log(data);
         setPeople(data);
       } catch (error) {
         console.error(error);
@@ -174,9 +171,6 @@ const CertificatePage: React.FC = () => {
           <IconButton color="primary" onClick={() => handleEditRow(params.row)}>
             <EditIcon></EditIcon>
           </IconButton>
-          <IconButton color="error" onClick={() => handleDeleteRow(params.row)}>
-            <DeleteIcon></DeleteIcon>
-          </IconButton>
         </>
       ),
     },
@@ -194,7 +188,7 @@ const CertificatePage: React.FC = () => {
 
   //edit
   const handleEditRow = (row: person) => {
-    console.log(row);
+    //console.log(row);
     setSelectedRowEdit(row);
     setOpenEditDialog(true);
   };
@@ -244,6 +238,14 @@ const CertificatePage: React.FC = () => {
 
   const handleAlertClose = () => setAlertOpen(false);
 
+  useEffect(() => {
+    if (selectedRowEdit) {
+      //console.log("Selected row edited:", selectedRowEdit);
+    } else {
+      //console.log("Selected row is null.");
+    }
+  }, [selectedRowEdit]);
+
   return (
     <>
       <NavBar />
@@ -272,6 +274,9 @@ const CertificatePage: React.FC = () => {
             initialState={{ pagination: { paginationModel } }}
             pageSizeOptions={[5, 10]}
           ></DataGrid>
+          <Button variant="contained" sx={{ mt: 2 }}>
+            GENERAR
+          </Button>
         </Paper>
         <AlertMessage
           message={alertMessage}
