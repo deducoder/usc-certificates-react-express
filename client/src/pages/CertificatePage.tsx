@@ -246,6 +246,17 @@ const CertificatePage: React.FC = () => {
     }
   }, [selectedRowEdit]);
 
+  const handleGenerate = async () => {
+    const dataToSend = {
+      STUDENT_NAME: `${student.STUDENT_NAME} ${student.STUDENT_PA_LAST_NAME} ${student.STUDENT_MA_LAST_NAME}`,
+      STUDENT_TUITION: student.STUDENT_TUITION,
+      STUDENT_CAREER: career.CAREER_NAME,
+      STUDENT_START_PERIOD: studentCareer.START_DATE,
+      STUDENT_END_PERIOD: studentCareer.END_DATE,
+    };
+    console.log(dataToSend);
+  };
+
   return (
     <>
       <NavBar />
@@ -267,6 +278,9 @@ const CertificatePage: React.FC = () => {
           </Typography>
         </Paper>
         <Paper sx={{ padding: "2rem", margin: "2rem" }}>
+          <Typography variant="h6">INFORMACIÓN</Typography>
+        </Paper>
+        <Paper sx={{ padding: "2rem", margin: "2rem" }}>
           <Typography variant="h6">RESPONSABLES</Typography>
           <DataGrid
             rows={rows}
@@ -274,7 +288,7 @@ const CertificatePage: React.FC = () => {
             initialState={{ pagination: { paginationModel } }}
             pageSizeOptions={[5, 10]}
           ></DataGrid>
-          <Button variant="contained" sx={{ mt: 2 }}>
+          <Button variant="contained" sx={{ mt: 2 }} onClick={handleGenerate}>
             GENERAR
           </Button>
         </Paper>

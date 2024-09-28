@@ -20,7 +20,7 @@ import CardItem from "../components/CardItem";
 const cards: items[] = [
   {
     image:
-      "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
+      "https://plus.unsplash.com/premium_vector-1723628218533-ea8e1f888e25?q=80&w=2342&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "students group",
     title: "ALUMNO",
     caption: "Da de alta un alumno",
@@ -28,7 +28,7 @@ const cards: items[] = [
   },
   {
     image:
-      "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
+      "https://plus.unsplash.com/premium_vector-1723628218419-3b9a74fbf88d?q=80&w=1954&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "students group",
     title: "ADMINISTRATIVO",
     caption: "Da de alta un administrativo",
@@ -36,7 +36,7 @@ const cards: items[] = [
   },
   {
     image:
-      "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
+      "https://plus.unsplash.com/premium_vector-1723628218425-ec5c4ad370c3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "students group",
     title: "CARRERAS Y  MATERIAS",
     caption: "Da de alta una carrera o materia",

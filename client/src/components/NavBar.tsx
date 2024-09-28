@@ -18,7 +18,7 @@ interface item {
 
 //pages buttons items for mapping
 const pages: item[] = [
-  { title: "INICIO", path: "/", icon: <HomeIcon /> },
+  //{ title: "INICIO", path: "/", icon: <HomeIcon /> },
   { title: "REGISTRAR", path: "/registrar", icon: <PersonAddAltIcon /> },
   {
     title: "ADMINISTRAR",

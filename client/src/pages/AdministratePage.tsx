@@ -10,7 +10,7 @@ const cards: items[] = [
     title: "ALUMNOS",
     caption: "Consulta, edita o elimina alumnos",
     image:
-      "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
+      "https://plus.unsplash.com/premium_vector-1723628218533-ea8e1f888e25?q=80&w=2342&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "students group",
     path: "alumnos",
   },
@@ -18,7 +18,7 @@ const cards: items[] = [
     title: "ADMINISTRATIVOS",
     caption: "Consulta, edita o elimina administrativos",
     image:
-      "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
+      "https://plus.unsplash.com/premium_vector-1723628218419-3b9a74fbf88d?q=80&w=1954&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "students group",
     path: "administrativos",
   },
@@ -26,7 +26,7 @@ const cards: items[] = [
     title: "CARRERAS",
     caption: "Consulta, edita o elimina carreras",
     image:
-      "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
+      "https://plus.unsplash.com/premium_vector-1723628218422-9e7d27062a5a?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "students group",
     path: "carreras",
   },
@@ -34,7 +34,7 @@ const cards: items[] = [
     title: "MATERIAS",
     caption: "Consulta, edita o elimina materias",
     image:
-      "https://fastly.picsum.photos/id/522/200/300.jpg?hmac=6-KFAVAX70eulRbHj_faT1bRFPGrXhPiDHXe6zPaH-4",
+      "https://plus.unsplash.com/premium_vector-1723628218421-f0bd43f9a156?q=80&w=2360&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "students group",
     path: "materias",
   },

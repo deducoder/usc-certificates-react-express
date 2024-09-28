@@ -15,7 +15,7 @@ import CertificatePage from "./certificatePage";
 const PagesData: routerType[] = [
   {
     path: "/",
-    element: <HomePage />,
+    element: <RegisterPage />, //<HomePage />,
     title: "inicio",
   },
   {
