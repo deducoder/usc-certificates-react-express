@@ -231,6 +231,53 @@ export const certificatePDF = (data: Data) => {
   doc.text("____", 136, 64);
 
   // Parrafo de información del alumno
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(12);
+  doc.text("C E R T I F I C A", 55, 80);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("QUE EL (LA) C.", 89, 80);
+
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(11);
+  doc.text(`${data.STUDENT_NAME}`, 113, 80);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("____________________________________________________", 113, 80.5);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("CON NÚMERO DE CONTROL", 55, 87);
+
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(12);
+  doc.text(`${data.STUDENT_TUITION}`, 115, 87);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("___________________________", 101, 87.5);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(12);
+  doc.text("ACREDITÓ", 152, 87);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("LAS MATERIAS QUE", 175, 87);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("INTEGRAN EL PLAN DE ESTUDIO DE LA", 55, 94);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text(`${data.STUDENT_CAREER},`, 117, 94);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("EN EL", 197, 94);
 
   // Agregar una nueva página
   doc.addPage();
