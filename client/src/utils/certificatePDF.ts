@@ -4,6 +4,8 @@ import { arialBoldBase64 } from "./fonts/arialBold";
 import { arialNarrowBase64 } from "./fonts/arialNarrow";
 import { timesNewRomanBase64 } from "./fonts/timesNewRoman";
 import { timesNewRomanBoldBase64 } from "./fonts/timesNewRomanBold";
+import { logoMXBase64 } from "./pictures/logoMX";
+import { pictureSizeBase64 } from "./pictures/pictureSize";
 
 const addCustomFonts = (doc: jsPDF) => {
   // Arial
@@ -27,34 +29,215 @@ const addCustomFonts = (doc: jsPDF) => {
   doc.addFont("TimesNewRomanBold.ttf", "TimesNewRoman", "bold");
 };
 
-export const certificatePDF = () => {
+interface Data {
+  // Informacion de la escuela
+  REGIMEN: String;
+  TURNO: String;
+  CLAVE: String;
+  MODALIDAD: String;
+  RVOE: String;
+  VIGENCIA: String;
+  SECL: String;
+  LEGAL: String;
+  // Informacion del estudiante
+  STUDENT_NAME: String;
+  STUDENT_TUITION: Number;
+  STUDENT_CAREER: String;
+  STUDENT_START_PERIOD: Date;
+  STUDENT_END_PERIOD: Date;
+}
+
+export const certificatePDF = (data: Data) => {
+  // Creando documento
   const doc = new jsPDF("portrait", "mm", [215.9, 355.6]);
 
-  // Add custom fonts
+  // Agregando fuentes
   addCustomFonts(doc);
 
-  // Testing fonts
-  doc.setFont("Arial", "normal");
-  doc.text("Texto en Arial", 10, 10);
+  // Separar la fecha de vigencia
+  const date: String = data.VIGENCIA; // Suponiendo que data.VIGENCIA es "2019-10-03"
+  const [yyyy, mm, dd] = date.split("-");
 
-  doc.setFont("ArialNarrow", "normal");
-  doc.text("Texto en Arial Narrow", 10, 20);
+  const month = [
+    "ENERO",
+    "FEBRERO",
+    "MARZO",
+    "ABRIL",
+    "MAYO",
+    "JUNIO",
+    "JULIO",
+    "AGOSTO",
+    "SEPTIEMBRE",
+    "OCTUBRE",
+    "NOVIEMBRE",
+    "DICIEMBRE",
+  ];
+
+  const monthName = month[parseInt(mm) - 1];
+
+  // Posiciones para el contenido
+  //const pageWidth = doc.internal.pageSize.getWidth();
+
+  // Logo gobierno de MX
+  doc.addImage(logoMXBase64, "PNG", 9, 8, 28, 29);
+
+  // Primer párrafo
+  const infoGobierno = `GOBIERNO CONSTITUCIONAL DEL ESTADO DE CHIAPAS\nSECRETARÍA DE EDUCACIÓN ESTATAL\nSUBSECRETARÍA DE EDUCACIÓN ESTATAL`;
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(12);
+  doc.text(infoGobierno, 105, 10, { align: "center" });
+
+  // Segundo párrafo
+  const infoDireccion = `DIRECCIÓN DE EDUCACIÓN SUPERIOR\nDEPARTAMENTO DE SERVICIOS ESCOLARES`;
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(10);
+  doc.text(infoDireccion, 105, 25, { align: "center" });
+
+  // SE-CL-YY
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(10);
+  doc.text(`${data.SECL}`, 200, 12, { align: "right" });
+
+  // Tamaño para la fotografía
+  doc.addImage(pictureSizeBase64, "PNG", 9, 45, 37, 50);
+
+  // Parrafo con información de la escuela
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(12);
+  doc.text("LA UNIVERSIDAD", 55, 43);
 
   doc.setFont("Arial", "bold");
-  doc.text("Texto en Arial Bold", 10, 30);
+  doc.setFontSize(12);
+  doc.text("«SAN CRISTÓBAL»", 91, 43);
 
-  doc.setFont("TimesNewRoman", "normal");
-  doc.text("Texto en Times New Roman", 10, 40);
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("UBICADO EN LA CIUDAD DE", 131, 43);
 
-  doc.setFont("TimesNewRoman", "bold");
-  doc.text("Texto en Times New Roman Bold", 10, 50);
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text("SAN CRISTÓBAL DE ", 175, 43);
 
-  // Add a new page
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("__________________", 175, 43.5);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text("LAS CASAS, CHIAPAS", 55, 50);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("____________________", 55, 50.5);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("RÉGIMEN", 114, 50);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text(`${data.REGIMEN},`, 130, 50);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("____________", 130, 50.5);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("TURNO:", 181, 50);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text(`${data.TURNO},`, 195, 50);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("______", 195, 50.5);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("CLAVE:", 55, 57);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(12);
+  doc.text(`${data.CLAVE},`, 68, 57);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("_______________", 68, 57.5);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("MODALIDAD:", 97, 57);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text(`${data.MODALIDAD},`, 118, 57);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("______", 118, 57.5);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(12);
+  doc.text("RVOE:", 131, 57);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("ACUERDO NUMERO:", 145, 57);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(12);
+  doc.text(`${data.RVOE},`, 178, 57);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("________________", 178, 57.5);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("VIGENTE: A PARTIR DEL", 55, 64);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text(`${dd}`, 95, 64);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("__", 95, 64);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("DE", 100, 64);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text(`${monthName}`, 106, 64);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("____________", 106, 64);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("DEL", 128, 64);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text(`${yyyy}`, 136, 64);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("____", 136, 64);
+
+  // Parrafo de información del alumno
+
+  // Agregar una nueva página
   doc.addPage();
 
-  // Second page
+  // Segunda página
   doc.text("This is the second page!", 10, 10);
 
-  // Save the PDF
+  // Guardar el PDF
   doc.save("two-pages.pdf");
 };

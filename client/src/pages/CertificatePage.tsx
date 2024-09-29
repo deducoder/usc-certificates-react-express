@@ -314,8 +314,24 @@ const CertificatePage: React.FC = () => {
     }
   }, [selectedRowEdit]);
 
+  // Consiguiendo campos de certificate fields para separalos
+  const getFieldValueById = (fields: Field[], fieldId: number): string => {
+    const field = fields.find((field) => field.FIELD_ID === fieldId);
+    return field ? field.FIELD_VALUE : ""; // Devuelve el valor o una cadena vacía si no se encuentra
+  };
+
   const handleGenerate = async () => {
     const dataToSend = {
+      // Informacion de la escuela
+      REGIMEN: getFieldValueById(fields, 1),
+      TURNO: getFieldValueById(fields, 2),
+      CLAVE: getFieldValueById(fields, 3),
+      MODALIDAD: getFieldValueById(fields, 4),
+      RVOE: getFieldValueById(fields, 5),
+      VIGENCIA: getFieldValueById(fields, 6),
+      SECL: getFieldValueById(fields, 7),
+      LEGAL: getFieldValueById(fields, 8),
+      // Informacion del estudiante
       STUDENT_NAME: `${student.STUDENT_NAME} ${student.STUDENT_PA_LAST_NAME} ${student.STUDENT_MA_LAST_NAME}`,
       STUDENT_TUITION: student.STUDENT_TUITION,
       STUDENT_CAREER: career.CAREER_NAME,
@@ -323,10 +339,11 @@ const CertificatePage: React.FC = () => {
       STUDENT_END_PERIOD: studentCareer.END_DATE,
     };
     console.log(dataToSend);
+    await handleGeneratePDF(dataToSend);
   };
 
-  const handleGeneratePDF = () => {
-    certificatePDF();
+  const handleGeneratePDF = (data) => {
+    certificatePDF(data);
   };
 
   return (
@@ -424,11 +441,7 @@ const CertificatePage: React.FC = () => {
             initialState={{ pagination: { paginationModel } }}
             pageSizeOptions={[5, 10]}
           ></DataGrid>
-          <Button
-            variant="contained"
-            sx={{ mt: 2 }}
-            onClick={handleGeneratePDF}
-          >
+          <Button variant="contained" sx={{ mt: 2 }} onClick={handleGenerate}>
             GENERAR
           </Button>
         </Paper>
