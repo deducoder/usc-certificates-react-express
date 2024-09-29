@@ -24,6 +24,8 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ReplayIcon from "@mui/icons-material/Replay";
+//pdf generator
+import { certificatePDF } from "../utils/certificatePDF";
 
 //interfaces
 interface Student {
@@ -323,6 +325,10 @@ const CertificatePage: React.FC = () => {
     console.log(dataToSend);
   };
 
+  const handleGeneratePDF = () => {
+    certificatePDF();
+  };
+
   return (
     <>
       <NavBar />
@@ -418,7 +424,11 @@ const CertificatePage: React.FC = () => {
             initialState={{ pagination: { paginationModel } }}
             pageSizeOptions={[5, 10]}
           ></DataGrid>
-          <Button variant="contained" sx={{ mt: 2 }} onClick={handleGenerate}>
+          <Button
+            variant="contained"
+            sx={{ mt: 2 }}
+            onClick={handleGeneratePDF}
+          >
             GENERAR
           </Button>
         </Paper>
