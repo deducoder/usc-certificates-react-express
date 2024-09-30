@@ -55,50 +55,91 @@ interface Data {
   STUDENT_END_PERIOD: String;
 }
 
-export const certificatePDF = (data: Data) => {
+interface Subject {
+  SUBJECT_ID: number;
+  SUBJECT_NAME: string;
+  SUBJECT_PERIOD: number;
+}
+
+export const certificatePDF = async (data: Data) => {
   // Creando documento
   const doc = new jsPDF("portrait", "mm", [215.9, 355.6]);
 
   // Obteniendo las materias
-  const fetchSubjects = async () => {
+  const fetchSubjects = async (): Promise<Subject[]> => {
     try {
       const response = await fetch(
         `http://localhost:8000/api/subjects/career/${data.CAREER_ID}`
       );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const subjectsData = await response.json();
       return subjectsData;
     } catch (error) {
-      console.error(error);
-      return error;
+      console.error("Error al obtener materias:", error);
+      return []; // Retorna un array vacío en caso de error
     }
   };
 
-  const getSubjects = async (period: number) => {
-    const subjects = await fetchSubjects(); // Espera a que se resuelva la promesa
+  const getSubjects = async (period: number, x: number, y: number) => {
+    const subjects: Subject[] = await fetchSubjects(); // Espera a que se resuelva la promesa
 
     // Filtra las materias por el periodo especificado
     const filteredSubjects = subjects.filter(
       (subject) => subject.SUBJECT_PERIOD === period
     );
 
+    // Posición inicial para el texto
+    let currentY = y; // Ajusta esta posición según sea necesario
+
     if (filteredSubjects.length > 0) {
+      // Establece el tamaño de la fuente inicial
+      let defaultFontSize = 8;
+      doc.setFontSize(defaultFontSize);
+
+      // Itera sobre cada materia filtrada y agrega el nombre al PDF
       filteredSubjects.forEach((filteredSubject) => {
-        console.log(
-          `Nombre (Periodo ${period}): ${filteredSubject.SUBJECT_NAME}`
+        // Divide el nombre de la materia en líneas, ajustado al ancho máximo (55 mm en este caso)
+        const splitText: string[] = doc.splitTextToSize(
+          filteredSubject.SUBJECT_NAME,
+          55
         );
+
+        // Si el nombre de la materia ocupa más de una línea, reducir el tamaño de fuente a 7
+        if (splitText.length > 1) {
+          doc.setFontSize(7); // Cambia el tamaño de la fuente a 7 si el texto se divide en varias líneas
+        }
+
+        // Agrega el texto dividido al documento
+        splitText.forEach((line: string) => {
+          doc.text(line, x, currentY);
+          currentY += 3; // Incrementa la posición Y para la siguiente línea de texto
+        });
+
+        // Después de agregar todas las líneas para este nombre de materia, restaura el tamaño de fuente a 8 si fue cambiado
+        if (splitText.length > 1) {
+          doc.setFontSize(defaultFontSize); // Restaura el tamaño de la fuente
+        }
+
+        // Añadimos espacio entre materias una vez
+        currentY += 2;
       });
     } else {
       console.log(`No hay materias para el periodo ${period}.`);
     }
   };
 
-  // Llama a la función para cada periodo de 1 a 8
-  for (let period = 1; period <= 8; period++) {
-    getSubjects(period);
-  }
-
   // Agregando fuentes
   addCustomFonts(doc);
+
+  doc.setFont("ArialNarrow", "normal");
+  await getSubjects(1, 10, 135);
+  await getSubjects(2, 111, 135);
+  await getSubjects(3, 10, 205);
+  await getSubjects(4, 111, 205);
+  await getSubjects(5, 10, 275);
+  await getSubjects(6, 111, 275);
 
   // Separar la fecha de vigencia
   const convertDate = (date: String) => {
@@ -403,25 +444,115 @@ export const certificatePDF = (data: Data) => {
   doc.text("Letra", 76.5, 129);
   doc.setFontSize(10);
   doc.text(`OBSERVA-\nCIONES`, 94, 125, { align: "center" });
-  // Cuerpo
-  const textTest = "INTRODUCCIÓN A LA INGENIERÍA EN SISTEMAS COMPUTACIONALES";
-  doc.setFont("Arial", "normal");
-  doc.setFontSize(8);
-  doc.text(textTest, 10, 135, { maxWidth: 55 });
 
   // Tabla 2
   doc.addImage(tableBase64, "PNG", 110, 120, 96, 60);
   // Cabecera tabla 2
   doc.setFont("ArialNarrow", "normal");
   doc.setFontSize(10);
-  doc.text("SEGUNDO CUATRIMESTRE", 130, 126);
+  doc.text("SEGUNDO CUATRIMESTRE", 120, 127);
+  doc.setFontSize(9);
+  doc.text("CALIFICACIÓN", 166, 124);
+  doc.text("Cifra", 167, 129);
+  doc.text("Letra", 177, 129);
+  doc.setFontSize(10);
+  doc.text(`OBSERVA-\nCIONES`, 195, 125, { align: "center" });
+
+  // Tabla 3
+  doc.addImage(tableBase64, "PNG", 9, 190, 96, 60);
+  // Cabecera tabla 3
+  doc.setFont("ArialNarrow", "normal");
+  doc.setFontSize(10);
+  doc.text("TECER CUATRIMESTRE", 20, 197);
+  doc.setFontSize(9);
+  doc.text("CALIFICACIÓN", 65.5, 194);
+  doc.text("Cifra", 66.5, 199);
+  doc.text("Letra", 76.5, 199);
+  doc.setFontSize(10);
+  doc.text(`OBSERVA-\nCIONES`, 94, 195, { align: "center" });
+
+  // Tabla 4
+  doc.addImage(tableBase64, "PNG", 110, 190, 96, 60);
+  // Cabecera tabla 4
+  doc.setFont("ArialNarrow", "normal");
+  doc.setFontSize(10);
+  doc.text("CUARTO CUATRIMESTRE", 120, 197);
+  doc.setFontSize(9);
+  doc.text("CALIFICACIÓN", 166, 194);
+  doc.text("Cifra", 167, 199);
+  doc.text("Letra", 177, 199);
+  doc.setFontSize(10);
+  doc.text(`OBSERVA-\nCIONES`, 195, 195, { align: "center" });
+
+  // Tabla 5
+  doc.addImage(tableBase64, "PNG", 9, 260, 96, 60);
+  // Cabecera tabla 5
+  doc.setFont("ArialNarrow", "normal");
+  doc.setFontSize(10);
+  doc.text("PRIMER CUATRIMESTRE", 20, 267);
+  doc.setFontSize(9);
+  doc.text("CALIFICACIÓN", 65.5, 264);
+  doc.text("Cifra", 66.5, 269);
+  doc.text("Letra", 76.5, 269);
+  doc.setFontSize(10);
+  doc.text(`OBSERVA-\nCIONES`, 94, 265, { align: "center" });
+
+  // Tabla 6
+  doc.addImage(tableBase64, "PNG", 110, 260, 96, 60);
+  // Cabecera tabla 6
+  doc.setFont("ArialNarrow", "normal");
+  doc.setFontSize(10);
+  doc.text("SEXTO CUATRIMESTRE", 120, 267);
+  doc.setFontSize(9);
+  doc.text("CALIFICACIÓN", 166, 264);
+  doc.text("Cifra", 167, 269);
+  doc.text("Letra", 177, 269);
+  doc.setFontSize(10);
+  doc.text(`OBSERVA-\nCIONES`, 195, 265, { align: "center" });
+
+  // Advertencia
+  doc.setFont("ArialNarrow", "normal");
+  doc.setFontSize(11);
+  doc.text(
+    "Este documento no es válido si presenta raspaduras o enmendaduras.",
+    60,
+    340
+  );
 
   // Agregar una nueva página
   doc.addPage();
 
-  // Segunda página
-  doc.text("This is the second page!", 10, 10);
+  // Tabla 7
+  doc.addImage(tableBase64, "PNG", 9, 15, 96, 60);
+  // Cabecera tabla 7
+  doc.setFont("ArialNarrow", "normal");
+  doc.setFontSize(10);
+  doc.text("SÉPTIMO CUATRIMESTRE", 20, 22);
+  doc.setFontSize(9);
+  doc.text("CALIFICACIÓN", 65.5, 19);
+  doc.text("Cifra", 66.5, 24);
+  doc.text("Letra", 76.5, 24);
+  doc.setFontSize(10);
+  doc.text(`OBSERVA-\nCIONES`, 94, 20, { align: "center" });
+
+  // Tabla 8
+  doc.addImage(tableBase64, "PNG", 110, 15, 96, 60);
+  // Cabecera tabla 8
+  doc.setFont("ArialNarrow", "normal");
+  doc.setFontSize(10);
+  doc.text("OCTAVO CUATRIMESTRE", 120, 22);
+  doc.setFontSize(9);
+  doc.text("CALIFICACIÓN", 166, 19);
+  doc.text("Cifra", 167, 24);
+  doc.text("Letra", 177, 24);
+  doc.setFontSize(10);
+  doc.text(`OBSERVA-\nCIONES`, 195, 20, { align: "center" });
+
+  // Cuerpo
+  doc.setFont("ArialNarrow", "normal");
+  await getSubjects(7, 10, 30);
+  await getSubjects(8, 111, 30);
 
   // Guardar el PDF
-  doc.save("two-pages.pdf");
+  doc.save(`${data.STUDENT_TUITION}-CERAQ`);
 };
