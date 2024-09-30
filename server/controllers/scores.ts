@@ -46,7 +46,7 @@ export const getScoressByStudentId = async (req: Request, res: Response) => {
 
 //function to create a new score
 export const postScore = async (req: Request, res: Response) => {
-  const { STUDENT_ID, SUBJECT_ID, SCORE } = req.body; //getting data from body
+  const { STUDENT_ID, SUBJECT_ID, SCORE, SCORE_OBSERVATION } = req.body; //getting data from body
   try {
     const existStudent = await Student.findByPk(STUDENT_ID);
     //validate if exist a user with the body.STUDENT_ID
@@ -72,6 +72,7 @@ export const postScore = async (req: Request, res: Response) => {
           STUDENT_ID,
           SUBJECT_ID,
           SCORE,
+          SCORE_OBSERVATION,
         });
         res.json(score);
       }

@@ -173,6 +173,12 @@ function ScoresPage() {
       editable: true,
     },
     {
+      field: "SCORE_OBSERVATION",
+      headerName: "OBSERVACIÓN",
+      width: 120,
+      editable: true,
+    },
+    {
       field: "ACTIONS",
       headerName: "ACCIONES",
       width: 150,
@@ -200,13 +206,15 @@ function ScoresPage() {
 
   //add score
   const handleScoreSubmit = async (score: Row) => {
-    console.log(score);
+    //console.log(score);
     try {
       const dataToSend = {
         STUDENT_ID: studentId,
         SUBJECT_ID: score.id,
         SCORE: score.SCORE,
+        SCORE_OBSERVATION: score.SCORE_OBSERVATION,
       };
+      console.log(dataToSend);
       const url = `http://localhost:8000/api/scores`;
       const response = await fetch(url, {
         method: "POST",
@@ -216,17 +224,15 @@ function ScoresPage() {
         body: JSON.stringify(dataToSend), // Send the new object
       });
       if (!response.ok) {
-        throw new Error(`Failed to update career: ${response.statusText}`);
+        throw new Error(`Failed to add score: ${response.statusText}`);
       }
       const data = await response.json();
+      console.log(data);
       // datos de la alertra
       setAlertMessage("Calificación agregada correctamente");
       setAlertSeverity("success");
       setAlertOpen(true);
       // tiempo de refresco
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
     } catch (error) {
       console.error(error);
       // datos de la alertra
@@ -235,7 +241,6 @@ function ScoresPage() {
       setAlertOpen(true);
     } finally {
       setOpenEditDialog(false); //close dialog
-      setSelectedRowEdit(null); //return row value to null
     }
   };
 
@@ -246,6 +251,7 @@ function ScoresPage() {
   };
 
   const handleEditSubmit = async (score: Score) => {
+    console.log(score);
     if (!score.SCORE_ID) {
       console.error("SCORE_ID is not defined");
       return;
@@ -257,6 +263,7 @@ function ScoresPage() {
         STUDENT_ID: studentId,
         SUBJECT_ID: score.id,
         SCORE: score.SCORE,
+        SCORE_OBSERVATION: score.SCORE_OBSERVATION,
       };
 
       const url = `http://localhost:8000/api/scores/${score.SCORE_ID}`; // Use SCORE_ID from score object
@@ -287,6 +294,9 @@ function ScoresPage() {
       setAlertMessage("Error al actualizar calificación");
       setAlertSeverity("error");
       setAlertOpen(true);
+    } finally {
+      setOpenEditDialog(false); //close dialog
+      setSelectedRowEdit(null); //return row value to null
     }
   };
 
@@ -307,6 +317,7 @@ function ScoresPage() {
       SUBJECT_NAME: subject.SUBJECT_NAME,
       SUBJECT_PERIOD: subject.SUBJECT_PERIOD,
       SCORE: score ? score.SCORE : null, // Set SCORE_VALUE or null if not found
+      SCORE_OBSERVATION: score ? score.SCORE_OBSERVATION : null,
       SCORE_ID: score ? score.SCORE_ID : null,
     };
   });
@@ -386,6 +397,20 @@ function ScoresPage() {
                     setSelectedRowEdit({
                       ...selectedRowEdit,
                       SCORE: e.target.value,
+                    })
+                  }
+                  sx={{ minWidth: "30rem" }}
+                />
+                <TextField
+                  margin="dense"
+                  label="Observación"
+                  fullWidth
+                  variant="outlined"
+                  value={selectedRowEdit.SCORE_OBSERVATION}
+                  onChange={(e) =>
+                    setSelectedRowEdit({
+                      ...selectedRowEdit,
+                      SCORE_OBSERVATION: e.target.value,
                     })
                   }
                   sx={{ minWidth: "30rem" }}

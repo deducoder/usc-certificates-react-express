@@ -40,6 +40,12 @@ const Score = db.define(
         min: 0.0,
       },
     },
+    SCORE_OBSERVATION: {
+      type: DataTypes.STRING,
+      validate: {
+        isIn: [["EXT", "TS", "EQ"]],
+      },
+    },
     SCORE_STATUS: {
       type: DataTypes.TINYINT,
       defaultValue: 1,
