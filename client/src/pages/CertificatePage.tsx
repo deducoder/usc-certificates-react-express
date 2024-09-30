@@ -332,9 +332,11 @@ const CertificatePage: React.FC = () => {
       SECL: getFieldValueById(fields, 7),
       LEGAL: getFieldValueById(fields, 8),
       // Informacion del estudiante
+      STUDENT_ID: student.STUDENT_ID,
       STUDENT_NAME: `${student.STUDENT_NAME} ${student.STUDENT_PA_LAST_NAME} ${student.STUDENT_MA_LAST_NAME}`,
       STUDENT_TUITION: student.STUDENT_TUITION,
       STUDENT_CAREER: career.CAREER_NAME,
+      CAREER_ID: career.CAREER_ID,
       STUDENT_START_PERIOD: studentCareer.START_DATE,
       STUDENT_END_PERIOD: studentCareer.END_DATE,
     };

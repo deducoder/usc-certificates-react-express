@@ -7,6 +7,7 @@ import { timesNewRomanBase64 } from "./fonts/timesNewRoman";
 import { timesNewRomanBoldBase64 } from "./fonts/timesNewRomanBold";
 import { logoMXBase64 } from "./pictures/logoMX";
 import { pictureSizeBase64 } from "./pictures/pictureSize";
+import { tableBase64 } from "./pictures/table";
 
 const addCustomFonts = (doc: jsPDF) => {
   // Arial
@@ -45,9 +46,11 @@ interface Data {
   SECL: String;
   LEGAL: String;
   // Informacion del estudiante
+  STUDENT_ID: Number;
   STUDENT_NAME: String;
   STUDENT_TUITION: Number;
   STUDENT_CAREER: String;
+  CAREER_ID: Number;
   STUDENT_START_PERIOD: String;
   STUDENT_END_PERIOD: String;
 }
@@ -55,6 +58,44 @@ interface Data {
 export const certificatePDF = (data: Data) => {
   // Creando documento
   const doc = new jsPDF("portrait", "mm", [215.9, 355.6]);
+
+  // Obteniendo las materias
+  const fetchSubjects = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/subjects/career/${data.CAREER_ID}`
+      );
+      const subjectsData = await response.json();
+      return subjectsData;
+    } catch (error) {
+      console.error(error);
+      return error;
+    }
+  };
+
+  const getSubjects = async (period: number) => {
+    const subjects = await fetchSubjects(); // Espera a que se resuelva la promesa
+
+    // Filtra las materias por el periodo especificado
+    const filteredSubjects = subjects.filter(
+      (subject) => subject.SUBJECT_PERIOD === period
+    );
+
+    if (filteredSubjects.length > 0) {
+      filteredSubjects.forEach((filteredSubject) => {
+        console.log(
+          `Nombre (Periodo ${period}): ${filteredSubject.SUBJECT_NAME}`
+        );
+      });
+    } else {
+      console.log(`No hay materias para el periodo ${period}.`);
+    }
+  };
+
+  // Llama a la función para cada periodo de 1 a 8
+  for (let period = 1; period <= 8; period++) {
+    getSubjects(period);
+  }
 
   // Agregando fuentes
   addCustomFonts(doc);
@@ -84,7 +125,6 @@ export const certificatePDF = (data: Data) => {
   };
 
   // Posiciones para el contenido
-  //const pageWidth = doc.internal.pageSize.getWidth();
 
   // Logo gobierno de MX
   doc.addImage(logoMXBase64, "PNG", 9, 8, 28, 29);
@@ -351,6 +391,30 @@ export const certificatePDF = (data: Data) => {
   doc.text("QUE A CONTINUACIÓN SE ANOTAN.", 55, 108);
 
   // Tablas de calificaciones
+  // Tabla 1
+  doc.addImage(tableBase64, "PNG", 9, 120, 96, 60);
+  // Cabecera tabla 1
+  doc.setFont("ArialNarrow", "normal");
+  doc.setFontSize(10);
+  doc.text("PRIMER CUATRIMESTRE", 20, 127);
+  doc.setFontSize(9);
+  doc.text("CALIFICACIÓN", 65.5, 124);
+  doc.text("Cifra", 66.5, 129);
+  doc.text("Letra", 76.5, 129);
+  doc.setFontSize(10);
+  doc.text(`OBSERVA-\nCIONES`, 94, 125, { align: "center" });
+  // Cuerpo
+  const textTest = "INTRODUCCIÓN A LA INGENIERÍA EN SISTEMAS COMPUTACIONALES";
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(8);
+  doc.text(textTest, 10, 135, { maxWidth: 55 });
+
+  // Tabla 2
+  doc.addImage(tableBase64, "PNG", 110, 120, 96, 60);
+  // Cabecera tabla 2
+  doc.setFont("ArialNarrow", "normal");
+  doc.setFontSize(10);
+  doc.text("SEGUNDO CUATRIMESTRE", 130, 126);
 
   // Agregar una nueva página
   doc.addPage();
