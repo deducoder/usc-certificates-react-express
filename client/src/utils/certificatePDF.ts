@@ -2,6 +2,7 @@ import jsPDF from "jspdf";
 import { arialBase64 } from "./fonts/arial";
 import { arialBoldBase64 } from "./fonts/arialBold";
 import { arialNarrowBase64 } from "./fonts/arialNarrow";
+import { arialNarrowBoldBase64 } from "./fonts/arialNarrowBold";
 import { timesNewRomanBase64 } from "./fonts/timesNewRoman";
 import { timesNewRomanBoldBase64 } from "./fonts/timesNewRomanBold";
 import { logoMXBase64 } from "./pictures/logoMX";
@@ -12,13 +13,17 @@ const addCustomFonts = (doc: jsPDF) => {
   doc.addFileToVFS("Arial.ttf", arialBase64);
   doc.addFont("Arial.ttf", "Arial", "normal");
 
+  // Arial Bold
+  doc.addFileToVFS("ArialBold.ttf", arialBoldBase64);
+  doc.addFont("ArialBold.ttf", "Arial", "bold");
+
   // Arial Narrow
   doc.addFileToVFS("ArialNarrow.ttf", arialNarrowBase64);
   doc.addFont("ArialNarrow.ttf", "ArialNarrow", "normal");
 
-  // Arial Bold
-  doc.addFileToVFS("ArialBold.ttf", arialBoldBase64);
-  doc.addFont("ArialBold.ttf", "Arial", "bold");
+  // Arial Narrow Bold
+  doc.addFileToVFS("ArialNarrowBold.ttf", arialNarrowBoldBase64);
+  doc.addFont("ArialNarrowBold.ttf", "ArialNarrow", "bold");
 
   // Times New Roman
   doc.addFileToVFS("TimesNewRoman.ttf", timesNewRomanBase64);
@@ -43,8 +48,8 @@ interface Data {
   STUDENT_NAME: String;
   STUDENT_TUITION: Number;
   STUDENT_CAREER: String;
-  STUDENT_START_PERIOD: Date;
-  STUDENT_END_PERIOD: Date;
+  STUDENT_START_PERIOD: String;
+  STUDENT_END_PERIOD: String;
 }
 
 export const certificatePDF = (data: Data) => {
@@ -55,25 +60,28 @@ export const certificatePDF = (data: Data) => {
   addCustomFonts(doc);
 
   // Separar la fecha de vigencia
-  const date: String = data.VIGENCIA; // Suponiendo que data.VIGENCIA es "2019-10-03"
-  const [yyyy, mm, dd] = date.split("-");
+  const convertDate = (date: String) => {
+    const [yyyy, mm, dd] = date.split("-");
 
-  const month = [
-    "ENERO",
-    "FEBRERO",
-    "MARZO",
-    "ABRIL",
-    "MAYO",
-    "JUNIO",
-    "JULIO",
-    "AGOSTO",
-    "SEPTIEMBRE",
-    "OCTUBRE",
-    "NOVIEMBRE",
-    "DICIEMBRE",
-  ];
+    const monthNames = [
+      "ENERO",
+      "FEBRERO",
+      "MARZO",
+      "ABRIL",
+      "MAYO",
+      "JUNIO",
+      "JULIO",
+      "AGOSTO",
+      "SEPTIEMBRE",
+      "OCTUBRE",
+      "NOVIEMBRE",
+      "DICIEMBRE",
+    ];
 
-  const monthName = month[parseInt(mm) - 1];
+    const monthName = monthNames[parseInt(mm) - 1]; // Convertir mm a número y obtener el nombre del mes
+
+    return { yyyy, mm, dd, monthName };
+  };
 
   // Posiciones para el contenido
   //const pageWidth = doc.internal.pageSize.getWidth();
@@ -198,9 +206,10 @@ export const certificatePDF = (data: Data) => {
   doc.setFontSize(9);
   doc.text("VIGENTE: A PARTIR DEL", 55, 64);
 
+  const vigenciaDD = convertDate(data.VIGENCIA);
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${dd}`, 95, 64);
+  doc.text(`${vigenciaDD.dd}`, 95, 64);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
@@ -210,9 +219,10 @@ export const certificatePDF = (data: Data) => {
   doc.setFontSize(9);
   doc.text("DE", 100, 64);
 
+  const vigenciaMM = convertDate(data.VIGENCIA);
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${monthName}`, 106, 64);
+  doc.text(`${vigenciaMM.monthName}`, 106, 64);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
@@ -222,9 +232,10 @@ export const certificatePDF = (data: Data) => {
   doc.setFontSize(9);
   doc.text("DEL", 128, 64);
 
+  const vigenciaYYYY = convertDate(data.VIGENCIA);
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${yyyy}`, 136, 64);
+  doc.text(`${vigenciaYYYY.yyyy}`, 136, 64);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
@@ -271,13 +282,75 @@ export const certificatePDF = (data: Data) => {
   doc.setFontSize(9);
   doc.text("INTEGRAN EL PLAN DE ESTUDIO DE LA", 55, 94);
 
-  doc.setFont("Arial", "bold");
-  doc.setFontSize(9);
+  doc.setFont("ArialNarrow", "bold");
+  doc.setFontSize(10);
   doc.text(`${data.STUDENT_CAREER},`, 117, 94);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
   doc.text("EN EL", 197, 94);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("PERÍODO DE", 55, 101);
+
+  const inicioPeriodoMM = convertDate(data.STUDENT_START_PERIOD);
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(11);
+  doc.text(`${inicioPeriodoMM.monthName}`, 76, 101);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("_______________", 76, 101);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("DE", 104, 101);
+
+  const inicioPeriodoYYYY = convertDate(data.STUDENT_START_PERIOD);
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(11);
+  doc.text(`${inicioPeriodoYYYY.yyyy}`, 110, 101);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("_____", 110, 101);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("A", 121, 101);
+
+  const finPeriodoMM = convertDate(data.STUDENT_END_PERIOD);
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(11);
+  doc.text(`${finPeriodoMM.monthName}`, 125, 101);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("_______________", 125, 101);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("DE", 153, 101);
+
+  const finPeriodoYYYY = convertDate(data.STUDENT_END_PERIOD);
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(11);
+  doc.text(`${finPeriodoYYYY.yyyy}`, 159, 101);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("_____,", 159, 101);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("CON LOS RESULTADOS", 170, 101);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text("QUE A CONTINUACIÓN SE ANOTAN.", 55, 108);
+
+  // Tablas de calificaciones
 
   // Agregar una nueva página
   doc.addPage();
