@@ -46,7 +46,7 @@ interface Data {
   SECL: String;
   LEGAL: String;
   // Informacion del estudiante
-  STUDENT_ID: Number;
+  STUDENT_ID: number;
   STUDENT_NAME: String;
   STUDENT_TUITION: Number;
   STUDENT_CAREER: String;
@@ -59,6 +59,12 @@ interface Subject {
   SUBJECT_ID: number;
   SUBJECT_NAME: string;
   SUBJECT_PERIOD: number;
+}
+
+interface Score {
+  SUBJECT_ID: number;
+  SCORE: number;
+  SCORE_OBSERVATION: string;
 }
 
 export const certificatePDF = async (data: Data) => {
@@ -82,47 +88,113 @@ export const certificatePDF = async (data: Data) => {
     }
   };
 
-  const getSubjects = async (period: number, x: number, y: number) => {
-    const subjects: Subject[] = await fetchSubjects(); // Espera a que se resuelva la promesa
+  // Función para obtener los puntajes del estudiante
+  const fetchScores = async (studentId: number): Promise<Score[]> => {
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/scores/student/${studentId}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const scoresData = await response.json();
+      return scoresData;
+    } catch (error) {
+      console.error("Error al obtener puntajes:", error);
+      return []; // Retorna un array vacío en caso de error
+    }
+  };
 
-    // Filtra las materias por el periodo especificado
+  // Convertir numero a texto
+  const translateNumberToWords = (num: number): string => {
+    const words: { [key: number]: string } = {
+      0: "Cero",
+      1: "Uno",
+      2: "Dos",
+      3: "Tres",
+      4: "Cuatro",
+      5: "Cinco",
+      6: "Seis",
+      7: "Siete",
+      8: "Ocho",
+      9: "Nueve",
+      10: "Diez",
+      // Agrega más números si es necesario
+    };
+
+    return words[num] || ""; // Devuelve una cadena vacía si no hay correspondencia
+  };
+
+  // Función para agregar materias y puntajes
+  const getSubjectsAndScores = async (
+    studentId: number,
+    period: number,
+    x: number,
+    y: number
+  ) => {
+    const subjects: Subject[] = await fetchSubjects(); // Obtener materias
+    const scores: Score[] = await fetchScores(studentId); // Obtener puntajes del estudiante
+
+    // Filtrar materias por periodo
     const filteredSubjects = subjects.filter(
       (subject) => subject.SUBJECT_PERIOD === period
     );
 
     // Posición inicial para el texto
-    let currentY = y; // Ajusta esta posición según sea necesario
+    let currentY = y;
 
     if (filteredSubjects.length > 0) {
-      // Establece el tamaño de la fuente inicial
       let defaultFontSize = 8;
       doc.setFontSize(defaultFontSize);
 
-      // Itera sobre cada materia filtrada y agrega el nombre al PDF
       filteredSubjects.forEach((filteredSubject) => {
-        // Divide el nombre de la materia en líneas, ajustado al ancho máximo (55 mm en este caso)
         const splitText: string[] = doc.splitTextToSize(
           filteredSubject.SUBJECT_NAME,
           55
         );
 
-        // Si el nombre de la materia ocupa más de una línea, reducir el tamaño de fuente a 7
         if (splitText.length > 1) {
-          doc.setFontSize(7); // Cambia el tamaño de la fuente a 7 si el texto se divide en varias líneas
+          doc.setFontSize(7);
         }
 
-        // Agrega el texto dividido al documento
+        // Agregar nombre de materia
         splitText.forEach((line: string) => {
-          doc.text(line, x, currentY);
-          currentY += 3; // Incrementa la posición Y para la siguiente línea de texto
+          if (line) {
+            doc.text(line, x, currentY);
+            currentY += 4; // Incrementar la posición Y para la siguiente línea
+          }
         });
 
-        // Después de agregar todas las líneas para este nombre de materia, restaura el tamaño de fuente a 8 si fue cambiado
         if (splitText.length > 1) {
-          doc.setFontSize(defaultFontSize); // Restaura el tamaño de la fuente
+          doc.setFontSize(defaultFontSize);
         }
 
-        // Añadimos espacio entre materias una vez
+        const subjectScore = scores.find(
+          (score) => score.SUBJECT_ID === filteredSubject.SUBJECT_ID
+        );
+
+        if (subjectScore) {
+          const scoreValue =
+            subjectScore.SCORE !== null ? subjectScore.SCORE : 0; // Valor del puntaje
+          const scoreText = scoreValue.toString(); // Texto del puntaje
+          const observationText = subjectScore.SCORE_OBSERVATION || ""; // Texto de observación
+
+          // Imprimir el `SCORE` y el `SCORE_OBSERVATION`
+          if (scoreText) {
+            doc.text(scoreText, x + 58, currentY - 4); // Columna de SCORE
+          }
+          if (observationText) {
+            doc.text(observationText, x + 82, currentY - 4); // Columna de OBSERVATION
+          }
+
+          // Traducir el puntaje a palabras y mostrarlo
+          const translatedScore = translateNumberToWords(scoreValue);
+          if (translatedScore) {
+            doc.text(translatedScore, x + 66, currentY - 4); // Columna para la traducción
+          }
+        }
+
+        // Espacio entre materias
         currentY += 2;
       });
     } else {
@@ -134,12 +206,12 @@ export const certificatePDF = async (data: Data) => {
   addCustomFonts(doc);
 
   doc.setFont("ArialNarrow", "normal");
-  await getSubjects(1, 10, 135);
-  await getSubjects(2, 111, 135);
-  await getSubjects(3, 10, 205);
-  await getSubjects(4, 111, 205);
-  await getSubjects(5, 10, 275);
-  await getSubjects(6, 111, 275);
+  await getSubjectsAndScores(data.STUDENT_ID, 1, 10, 135);
+  await getSubjectsAndScores(data.STUDENT_ID, 2, 111, 135);
+  await getSubjectsAndScores(data.STUDENT_ID, 3, 10, 205);
+  await getSubjectsAndScores(data.STUDENT_ID, 4, 111, 205);
+  await getSubjectsAndScores(data.STUDENT_ID, 5, 10, 275);
+  await getSubjectsAndScores(data.STUDENT_ID, 6, 111, 275);
 
   // Separar la fecha de vigencia
   const convertDate = (date: String) => {
@@ -164,8 +236,6 @@ export const certificatePDF = async (data: Data) => {
 
     return { yyyy, mm, dd, monthName };
   };
-
-  // Posiciones para el contenido
 
   // Logo gobierno de MX
   doc.addImage(logoMXBase64, "PNG", 9, 8, 28, 29);
@@ -550,9 +620,9 @@ export const certificatePDF = async (data: Data) => {
 
   // Cuerpo
   doc.setFont("ArialNarrow", "normal");
-  await getSubjects(7, 10, 30);
-  await getSubjects(8, 111, 30);
+  await getSubjectsAndScores(data.STUDENT_ID, 7, 10, 30);
+  await getSubjectsAndScores(data.STUDENT_ID, 8, 111, 30);
 
   // Guardar el PDF
-  doc.save(`${data.STUDENT_TUITION}-CERAQ`);
+  doc.save(`${data.STUDENT_TUITION}-CER-AQ`);
 };
