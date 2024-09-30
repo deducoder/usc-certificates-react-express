@@ -339,6 +339,51 @@ const CertificatePage: React.FC = () => {
       CAREER_ID: career.CAREER_ID,
       STUDENT_START_PERIOD: studentCareer.START_DATE,
       STUDENT_END_PERIOD: studentCareer.END_DATE,
+      // Información de los responsables
+      PEOPLE: {
+        1: {
+          NAME: `${people[0]?.PEOPLE_PREFIX || ""} ${
+            people[0]?.PEOPLE_NAME || ""
+          }`,
+          CHARGE: people[0]?.PEOPLE_CHARGE || "",
+        },
+        2: {
+          NAME: `${people[1]?.PEOPLE_PREFIX || ""} ${
+            people[1]?.PEOPLE_NAME || ""
+          }`,
+          CHARGE: people[1]?.PEOPLE_CHARGE || "",
+        },
+        3: {
+          NAME: `${people[2]?.PEOPLE_PREFIX || ""} ${
+            people[2]?.PEOPLE_NAME || ""
+          }`,
+          CHARGE: people[2]?.PEOPLE_CHARGE || "",
+        },
+        4: {
+          NAME: `${people[3]?.PEOPLE_PREFIX || ""} ${
+            people[3]?.PEOPLE_NAME || ""
+          }`,
+          CHARGE: people[3]?.PEOPLE_CHARGE || "",
+        },
+        5: {
+          NAME: `${people[4]?.PEOPLE_PREFIX || ""} ${
+            people[4]?.PEOPLE_NAME || ""
+          }`,
+          CHARGE: people[4]?.PEOPLE_CHARGE || "",
+        },
+        6: {
+          NAME: `${people[5]?.PEOPLE_PREFIX || ""} ${
+            people[5]?.PEOPLE_NAME || ""
+          }`,
+          CHARGE: people[5]?.PEOPLE_CHARGE || "",
+        },
+        7: {
+          NAME: `${people[6]?.PEOPLE_PREFIX || ""} ${
+            people[6]?.PEOPLE_NAME || ""
+          }`,
+          CHARGE: people[6]?.PEOPLE_CHARGE || "",
+        },
+      },
     };
     console.log(dataToSend);
     await handleGeneratePDF(dataToSend);

@@ -8,6 +8,8 @@ import { timesNewRomanBoldBase64 } from "./fonts/timesNewRomanBold";
 import { logoMXBase64 } from "./pictures/logoMX";
 import { pictureSizeBase64 } from "./pictures/pictureSize";
 import { tableBase64 } from "./pictures/table";
+import { squareBase64 } from "./pictures/square";
+import { averageSquareBase64 } from "./pictures/averageSquare";
 
 const addCustomFonts = (doc: jsPDF) => {
   // Arial
@@ -37,22 +39,24 @@ const addCustomFonts = (doc: jsPDF) => {
 
 interface Data {
   // Informacion de la escuela
-  REGIMEN: String;
-  TURNO: String;
-  CLAVE: String;
-  MODALIDAD: String;
-  RVOE: String;
-  VIGENCIA: String;
-  SECL: String;
-  LEGAL: String;
+  REGIMEN: string;
+  TURNO: string;
+  CLAVE: string;
+  MODALIDAD: string;
+  RVOE: string;
+  VIGENCIA: string;
+  SECL: string;
+  LEGAL: string;
   // Informacion del estudiante
   STUDENT_ID: number;
-  STUDENT_NAME: String;
-  STUDENT_TUITION: Number;
-  STUDENT_CAREER: String;
-  CAREER_ID: Number;
-  STUDENT_START_PERIOD: String;
-  STUDENT_END_PERIOD: String;
+  STUDENT_NAME: string;
+  STUDENT_TUITION: number;
+  STUDENT_CAREER: string;
+  CAREER_ID: number;
+  STUDENT_START_PERIOD: string;
+  STUDENT_END_PERIOD: string;
+  // Información de los responsables
+  PEOPLE: { [key: number]: People };
 }
 
 interface Subject {
@@ -67,9 +71,22 @@ interface Score {
   SCORE_OBSERVATION: string;
 }
 
+interface People {
+  PEOPLE_ID: number; // ID único de la persona
+  NAME: string; // Nombre completo de la persona
+  CHARGE: string; // Cargo o puesto de la persona
+}
+
 export const certificatePDF = async (data: Data) => {
   // Creando documento
   const doc = new jsPDF("portrait", "mm", [215.9, 355.6]);
+  console.log(data.PEOPLE[1].NAME); // Imprime el nombre de la persona con PEOPLE_ID 1
+  console.log(data.PEOPLE[2].NAME); // Imprime el nombre de la persona con PEOPLE_ID 1
+  console.log(data.PEOPLE[3].NAME); // Imprime el nombre de la persona con PEOPLE_ID 1
+  console.log(data.PEOPLE[4].NAME); // Imprime el nombre de la persona con PEOPLE_ID 1
+  console.log(data.PEOPLE[5].NAME); // Imprime el nombre de la persona con PEOPLE_ID 1
+  console.log(data.PEOPLE[6].NAME); // Imprime el nombre de la persona con PEOPLE_ID 1
+  console.log(data.PEOPLE[7].NAME); // Imprime el nombre de la persona con PEOPLE_ID 1
 
   // Obteniendo las materias
   const fetchSubjects = async (): Promise<Subject[]> => {
@@ -125,6 +142,120 @@ export const certificatePDF = async (data: Data) => {
     return words[num] || ""; // Devuelve una cadena vacía si no hay correspondencia
   };
 
+  const numberToWords: { [key: number]: string } = {
+    0: "cero",
+    1: "uno",
+    2: "dos",
+    3: "tres",
+    4: "cuatro",
+    5: "cinco",
+    6: "seis",
+    7: "siete",
+    8: "ocho",
+    9: "nueve",
+    10: "diez",
+    // Puedes agregar más números según sea necesario
+  };
+
+  // Funcion para convertir promedio a texto
+  const translateAverageToWords = (numStr: string): string => {
+    const [wholePart, decimalPart] = numStr.split("."); // Divide el número en parte entera y decimal
+    let words = "";
+
+    // Convertir la parte entera
+    if (parseInt(wholePart) in numberToWords) {
+      words += numberToWords[parseInt(wholePart)];
+    } else {
+      words += "número fuera de rango"; // Mensaje de error si no se encuentra
+    }
+
+    // Si hay parte decimal, convertirla
+    if (decimalPart) {
+      words += " punto "; // Agrega "punto"
+      for (const digit of decimalPart) {
+        words += numberToWords[parseInt(digit)] + " "; // Agrega cada dígito
+      }
+    }
+
+    // Hacer que la primera letra sea mayúscula
+    return words.charAt(0).toUpperCase() + words.slice(1).trim(); // Devuelve la cadena resultante sin espacios extra
+  };
+
+  // Funcion que convierte total de materias a texto
+  const numberToString = (num: number): string => {
+    const unidades: string[] = [
+      "cero",
+      "uno",
+      "dos",
+      "tres",
+      "cuatro",
+      "cinco",
+      "seis",
+      "siete",
+      "ocho",
+      "nueve",
+    ];
+    const especiales: string[] = [
+      "diez",
+      "once",
+      "doce",
+      "trece",
+      "catorce",
+      "quince",
+      "dieciséis",
+      "diecisiete",
+      "dieciocho",
+      "diecinueve",
+    ];
+    const decenas: string[] = [
+      "veinte",
+      "treinta",
+      "cuarenta",
+      "cincuenta",
+      "sesenta",
+      "setenta",
+      "ochenta",
+      "noventa",
+    ];
+
+    // Si el número está fuera del rango
+    if (num < 0 || num > 99) {
+      return "número fuera de rango";
+    }
+
+    // Si el número es 0
+    if (num === 0) {
+      return unidades[0]; // "cero"
+    }
+
+    // Si el número está entre 1 y 9
+    if (num >= 1 && num <= 9) {
+      return unidades[num];
+    }
+
+    // Si el número es un número especial entre 10 y 19
+    if (num >= 10 && num <= 19) {
+      return especiales[num - 10];
+    }
+
+    // Si el número es un múltiplo de 10 entre 20 y 90
+    if (num % 10 === 0 && num <= 90) {
+      return decenas[Math.floor(num / 10) - 2];
+    }
+
+    // Si el número está entre 21 y 99
+    if (num >= 21 && num <= 99) {
+      const decena = decenas[Math.floor(num / 10) - 2];
+      const unidad = unidades[num % 10];
+      return decena + " y " + unidad;
+    }
+
+    return ""; // En caso de que no se cumpla ninguna condición, aunque no debería llegar aquí.
+  };
+
+  let averageScore: string = "0.0";
+  let totalSubjects: number = 0;
+
   // Función para agregar materias y puntajes
   const getSubjectsAndScores = async (
     studentId: number,
@@ -142,6 +273,18 @@ export const certificatePDF = async (data: Data) => {
 
     // Posición inicial para el texto
     let currentY = y;
+
+    const scoreValues = scores.map((score) => score.SCORE); // Extraer los scores
+    const totalScore = scoreValues.reduce((acc, score) => acc + score, 0); // Sumar todos los scores
+
+    // Asignar el promedio a averageScore
+    averageScore =
+      scoreValues.length > 0
+        ? (totalScore / scoreValues.length).toFixed(1)
+        : "0.0"; // Calcular promedio con 1 decimal
+
+    totalSubjects =
+      scoreValues.length > 0 ? (totalSubjects = scoreValues.length) : 0;
 
     if (filteredSubjects.length > 0) {
       let defaultFontSize = 8;
@@ -622,6 +765,28 @@ export const certificatePDF = async (data: Data) => {
   doc.setFont("ArialNarrow", "normal");
   await getSubjectsAndScores(data.STUDENT_ID, 7, 10, 30);
   await getSubjectsAndScores(data.STUDENT_ID, 8, 111, 30);
+
+  // Promedio
+  const averageScoreText = translateAverageToWords(averageScore);
+  doc.addImage(averageSquareBase64, "PNG", 9, 85, 96, 5);
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text("PROMEDIO GENERAL:", 10, 88.5);
+  doc.setFont("TimesNewRoman", "bold");
+  doc.setFontSize(9);
+  doc.text(`${averageScore}  ( ${averageScoreText} )`, 55, 88.5);
+
+  // Legal
+  const totalSubjectsText = numberToString(totalSubjects);
+  doc.addImage(squareBase64, "PNG", 110, 85, 96, 60);
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(11);
+  doc.text(
+    `La escala oficial de calificaciones de 0 (CERO) a 10 (DIEZ), considerando como minima aprobatoria 6 (SEIS). Este certificado ampara ${totalSubjects} (${totalSubjectsText})`,
+    112,
+    90,
+    { maxWidth: 92 }
+  );
 
   // Guardar el PDF
   doc.save(`${data.STUDENT_TUITION}-CER-AQ`);
