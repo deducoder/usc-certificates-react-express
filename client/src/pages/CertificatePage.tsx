@@ -60,6 +60,10 @@ interface Field {
   FIELD_VALUE: String;
 }
 
+interface Date {
+  CURRENT_DATE: string;
+}
+
 const CertificatePage: React.FC = () => {
   const { studentId } = useParams(); //student ID
   const [student, setStudent] = useState<Student | null>(null); //student values
@@ -82,6 +86,8 @@ const CertificatePage: React.FC = () => {
   const [selectedFieldEdit, setSelectedFieldEdit] = useState<Field | null>(
     null
   );
+  // Current date
+  const [currentDate, setCurrenteDate] = useState<Date | null>(null);
 
   //fetching student information
   useEffect(() => {
@@ -320,6 +326,19 @@ const CertificatePage: React.FC = () => {
     return field ? field.FIELD_VALUE : ""; // Devuelve el valor o una cadena vacía si no se encuentra
   };
 
+  // Consiguiendo fecha de expedición
+  useEffect(() => {
+    const currentDate = async () => {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const day = String(today.getDate()).padStart(2, "0");
+      const currentDateString = `${year}-${month}-${day}`; // Formato yyyy-mm-dd
+      setCurrenteDate(currentDateString);
+    };
+    currentDate();
+  }, []);
+
   const handleGenerate = async () => {
     const dataToSend = {
       // Informacion de la escuela
@@ -384,6 +403,7 @@ const CertificatePage: React.FC = () => {
           CHARGE: people[6]?.PEOPLE_CHARGE || "",
         },
       },
+      CURRENT_DATE: currentDate,
     };
     console.log(dataToSend);
     await handleGeneratePDF(dataToSend);

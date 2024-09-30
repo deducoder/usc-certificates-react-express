@@ -57,6 +57,8 @@ interface Data {
   STUDENT_END_PERIOD: string;
   // Información de los responsables
   PEOPLE: { [key: number]: People };
+  // Expedición
+  CURRENT_DATE: string;
 }
 
 interface Subject {
@@ -373,6 +375,29 @@ export const certificatePDF = async (data: Data) => {
       "OCTUBRE",
       "NOVIEMBRE",
       "DICIEMBRE",
+    ];
+
+    const monthName = monthNames[parseInt(mm) - 1]; // Convertir mm a número y obtener el nombre del mes
+
+    return { yyyy, mm, dd, monthName };
+  };
+
+  const convertDateNoCaps = (date: String) => {
+    const [yyyy, mm, dd] = date.split("-");
+
+    const monthNames = [
+      "Enero",
+      "Febrero",
+      "Marzo",
+      "Abril",
+      "Mayo",
+      "Junio",
+      "Julio",
+      "Agosto",
+      "Septiembre",
+      "Octubre",
+      "Noviembre",
+      "Diciembre",
     ];
 
     const monthName = monthNames[parseInt(mm) - 1]; // Convertir mm a número y obtener el nombre del mes
@@ -778,11 +803,14 @@ export const certificatePDF = async (data: Data) => {
 
   // Legal
   const totalSubjectsText = numberToString(totalSubjects);
+  const certificateDateDD = convertDateNoCaps(data.CURRENT_DATE);
+  const certificateDateMM = convertDateNoCaps(data.CURRENT_DATE);
+  const certificateDateYYYY = convertDateNoCaps(data.CURRENT_DATE);
   doc.addImage(squareBase64, "PNG", 110, 85, 96, 60);
   doc.setFont("Arial", "normal");
   doc.setFontSize(11);
   doc.text(
-    `La escala oficial de calificaciones de 0 (CERO) a 10 (DIEZ), considerando como minima aprobatoria 6 (SEIS). Este certificado ampara ${totalSubjects} (${totalSubjectsText})`,
+    `La escala oficial de calificaciones de 0 (CERO) a 10 (DIEZ), considerando como minima aprobatoria 6 (SEIS). Este certificado ampara ${totalSubjects} (${totalSubjectsText} materias del plan de estudios vigente y en cumplimiento de las prescripciones legales, se extiende el presente en la Ciudad de San Cristóbal de las Casas, Chiapas; a los ${certificateDateDD.dd} días del mes de ${certificateDateMM.monthName} de ${certificateDateYYYY.yyyy})`,
     112,
     90,
     { maxWidth: 92 }
