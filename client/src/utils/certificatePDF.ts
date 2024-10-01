@@ -285,8 +285,7 @@ export const certificatePDF = async (data: Data) => {
         ? (totalScore / scoreValues.length).toFixed(1)
         : "0.0"; // Calcular promedio con 1 decimal
 
-    totalSubjects =
-      scoreValues.length > 0 ? (totalSubjects = scoreValues.length) : 0;
+    totalSubjects = subjects.length > 0 ? (totalSubjects = subjects.length) : 0;
 
     if (filteredSubjects.length > 0) {
       let defaultFontSize = 8;
@@ -803,19 +802,57 @@ export const certificatePDF = async (data: Data) => {
 
   // Legal
   const totalSubjectsText = numberToString(totalSubjects);
-  const certificateDateDD = convertDateNoCaps(data.CURRENT_DATE);
-  const certificateDateMM = convertDateNoCaps(data.CURRENT_DATE);
-  const certificateDateYYYY = convertDateNoCaps(data.CURRENT_DATE);
+  const certificateDate = convertDateNoCaps(data.CURRENT_DATE);
   doc.addImage(squareBase64, "PNG", 110, 85, 96, 60);
   doc.setFont("Arial", "normal");
   doc.setFontSize(11);
   doc.text(
-    `La escala oficial de calificaciones de 0 (CERO) a 10 (DIEZ), considerando como minima aprobatoria 6 (SEIS). Este certificado ampara ${totalSubjects} (${totalSubjectsText} materias del plan de estudios vigente y en cumplimiento de las prescripciones legales, se extiende el presente en la Ciudad de San Cristóbal de las Casas, Chiapas; a los ${certificateDateDD.dd} días del mes de ${certificateDateMM.monthName} de ${certificateDateYYYY.yyyy})`,
-    112,
-    90,
-    { maxWidth: 92 }
+    "La  escala  oficial   de calificaciones  de  0 (CERO)  a",
+    111.5,
+    90
   );
+  doc.text("10 (DIEZ), considerando como mínima aprobatoria  6", 111.5, 95);
+  doc.text(
+    `(SEIS).  Este certificado ampara ${totalSubjects} (${totalSubjectsText})`,
+    111.5,
+    100
+  );
+  doc.text(
+    "materias     del   plan   de   estudios   vigente    y    en",
+    111.5,
+    105
+  );
+  doc.text(
+    "cumplimiento a las prescripciones legales, se extiende",
+    111.5,
+    110
+  );
+  doc.text(
+    "el  presente,  en   la ciudad  de  San  Cristóbal de Las",
+    111.5,
+    115
+  );
+  doc.text(
+    `Casas, Chiapas, a los ${certificateDate.dd} días del mes de ${certificateDate.monthName}`,
+    111.5,
+    120
+  );
+  doc.text("__", 150, 120);
+  doc.text("_________", 184, 120);
+  doc.text(`de ${certificateDate.yyyy}`, 111.5, 125);
+  doc.text("_____", 116, 125);
+
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text(`${data.PEOPLE[1].CHARGE} «SAN CRISTÓBAL»`, 50, 170, {
+    maxWidth: 60,
+    align: "center",
+  });
+  doc.text("_________________________________________________", 10, 190);
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(10);
+  doc.text(`${data.PEOPLE[1].NAME}`, 15, 195);
 
   // Guardar el PDF
-  doc.save(`${data.STUDENT_TUITION}-CER-AQ`);
+  doc.save(`${data.CURRENT_DATE}-${data.STUDENT_TUITION}-CER-AQ`);
 };
