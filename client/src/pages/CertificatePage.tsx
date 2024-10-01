@@ -349,7 +349,8 @@ const CertificatePage: React.FC = () => {
       RVOE: getFieldValueById(fields, 5),
       VIGENCIA: getFieldValueById(fields, 6),
       SECL: getFieldValueById(fields, 7),
-      LEGAL: getFieldValueById(fields, 8),
+      LEGAL_1: getFieldValueById(fields, 8),
+      LEGAL_2: getFieldValueById(fields, 9),
       // Informacion del estudiante
       STUDENT_ID: student.STUDENT_ID,
       STUDENT_NAME: `${student.STUDENT_NAME} ${student.STUDENT_PA_LAST_NAME} ${student.STUDENT_MA_LAST_NAME}`,
@@ -468,7 +469,7 @@ const CertificatePage: React.FC = () => {
             </Grid2>
             <Grid2 size={6} key="paragraph">
               {fields
-                .filter((field) => field.FIELD_ID === 8) // Filtra solo el campo con FIELD_ID de 8
+                .filter((field) => field.FIELD_ID === 8 || field.FIELD_ID === 9) // Filtra solo el campo con FIELD_ID de 8
                 .map((field) => (
                   <TextField
                     key={field.FIELD_ID} // Añadido key para cada TextField
@@ -491,7 +492,7 @@ const CertificatePage: React.FC = () => {
                     variant="outlined"
                     fullWidth
                     multiline
-                    rows={10}
+                    rows={8.8}
                     sx={{ mb: 2 }} // Espaciado inferior
                   />
                 ))}

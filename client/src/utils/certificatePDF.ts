@@ -10,6 +10,7 @@ import { pictureSizeBase64 } from "./pictures/pictureSize";
 import { tableBase64 } from "./pictures/table";
 import { squareBase64 } from "./pictures/square";
 import { averageSquareBase64 } from "./pictures/averageSquare";
+import { schoolarServicesTableBase64 } from "./pictures/schoolarServicesTable";
 
 const addCustomFonts = (doc: jsPDF) => {
   // Arial
@@ -46,7 +47,8 @@ interface Data {
   RVOE: string;
   VIGENCIA: string;
   SECL: string;
-  LEGAL: string;
+  LEGAL_1: string;
+  LEGAL_2: string;
   // Informacion del estudiante
   STUDENT_ID: number;
   STUDENT_NAME: string;
@@ -842,16 +844,123 @@ export const certificatePDF = async (data: Data) => {
   doc.text(`de ${certificateDate.yyyy}`, 111.5, 125);
   doc.text("_____", 116, 125);
 
+  // Responsable 1
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[1].CHARGE} «SAN CRISTÓBAL»`, 50, 170, {
+  doc.text(`${data.PEOPLE[1].CHARGE} «SAN CRISTÓBAL»`, 55, 160, {
     maxWidth: 60,
     align: "center",
   });
-  doc.text("_________________________________________________", 10, 190);
+  doc.text("____________________________________________________", 10, 180);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[1].NAME}`, 15, 195);
+  doc.text(`${data.PEOPLE[1].NAME}`, 28, 185, {
+    maxWidth: 87,
+  });
+
+  // Responsable 2
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text(`${data.PEOPLE[2].CHARGE} «SAN CRISTÓBAL»`, 155, 160, {
+    maxWidth: 50,
+    align: "center",
+  });
+  doc.text("____________________________________________________", 110, 180);
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(10);
+  doc.text(`${data.PEOPLE[2].NAME}`, 115, 185, {
+    maxWidth: 87,
+  });
+
+  // Responsable 3
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text(`${data.PEOPLE[3].CHARGE}`, 55, 210, {
+    maxWidth: 60,
+    align: "center",
+  });
+  doc.text("____________________________________________________", 10, 230);
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(10);
+  doc.text(`${data.PEOPLE[3].NAME}`, 18, 235, {
+    maxWidth: 87,
+  });
+
+  // Responsable 4
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text(`${data.PEOPLE[4].CHARGE}`, 155, 210, {
+    maxWidth: 50,
+    align: "center",
+  });
+  doc.text("____________________________________________________", 110, 230);
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(10);
+  doc.text(`${data.PEOPLE[4].NAME}`, 126, 235, {
+    maxWidth: 87,
+  });
+
+  // Tabla de servicio escolare
+  doc.addImage(schoolarServicesTableBase64, "PNG", 10, 250, 60, 95);
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(8.5);
+  doc.text("REGISTRADO EN EL DEPARTAMENTO DE SERVICIOS ESCOLARES", 40, 255.5, {
+    maxWidth: 60,
+    align: "center",
+  });
+  doc.setFontSize(10);
+  doc.text("CON Nº:", 12, 272);
+  doc.text("EN EL LIBRO:", 12, 282);
+  doc.text("FOJA:", 12, 292);
+  doc.text("FECHA:", 12, 302);
+  doc.text("_____________", 40, 272);
+  doc.text("_____________", 40, 282);
+  doc.text("_____________", 40, 292);
+  doc.text("_____________", 40, 302);
+  doc.setFont("Arial", "bold");
+  doc.text("C O T E J Ó:", 30, 313);
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(8);
+  doc.text(`${data.PEOPLE[7].NAME}`, 17, 322);
+  doc.setFont("Arial", "normal");
+  doc.text(`${data.PEOPLE[5].CHARGE}`, 27, 332);
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(8);
+  doc.text(`${data.PEOPLE[5].NAME}`, 15, 340);
+
+  // Parrafo legal
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(10);
+  doc.text(`${data.LEGAL_1}`, 110, 255, { maxWidth: 95 });
+  doc.text(`${data.LEGAL_2}`, 110, 280, { maxWidth: 95 });
+
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(10);
+  doc.text(`${data.PEOPLE[4].NAME}`, 126, 305, {
+    maxWidth: 87,
+  });
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text("____________________________________________________", 110, 306);
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(8);
+  doc.text("TUXTLA GUTIÉRREZ, CHIAPAS; A", 110, 316);
+  doc.setFont("Arial", "bold");
+  doc.setFontSize(9);
+  doc.text("__________________________", 157, 316);
+
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  doc.text(`${data.PEOPLE[6].CHARGE}`, 156, 326, {
+    maxWidth: 100,
+    align: "center",
+  });
+  doc.text("____________________________________________________", 110, 340);
+  doc.setFont("TimesNewRoman", "normal");
+  doc.setFontSize(10);
+  doc.text(`${data.PEOPLE[6].NAME}`, 125, 345, {
+    maxWidth: 87,
+  });
 
   // Guardar el PDF
   doc.save(`${data.CURRENT_DATE}-${data.STUDENT_TUITION}-CER-AQ`);
