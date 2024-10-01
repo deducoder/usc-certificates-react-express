@@ -290,7 +290,7 @@ export const certificatePDF = async (data: Data) => {
     totalSubjects = subjects.length > 0 ? (totalSubjects = subjects.length) : 0;
 
     if (filteredSubjects.length > 0) {
-      let defaultFontSize = 8;
+      let defaultFontSize = 7.5;
       doc.setFontSize(defaultFontSize);
 
       filteredSubjects.forEach((filteredSubject) => {
@@ -341,7 +341,7 @@ export const certificatePDF = async (data: Data) => {
         }
 
         // Espacio entre materias
-        currentY += 2;
+        currentY += 0.5;
       });
     } else {
       console.log(`No hay materias para el periodo ${period}.`);
