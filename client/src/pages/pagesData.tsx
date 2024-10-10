@@ -59,17 +59,17 @@ const PagesData: routerType[] = [
     title: "materias",
   },
   {
-    path: "registrar/alumno",
+    path: "/alumno",
     element: <RegStudentPage />,
     title: "alumno",
   },
   {
-    path: "registrar/administrativo",
+    path: "/administrativo",
     element: <RegAdministratorPage />,
     title: "administrativo",
   },
   {
-    path: "registrar/carrera-materia",
+    path: "/carrera-materia",
     element: <RegCareerSubjectPage />,
     title: "carreras",
   },

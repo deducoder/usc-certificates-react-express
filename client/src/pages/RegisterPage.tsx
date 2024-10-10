@@ -24,7 +24,7 @@ const cards: items[] = [
     alt: "students group",
     title: "ALUMNO",
     caption: "Da de alta un alumno",
-    path: "alumno",
+    path: "/alumno",
   },
   {
     image:
@@ -32,7 +32,7 @@ const cards: items[] = [
     alt: "students group",
     title: "ADMINISTRATIVO",
     caption: "Da de alta un administrativo",
-    path: "administrativo",
+    path: "/administrativo",
   },
   {
     image:
@@ -40,7 +40,7 @@ const cards: items[] = [
     alt: "students group",
     title: "CARRERAS Y  MATERIAS",
     caption: "Da de alta una carrera o materia",
-    path: "carrera-materia",
+    path: "/carrera-materia",
   },
 ];
 
