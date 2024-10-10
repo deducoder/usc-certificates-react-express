@@ -221,7 +221,7 @@ const CertificatePage: React.FC = () => {
     fetchFields();
   }, []);
 
-  const renderFieldIds = [1, 2, 3, 4, 5, 6, 7];
+  const renderFieldIds = [1, 2, 3, 4, 5, 6, 7, 8];
 
   const paginationModel = { page: 0, pageSize: 10 };
 
@@ -349,8 +349,9 @@ const CertificatePage: React.FC = () => {
       RVOE: getFieldValueById(fields, 5),
       VIGENCIA: getFieldValueById(fields, 6),
       SECL: getFieldValueById(fields, 7),
-      LEGAL_1: getFieldValueById(fields, 8),
-      LEGAL_2: getFieldValueById(fields, 9),
+      LEGAL_1: getFieldValueById(fields, 9),
+      EXP: getFieldValueById(fields, 8),
+      LEGAL_2: getFieldValueById(fields, 10),
       // Informacion del estudiante
       STUDENT_ID: student.STUDENT_ID,
       STUDENT_NAME: `${student.STUDENT_NAME} ${student.STUDENT_PA_LAST_NAME} ${student.STUDENT_MA_LAST_NAME}`,
@@ -469,7 +470,9 @@ const CertificatePage: React.FC = () => {
             </Grid2>
             <Grid2 size={6} key="paragraph">
               {fields
-                .filter((field) => field.FIELD_ID === 8 || field.FIELD_ID === 9) // Filtra solo el campo con FIELD_ID de 8
+                .filter(
+                  (field) => field.FIELD_ID === 9 || field.FIELD_ID === 10
+                ) // Filtra solo el campo con FIELD_ID de 8
                 .map((field) => (
                   <TextField
                     key={field.FIELD_ID} // Añadido key para cada TextField

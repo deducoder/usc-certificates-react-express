@@ -343,6 +343,9 @@ function ScoresPage() {
         </Paper>
         <Paper sx={{ padding: "2rem", margin: "2rem" }}>
           <Typography variant="h6">CALIFICACIONES</Typography>
+          <Typography variant="body1">
+            OBSERVACIONES PERMITIDAS: TS, EQ, EX
+          </Typography>
           <FormControl sx={{ mt: 4, mb: 4 }} fullWidth>
             <InputLabel id="period-select-label">CUATRIMESTRE</InputLabel>
             <Select

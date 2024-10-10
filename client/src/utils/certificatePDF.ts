@@ -60,7 +60,7 @@ interface Data {
   // Información de los responsables
   PEOPLE: { [key: number]: People };
   // Expedición
-  CURRENT_DATE: string;
+  EXP: string;
 }
 
 interface Subject {
@@ -409,7 +409,13 @@ export const certificatePDF = async (data: Data) => {
   // Logo gobierno de MX
   doc.addImage(logoMXBase64, "PNG", 9, 8, 28, 29);
 
+  // Numero de certificado
+  doc.setFont("TimesNewRoman", "bold");
+  doc.setFontSize(12);
+  doc.text("N°: _________", 175, 30);
+
   // Primer párrafo
+  doc.setTextColor("black");
   const infoGobierno = `GOBIERNO CONSTITUCIONAL DEL ESTADO DE CHIAPAS\nSECRETARÍA DE EDUCACIÓN ESTATAL\nSUBSECRETARÍA DE EDUCACIÓN ESTATAL`;
   doc.setFont("Arial", "bold");
   doc.setFontSize(12);
@@ -804,7 +810,7 @@ export const certificatePDF = async (data: Data) => {
 
   // Legal
   const totalSubjectsText = numberToString(totalSubjects);
-  const certificateDate = convertDateNoCaps(data.CURRENT_DATE);
+  const certificateDate = convertDateNoCaps(data.EXP);
   doc.addImage(squareBase64, "PNG", 110, 85, 96, 60);
   doc.setFont("Arial", "normal");
   doc.setFontSize(11);
@@ -963,5 +969,5 @@ export const certificatePDF = async (data: Data) => {
   });
 
   // Guardar el PDF
-  doc.save(`${data.CURRENT_DATE}-${data.STUDENT_TUITION}-CER-AQ`);
+  doc.save(`${data.EXP}-${data.STUDENT_TUITION}-CER-AQ`);
 };
