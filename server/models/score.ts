@@ -56,6 +56,13 @@ const Score = db.define(
     },
   },
   {
+    hooks: {
+      beforeSave: (score: any) => {
+        if (score.SCORE_OBSERVATION) {
+          score.SCORE_OBSERVATION = score.SCORE_OBSERVATION.toUpperCase();
+        }
+      },
+    },
     tableName: "SCORES",
     createdAt: "SCORE_CREATION",
     updatedAt: "SCORE_LAST_UPDATE",
