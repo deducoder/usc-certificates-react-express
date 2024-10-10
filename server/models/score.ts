@@ -43,7 +43,7 @@ const Score = db.define(
     SCORE_OBSERVATION: {
       type: DataTypes.STRING,
       validate: {
-        isIn: [["EX", "TS", "EQ"]],
+        isIn: [["EX", "TS", "EQ", "ex", "ts", "eq"]],
       },
     },
     SCORE_STATUS: {
