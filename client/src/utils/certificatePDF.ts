@@ -61,6 +61,7 @@ interface Data {
   PEOPLE: { [key: number]: People };
   // Expedición
   EXP: string;
+  CERTIFICATE_NUMBER: string;
 }
 
 interface Subject {
@@ -412,7 +413,10 @@ export const certificatePDF = async (data: Data) => {
   // Numero de certificado
   doc.setFont("TimesNewRoman", "bold");
   doc.setFontSize(12);
-  doc.text("N°: _________", 175, 30);
+  doc.text("N°: _________", 175, 30.2);
+
+  doc.setTextColor("red");
+  doc.text(`${data.CERTIFICATE_NUMBER}`, 183, 30);
 
   // Primer párrafo
   doc.setTextColor("black");

@@ -88,6 +88,7 @@ const CertificatePage: React.FC = () => {
   );
   // Current date
   const [currentDate, setCurrenteDate] = useState<Date | null>(null);
+  const [certificateNumber, setCertificateNumber] = useState<string>("");
 
   //fetching student information
   useEffect(() => {
@@ -406,6 +407,8 @@ const CertificatePage: React.FC = () => {
         },
       },
       CURRENT_DATE: currentDate,
+      // Información del certificado
+      CERTIFICATE_NUMBER: certificateNumber,
     };
     console.log(dataToSend);
     await handleGeneratePDF(dataToSend);
@@ -467,6 +470,12 @@ const CertificatePage: React.FC = () => {
                     sx={{ mb: 2 }} // Espaciado inferior
                   />
                 ))}
+              <TextField
+                label="NÚMERO DE CERTIFICADO"
+                fullWidth
+                value={certificateNumber}
+                onChange={(e) => setCertificateNumber(e.target.value)}
+              ></TextField>
             </Grid2>
             <Grid2 size={6} key="paragraph">
               {fields
