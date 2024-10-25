@@ -206,7 +206,6 @@ function ScoresPage() {
 
   //add score
   const handleScoreSubmit = async (score: Row) => {
-    //console.log(score);
     try {
       const dataToSend = {
         STUDENT_ID: studentId,
@@ -214,33 +213,41 @@ function ScoresPage() {
         SCORE: score.SCORE,
         SCORE_OBSERVATION: score.SCORE_OBSERVATION,
       };
-      console.log(dataToSend);
-      const url = `http://localhost:8000/api/scores`;
-      const response = await fetch(url, {
+
+      const response = await fetch("http://localhost:8000/api/scores", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend), // Send the new object
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend),
       });
+
       if (!response.ok) {
         throw new Error(`Failed to add score: ${response.statusText}`);
       }
-      const data = await response.json();
-      console.log(data);
-      // datos de la alertra
+
+      const newScore = await response.json();
+
+      // Display success message
       setAlertMessage("Calificación agregada correctamente");
       setAlertSeverity("success");
       setAlertOpen(true);
-      // tiempo de refresco
+
+      // Update scores state with the new score
+      setScores((prevScores) => [
+        ...prevScores,
+        {
+          ...newScore,
+          SUBJECT_ID: score.id,
+          SCORE: score.SCORE,
+          SCORE_OBSERVATION: score.SCORE_OBSERVATION,
+        },
+      ]);
     } catch (error) {
       console.error(error);
-      // datos de la alertra
       setAlertMessage("Error al agregar calificación");
       setAlertSeverity("error");
       setAlertOpen(true);
     } finally {
-      setOpenEditDialog(false); //close dialog
+      setOpenEditDialog(false); // Close dialog if open
     }
   };
 
@@ -251,7 +258,6 @@ function ScoresPage() {
   };
 
   const handleEditSubmit = async (score: Score) => {
-    console.log(score);
     if (!score.SCORE_ID) {
       console.error("SCORE_ID is not defined");
       return;
@@ -266,37 +272,41 @@ function ScoresPage() {
         SCORE_OBSERVATION: score.SCORE_OBSERVATION,
       };
 
-      const url = `http://localhost:8000/api/scores/${score.SCORE_ID}`; // Use SCORE_ID from score object
+      const url = `http://localhost:8000/api/scores/${score.SCORE_ID}`;
       const response = await fetch(url, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend), // Send the updated score data
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
         throw new Error(`Failed to update score: ${response.statusText}`);
       }
 
-      const data = await response.json();
-      // datos de la alerta
       setAlertMessage("Calificación actualizada correctamente");
       setAlertSeverity("success");
       setAlertOpen(true);
-      // tiempo de refresco
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+
+      // Update local scores array with edited score
+      setScores((prevScores) =>
+        prevScores.map((item) =>
+          item.SCORE_ID === score.SCORE_ID
+            ? {
+                ...item,
+                SCORE: score.SCORE,
+                SCORE_OBSERVATION: score.SCORE_OBSERVATION,
+              }
+            : item
+        )
+      );
     } catch (error) {
       console.error(error);
-      // datos de la alerta
       setAlertMessage("Error al actualizar calificación");
       setAlertSeverity("error");
       setAlertOpen(true);
     } finally {
-      setOpenEditDialog(false); //close dialog
-      setSelectedRowEdit(null); //return row value to null
+      setOpenEditDialog(false); // Close dialog
+      setSelectedRowEdit(null); // Reset selected row
     }
   };
 
