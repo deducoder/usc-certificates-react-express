@@ -84,7 +84,7 @@ interface People {
 
 export const certificatePDF = async (data: Data) => {
   // Creando documento
-  const doc = new jsPDF("portrait", "mm", [215.9, 355.6]);
+  const doc = new jsPDF("portrait", "mm", [215.9, 343]);
   console.log(data.PEOPLE[1].NAME); // Imprime el nombre de la persona con PEOPLE_ID 1
   console.log(data.PEOPLE[2].NAME); // Imprime el nombre de la persona con PEOPLE_ID 1
   console.log(data.PEOPLE[3].NAME); // Imprime el nombre de la persona con PEOPLE_ID 1
@@ -427,8 +427,6 @@ export const certificatePDF = async (data: Data) => {
 
   // Segundo párrafo
   const infoDireccion = `DIRECCIÓN DE EDUCACIÓN SUPERIOR\nDEPARTAMENTO DE SERVICIOS ESCOLARES`;
-  doc.setFont("Arial", "normal");
-  doc.setFontSize(10);
   doc.text(infoDireccion, 105, 25, { align: "center" });
 
   // SE-CL-YY
@@ -765,7 +763,7 @@ export const certificatePDF = async (data: Data) => {
   doc.text(
     "Este documento no es válido si presenta raspaduras o enmendaduras.",
     60,
-    340
+    328
   );
 
   // Agregar una nueva página
@@ -804,171 +802,171 @@ export const certificatePDF = async (data: Data) => {
 
   // Promedio
   const averageScoreText = translateAverageToWords(averageScore);
-  doc.addImage(averageSquareBase64, "PNG", 9, 85, 96, 5);
+  doc.addImage(averageSquareBase64, "PNG", 9, 79, 96, 5);
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text("PROMEDIO GENERAL:", 10, 88.5);
+  doc.text("PROMEDIO GENERAL:", 10, 82.5);
   doc.setFont("TimesNewRoman", "bold");
   doc.setFontSize(9);
-  doc.text(`${averageScore}  ( ${averageScoreText} )`, 55, 88.5);
+  doc.text(`${averageScore}  ( ${averageScoreText} )`, 55, 82.5);
 
   // Legal
   const totalSubjectsText = numberToString(totalSubjects);
   const certificateDate = convertDateNoCaps(data.EXP);
-  doc.addImage(squareBase64, "PNG", 110, 85, 96, 60);
+  doc.addImage(squareBase64, "PNG", 110, 79, 96, 50);
   doc.setFont("Arial", "normal");
   doc.setFontSize(11);
   doc.text(
     "La  escala  oficial   de calificaciones  de  0 (CERO)  a",
     111.5,
-    90
+    83
   );
-  doc.text("10 (DIEZ), considerando como mínima aprobatoria  6", 111.5, 95);
+  doc.text("10 (DIEZ), considerando como mínima aprobatoria  6", 111.5, 87.5);
   doc.text(
     `(SEIS).  Este certificado ampara ${totalSubjects} (${totalSubjectsText})`,
     111.5,
-    100
+    93
   );
   doc.text(
     "materias     del   plan   de   estudios   vigente    y    en",
     111.5,
-    105
+    98
   );
   doc.text(
     "cumplimiento a las prescripciones legales, se extiende",
     111.5,
-    110
+    103
   );
   doc.text(
     "el  presente,  en   la ciudad  de  San  Cristóbal de Las",
     111.5,
-    115
+    108
   );
   doc.text(
     `Casas, Chiapas, a los ${certificateDate.dd} días del mes de ${certificateDate.monthName}`,
     111.5,
-    120
+    113
   );
-  doc.text("__", 150, 120);
-  doc.text("_________", 184, 120);
-  doc.text(`de ${certificateDate.yyyy}`, 111.5, 125);
-  doc.text("_____", 116, 125);
+  doc.text("__", 150, 113);
+  doc.text("_________", 184, 113);
+  doc.text(`de ${certificateDate.yyyy}`, 111.5, 118);
+  doc.text("_____", 116, 118);
 
   // Responsable 1
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[1].CHARGE} «SAN CRISTÓBAL»`, 55, 160, {
+  doc.text(`${data.PEOPLE[1].CHARGE} «SAN CRISTÓBAL»`, 55, 145, {
     maxWidth: 60,
     align: "center",
   });
-  doc.text("____________________________________________________", 10, 180);
+  doc.text("____________________________________________________", 10, 165);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[1].NAME}`, 28, 185, {
+  doc.text(`${data.PEOPLE[1].NAME}`, 28, 170, {
     maxWidth: 87,
   });
 
   // Responsable 2
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[2].CHARGE} «SAN CRISTÓBAL»`, 155, 160, {
+  doc.text(`${data.PEOPLE[2].CHARGE} «SAN CRISTÓBAL»`, 155, 145, {
     maxWidth: 50,
     align: "center",
   });
-  doc.text("____________________________________________________", 110, 180);
+  doc.text("____________________________________________________", 110, 165);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[2].NAME}`, 115, 185, {
+  doc.text(`${data.PEOPLE[2].NAME}`, 115, 170, {
     maxWidth: 87,
   });
 
   // Responsable 3
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[3].CHARGE}`, 55, 210, {
+  doc.text(`${data.PEOPLE[3].CHARGE}`, 55, 195, {
     maxWidth: 60,
     align: "center",
   });
-  doc.text("____________________________________________________", 10, 230);
+  doc.text("____________________________________________________", 10, 215);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[3].NAME}`, 18, 235, {
+  doc.text(`${data.PEOPLE[3].NAME}`, 18, 220, {
     maxWidth: 87,
   });
 
   // Responsable 4
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[4].CHARGE}`, 155, 210, {
+  doc.text(`${data.PEOPLE[4].CHARGE}`, 155, 195, {
     maxWidth: 50,
     align: "center",
   });
-  doc.text("____________________________________________________", 110, 230);
+  doc.text("____________________________________________________", 110, 215);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[4].NAME}`, 126, 235, {
+  doc.text(`${data.PEOPLE[4].NAME}`, 126, 220, {
     maxWidth: 87,
   });
 
   // Tabla de servicio escolare
-  doc.addImage(schoolarServicesTableBase64, "PNG", 10, 250, 60, 95);
+  doc.addImage(schoolarServicesTableBase64, "PNG", 10, 235, 60, 95);
   doc.setFont("Arial", "normal");
   doc.setFontSize(8.5);
-  doc.text("REGISTRADO EN EL DEPARTAMENTO DE SERVICIOS ESCOLARES", 40, 255.5, {
+  doc.text("REGISTRADO EN EL DEPARTAMENTO DE SERVICIOS ESCOLARES", 40, 240.5, {
     maxWidth: 60,
     align: "center",
   });
   doc.setFontSize(10);
-  doc.text("CON Nº:", 12, 272);
-  doc.text("EN EL LIBRO:", 12, 282);
-  doc.text("FOJA:", 12, 292);
-  doc.text("FECHA:", 12, 302);
-  doc.text("_____________", 40, 272);
-  doc.text("_____________", 40, 282);
-  doc.text("_____________", 40, 292);
-  doc.text("_____________", 40, 302);
+  doc.text("CON Nº:", 12, 257);
+  doc.text("EN EL LIBRO:", 12, 267);
+  doc.text("FOJA:", 12, 277);
+  doc.text("FECHA:", 12, 287);
+  doc.text("_____________", 40, 257);
+  doc.text("_____________", 40, 267);
+  doc.text("_____________", 40, 277);
+  doc.text("_____________", 40, 287);
   doc.setFont("Arial", "bold");
-  doc.text("C O T E J Ó:", 30, 313);
+  doc.text("C O T E J Ó:", 30, 298);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(8);
-  doc.text(`${data.PEOPLE[7].NAME}`, 17, 322);
+  doc.text(`${data.PEOPLE[7].NAME}`, 17, 307);
   doc.setFont("Arial", "normal");
-  doc.text(`${data.PEOPLE[5].CHARGE}`, 27, 332);
+  doc.text(`${data.PEOPLE[5].CHARGE}`, 27, 317);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(8);
-  doc.text(`${data.PEOPLE[5].NAME}`, 15, 340);
+  doc.text(`${data.PEOPLE[5].NAME}`, 15, 325);
 
   // Parrafo legal
   doc.setFont("Arial", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.LEGAL_1}`, 110, 255, { maxWidth: 95 });
-  doc.text(`${data.LEGAL_2}`, 110, 280, { maxWidth: 95 });
+  doc.text(`${data.LEGAL_1}`, 110, 240, { maxWidth: 95 });
+  doc.text(`${data.LEGAL_2}`, 110, 2657, { maxWidth: 95 });
 
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[4].NAME}`, 126, 305, {
+  doc.text(`${data.PEOPLE[4].NAME}`, 126, 290, {
     maxWidth: 87,
   });
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text("____________________________________________________", 110, 306);
+  doc.text("____________________________________________________", 110, 291);
   doc.setFont("Arial", "normal");
   doc.setFontSize(8);
-  doc.text("TUXTLA GUTIÉRREZ, CHIAPAS; A", 110, 316);
+  doc.text("TUXTLA GUTIÉRREZ, CHIAPAS; A", 110, 301);
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text("__________________________", 157, 316);
+  doc.text("__________________________", 157, 301);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[6].CHARGE}`, 156, 326, {
+  doc.text(`${data.PEOPLE[6].CHARGE}`, 156, 311, {
     maxWidth: 100,
     align: "center",
   });
-  doc.text("____________________________________________________", 110, 340);
+  doc.text("____________________________________________________", 110, 325);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[6].NAME}`, 125, 345, {
+  doc.text(`${data.PEOPLE[6].NAME}`, 125, 330, {
     maxWidth: 87,
   });
 
