@@ -272,6 +272,7 @@ const CertificatePage: React.FC = () => {
     try {
       const dataToSend = {
         PEOPLE_ID: updatedRow.id,
+        PEOPLE_PREFIX: updatedRow.PEOPLE_PREFIX,
         PEOPLE_NAME: updatedRow.PEOPLE_NAME,
         PEOPLE_CHARGE: updatedRow.PEOPLE_CHARGE,
         PEOPLE_GENDER: updatedRow.PEOPLE_GENDER,
