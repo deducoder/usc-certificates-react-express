@@ -885,6 +885,8 @@ export const certificatePDF = async (data: Data) => {
   doc.text("__", 150, 113);
   //doc.text("_________", 184, 113);
   addTextWithUnderscores(doc, certificateDate.monthName, 184, 113, 0);
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(11);
   doc.text(`de ${certificateDate.yyyy}`, 111.5, 118);
   doc.text("_____", 116, 118);
 
