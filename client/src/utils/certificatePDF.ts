@@ -38,6 +38,36 @@ const addCustomFonts = (doc: jsPDF) => {
   doc.addFont("TimesNewRomanBold.ttf", "TimesNewRoman", "bold");
 };
 
+function calculateTextWidth(doc: jsPDF, text: string): number {
+  return doc.getTextWidth(text);
+}
+
+// Function to add underscores based on text width
+function addTextWithUnderscores(
+  doc: jsPDF,
+  text: string,
+  x: number,
+  y: number,
+  additionalSpaces: number = 0
+) {
+  // Calculate the width of the text
+  const textWidth = calculateTextWidth(doc, text);
+
+  // Set font for underscores and calculate underscore width
+  doc.setFont("Arial", "normal");
+  doc.setFontSize(9);
+  const underscoreWidth = calculateTextWidth(doc, "_");
+
+  // Calculate the number of underscores needed
+  const totalUnderscores = Math.ceil(
+    textWidth / underscoreWidth + additionalSpaces
+  );
+  const underscores = "_".repeat(totalUnderscores);
+
+  // Write underscores to the PDF
+  doc.text(underscores, x, y);
+}
+
 interface Data {
   // Informacion de la escuela
   REGIMEN: string;
@@ -552,9 +582,10 @@ export const certificatePDF = async (data: Data) => {
   doc.setFontSize(9);
   doc.text(`${vigenciaMM.monthName}`, 106, 64);
 
-  doc.setFont("Arial", "normal");
+  /*doc.setFont("Arial", "normal");
   doc.setFontSize(9);
-  doc.text("____________", 106, 64);
+  doc.text("____________", 106, 64);*/
+  addTextWithUnderscores(doc, vigenciaMM.monthName, 106, 64, 0);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
@@ -627,9 +658,10 @@ export const certificatePDF = async (data: Data) => {
   doc.setFontSize(11);
   doc.text(`${inicioPeriodoMM.monthName}`, 76, 101);
 
-  doc.setFont("Arial", "normal");
+  /*doc.setFont("Arial", "normal");
   doc.setFontSize(9);
-  doc.text("_______________", 76, 101);
+  doc.text("________", 76, 101);*/
+  addTextWithUnderscores(doc, inicioPeriodoMM.monthName, 76, 101, 0);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
@@ -653,9 +685,12 @@ export const certificatePDF = async (data: Data) => {
   doc.setFontSize(11);
   doc.text(`${finPeriodoMM.monthName}`, 125, 101);
 
-  doc.setFont("Arial", "normal");
+  /*doc.setFont("Arial", "normal");
   doc.setFontSize(9);
-  doc.text("_______________", 125, 101);
+  doc.text("_____________", 125, 101);*/
+
+  // Add underscores below the text
+  addTextWithUnderscores(doc, finPeriodoMM.monthName, 125, 101, 0);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
@@ -848,7 +883,8 @@ export const certificatePDF = async (data: Data) => {
     113
   );
   doc.text("__", 150, 113);
-  doc.text("_________", 184, 113);
+  //doc.text("_________", 184, 113);
+  addTextWithUnderscores(doc, certificateDate.monthName, 184, 113, 0);
   doc.text(`de ${certificateDate.yyyy}`, 111.5, 118);
   doc.text("_____", 116, 118);
 
