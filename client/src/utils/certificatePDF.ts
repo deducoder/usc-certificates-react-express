@@ -11,6 +11,7 @@ import { tableBase64 } from "./pictures/table";
 import { squareBase64 } from "./pictures/square";
 import { averageSquareBase64 } from "./pictures/averageSquare";
 import { schoolarServicesTableBase64 } from "./pictures/schoolarServicesTable";
+import { sofiaBase64 } from "./fonts/sofiaBold";
 
 const addCustomFonts = (doc: jsPDF) => {
   // Arial
@@ -36,6 +37,10 @@ const addCustomFonts = (doc: jsPDF) => {
   // Times New Roman Bold
   doc.addFileToVFS("TimesNewRomanBold.ttf", timesNewRomanBoldBase64);
   doc.addFont("TimesNewRomanBold.ttf", "TimesNewRoman", "bold");
+
+  // Sofia Sans Bold
+  doc.addFileToVFS("SofiaBold.ttf", sofiaBase64);
+  doc.addFont("SofiaBold.ttf", "SofiaBold", "bold");
 };
 
 function calculateTextWidth(doc: jsPDF, text: string): number {
@@ -665,13 +670,26 @@ export const certificatePDF = async (data: Data) => {
   doc.setFontSize(9);
   doc.text("LAS MATERIAS QUE", 175, 87);
 
-  doc.setFont("Arial", "normal");
-  doc.setFontSize(9);
+  doc.setFont("ArialNarrow", "normal");
+  doc.setFontSize(9.5);
   doc.text("INTEGRAN EL PLAN DE ESTUDIO DE LA", 55, 94);
 
-  doc.setFont("ArialNarrow", "bold");
-  doc.setFontSize(10);
-  doc.text(`${data.STUDENT_CAREER},`, 117, 94);
+  doc.setFont("SofiaBold", "bold");
+  doc.setFontSize(13);
+  // Coordendas
+  const xStart12 = 108;
+  const xEnd12 = 195;
+
+  // Obteniendo coordenada x centrada
+  const centeredX12 = getCenteredX(
+    doc,
+    `${data.STUDENT_CAREER}`,
+    xStart12,
+    xEnd12
+  );
+
+  // Imprimiendo texto
+  doc.text(`${data.STUDENT_CAREER},`, centeredX12, 94);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
@@ -943,10 +961,23 @@ export const certificatePDF = async (data: Data) => {
   });
   doc.text("____________________________________________________", 10, 160);
   doc.setFont("TimesNewRoman", "normal");
+  // Estableciendo fuentes
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[1].NAME}`, 28, 165, {
-    maxWidth: 87,
-  });
+
+  // Coordenadas de inicio y fin
+  const xStart4 = 10;
+  const xEnd4 = 100;
+
+  // Obteniendo coordenada x centrada
+  const centeredX4 = getCenteredX(
+    doc,
+    `${data.PEOPLE[1].NAME}`,
+    xStart4,
+    xEnd4
+  );
+
+  // Imprimiendo nombre
+  doc.text(`${data.PEOPLE[1].NAME}`, centeredX4, 165);
 
   // Responsable 2
   doc.setFont("Arial", "bold");
@@ -958,9 +989,19 @@ export const certificatePDF = async (data: Data) => {
   doc.text("____________________________________________________", 110, 160);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[2].NAME}`, 115, 165, {
-    maxWidth: 87,
-  });
+
+  const xStart5 = 110;
+  const xEnd5 = 200;
+
+  // Obteniendo coordenada x centrada
+  const centeredX5 = getCenteredX(
+    doc,
+    `${data.PEOPLE[2].NAME}`,
+    xStart5,
+    xEnd5
+  );
+
+  doc.text(`${data.PEOPLE[2].NAME}`, centeredX5, 165);
 
   // Responsable 3
   doc.setFont("Arial", "bold");
@@ -972,9 +1013,19 @@ export const certificatePDF = async (data: Data) => {
   doc.text("____________________________________________________", 10, 210);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[3].NAME}`, 18, 215, {
-    maxWidth: 87,
-  });
+
+  const xStart6 = 10;
+  const xEnd6 = 100;
+
+  // Obteniendo coordenada x centrada
+  const centeredX6 = getCenteredX(
+    doc,
+    `${data.PEOPLE[3].NAME}`,
+    xStart6,
+    xEnd6
+  );
+
+  doc.text(`${data.PEOPLE[3].NAME}`, centeredX6, 215);
 
   // Responsable 4
   doc.setFont("Arial", "bold");
@@ -986,9 +1037,19 @@ export const certificatePDF = async (data: Data) => {
   doc.text("____________________________________________________", 110, 210);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[4].NAME}`, 126, 215, {
-    maxWidth: 87,
-  });
+
+  const xStart7 = 110;
+  const xEnd7 = 200;
+
+  // Obteniendo coordenada x centrada
+  const centeredX7 = getCenteredX(
+    doc,
+    `${data.PEOPLE[4].NAME}`,
+    xStart7,
+    xEnd7
+  );
+
+  doc.text(`${data.PEOPLE[4].NAME}`, centeredX7, 215);
 
   // Tabla de servicio escolare
   doc.addImage(schoolarServicesTableBase64, "PNG", 10, 230, 60, 95);
@@ -1009,14 +1070,39 @@ export const certificatePDF = async (data: Data) => {
   doc.text("_____________", 40, 282);
   doc.setFont("Arial", "bold");
   doc.text("C O T E J Ó:", 30, 293);
+  // Estableciendo fuentes
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(8);
-  doc.text(`${data.PEOPLE[7].NAME}`, 17, 302);
+  // Coordenadas de inicio y fin
+  const xStart8 = 12;
+  const xEnd8 = 68;
+
+  // Obteniendo coordenada x centrada
+  const centeredX8 = getCenteredX(
+    doc,
+    `${data.PEOPLE[7].NAME}`,
+    xStart8,
+    xEnd8
+  );
+  // Imprimiendo texto
+  doc.text(`${data.PEOPLE[7].NAME}`, centeredX8, 302);
+
   doc.setFont("Arial", "normal");
   doc.text(`${data.PEOPLE[5].CHARGE}`, 27, 312);
+
+  // Estableciendo fuentes
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(8);
-  doc.text(`${data.PEOPLE[5].NAME}`, 15, 320);
+
+  // Obteniendo coordenada x centrada
+  const centeredX9 = getCenteredX(
+    doc,
+    `${data.PEOPLE[5].NAME}`,
+    xStart8,
+    xEnd8
+  );
+  // Imprimiendo texto
+  doc.text(`${data.PEOPLE[5].NAME}`, centeredX9, 320);
 
   // Parrafo legal
   doc.setFont("Arial", "normal");
@@ -1026,9 +1112,18 @@ export const certificatePDF = async (data: Data) => {
 
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[4].NAME}`, 126, 281, {
-    maxWidth: 87,
-  });
+  // Coordenadas de inicio y fin
+  const xStart10 = 110;
+  const xEnd10 = 200;
+
+  // Obteniendo coordenada x centrada
+  const centeredX10 = getCenteredX(
+    doc,
+    `${data.PEOPLE[4].NAME}`,
+    xStart10,
+    xEnd10
+  );
+  doc.text(`${data.PEOPLE[4].NAME}`, centeredX10, 281);
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
   doc.text("____________________________________________________", 110, 282);
@@ -1048,7 +1143,18 @@ export const certificatePDF = async (data: Data) => {
   doc.text("____________________________________________________", 110, 320);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[6].NAME}`, 125, 325, {
+  // Coordenadas de inicio y fin
+  const xStart11 = 110;
+  const xEnd11 = 200;
+
+  // Obteniendo coordenada x centrada
+  const centeredX11 = getCenteredX(
+    doc,
+    `${data.PEOPLE[6].NAME}`,
+    xStart11,
+    xEnd11
+  );
+  doc.text(`${data.PEOPLE[6].NAME}`, centeredX11, 325, {
     maxWidth: 87,
   });
 
