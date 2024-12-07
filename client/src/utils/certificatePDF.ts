@@ -321,7 +321,7 @@ export const certificatePDF = async (data: Data) => {
     totalSubjects = subjects.length > 0 ? (totalSubjects = subjects.length) : 0;
 
     if (filteredSubjects.length > 0) {
-      let defaultFontSize = 7.5;
+      let defaultFontSize = 9.5;
       doc.setFontSize(defaultFontSize);
 
       filteredSubjects.forEach((filteredSubject) => {
@@ -331,7 +331,7 @@ export const certificatePDF = async (data: Data) => {
         );
 
         if (splitText.length > 1) {
-          doc.setFontSize(7);
+          doc.setFontSize(9.5);
         }
 
         // Agregar nombre de materia
@@ -358,7 +358,10 @@ export const certificatePDF = async (data: Data) => {
 
           // Imprimir el `SCORE` y el `SCORE_OBSERVATION`
           if (scoreText) {
-            doc.text(scoreText, x + 58, currentY - 4); // Columna de SCORE
+            const scoreTextWidth = doc.getTextWidth(scoreText); // Obtener el ancho del texto
+            const xCentered = x + 58 - scoreTextWidth / 2; // Calcular el valor de `x` para centrar el texto
+            console.log(scoreText);
+            doc.text(scoreText, xCentered, currentY - 4); // Imprimir el `SCORE` centrado
           }
           if (observationText) {
             doc.text(observationText, x + 82, currentY - 4); // Columna de OBSERVATION
@@ -610,7 +613,7 @@ export const certificatePDF = async (data: Data) => {
   doc.text("QUE EL (LA) C.", 89, 80);
 
   doc.setFont("TimesNewRoman", "normal");
-  doc.setFontSize(11);
+  doc.setFontSize(12);
   doc.text(`${data.STUDENT_NAME}`, 113, 80);
 
   doc.setFont("Arial", "normal");
@@ -805,206 +808,202 @@ export const certificatePDF = async (data: Data) => {
   doc.addPage();
 
   // Tabla 7
-  doc.addImage(tableBase64, "PNG", 9, 15, 96, 60);
+  doc.addImage(tableBase64, "PNG", 9, 10, 96, 60);
   // Cabecera tabla 7
   doc.setFont("ArialNarrow", "normal");
   doc.setFontSize(10);
-  doc.text("SÉPTIMO CUATRIMESTRE", 20, 22);
+  doc.text("SÉPTIMO CUATRIMESTRE", 20, 17);
   doc.setFontSize(9);
-  doc.text("CALIFICACIÓN", 65.5, 19);
-  doc.text("Cifra", 66.5, 24);
-  doc.text("Letra", 76.5, 24);
+  doc.text("CALIFICACIÓN", 65.5, 14);
+  doc.text("Cifra", 66.5, 19);
+  doc.text("Letra", 76.5, 19);
   doc.setFontSize(10);
-  doc.text(`OBSERVA-\nCIONES`, 94, 20, { align: "center" });
+  doc.text(`OBSERVA-\nCIONES`, 94, 15, { align: "center" });
 
   // Tabla 8
-  doc.addImage(tableBase64, "PNG", 110, 15, 96, 60);
+  doc.addImage(tableBase64, "PNG", 110, 10, 96, 60);
   // Cabecera tabla 8
   doc.setFont("ArialNarrow", "normal");
   doc.setFontSize(10);
-  doc.text("OCTAVO CUATRIMESTRE", 120, 22);
+  doc.text("OCTAVO CUATRIMESTRE", 120, 17);
   doc.setFontSize(9);
-  doc.text("CALIFICACIÓN", 166, 19);
-  doc.text("Cifra", 167, 24);
-  doc.text("Letra", 177, 24);
+  doc.text("CALIFICACIÓN", 166, 14);
+  doc.text("Cifra", 167, 19);
+  doc.text("Letra", 177, 19);
   doc.setFontSize(10);
-  doc.text(`OBSERVA-\nCIONES`, 195, 20, { align: "center" });
+  doc.text(`OBSERVA-\nCIONES`, 195, 15, { align: "center" });
 
   // Cuerpo
   doc.setFont("ArialNarrow", "normal");
-  await getSubjectsAndScores(data.STUDENT_ID, 7, 10, 30);
-  await getSubjectsAndScores(data.STUDENT_ID, 8, 111, 30);
+  await getSubjectsAndScores(data.STUDENT_ID, 7, 10, 25);
+  await getSubjectsAndScores(data.STUDENT_ID, 8, 111, 25);
 
   // Promedio
   const averageScoreText = translateAverageToWords(averageScore);
-  doc.addImage(averageSquareBase64, "PNG", 9, 79, 96, 5);
+  doc.addImage(averageSquareBase64, "PNG", 9, 74, 96, 5);
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text("PROMEDIO GENERAL:", 10, 82.5);
+  doc.text("PROMEDIO GENERAL:", 10, 77.5);
   doc.setFont("TimesNewRoman", "bold");
   doc.setFontSize(9);
-  doc.text(`${averageScore}  ( ${averageScoreText} )`, 55, 82.5);
+  doc.text(`${averageScore}  ( ${averageScoreText} )`, 55, 77.5);
 
   // Legal
   const totalSubjectsText = numberToString(totalSubjects);
   const certificateDate = convertDateNoCaps(data.EXP);
-  doc.addImage(squareBase64, "PNG", 110, 79, 96, 50);
+  doc.addImage(squareBase64, "PNG", 110, 74, 96, 50);
   doc.setFont("Arial", "normal");
   doc.setFontSize(11);
   doc.text(
     "La  escala  oficial   de calificaciones  de  0 (CERO)  a",
     111.5,
-    83
+    78
   );
-  doc.text("10 (DIEZ), considerando como mínima aprobatoria  6", 111.5, 87.5);
+  doc.text("10 (DIEZ), considerando como mínima aprobatoria  6", 111.5, 82.5);
   doc.text(
     `(SEIS).  Este certificado ampara ${totalSubjects} (${totalSubjectsText})`,
     111.5,
-    93
+    88
   );
   doc.text(
     "materias     del   plan   de   estudios   vigente    y    en",
     111.5,
-    98
+    93
   );
+  doc.text("cumplimiento a las prescripciones legales, se extiende", 111.5, 98);
   doc.text(
-    "cumplimiento a las prescripciones legales, se extiende",
+    "el  presente,  en   la ciudad  de  San  Cristóbal de Las",
     111.5,
     103
   );
   doc.text(
-    "el  presente,  en   la ciudad  de  San  Cristóbal de Las",
+    `Casas, Chiapas, a los ${certificateDate.dd} días del mes de ${certificateDate.monthName}`,
     111.5,
     108
   );
-  doc.text(
-    `Casas, Chiapas, a los ${certificateDate.dd} días del mes de ${certificateDate.monthName}`,
-    111.5,
-    113
-  );
-  doc.text("__", 150, 113);
+  doc.text("__", 150, 108);
   //doc.text("_________", 184, 113);
-  addTextWithUnderscores(doc, certificateDate.monthName, 184, 113, 0);
+  addTextWithUnderscores(doc, certificateDate.monthName, 184, 108, 0);
   doc.setFont("Arial", "normal");
   doc.setFontSize(11);
-  doc.text(`de ${certificateDate.yyyy}`, 111.5, 118);
-  doc.text("_____", 116, 118);
+  doc.text(`de ${certificateDate.yyyy}`, 111.5, 113);
+  doc.text("_____", 116, 113);
 
   // Responsable 1
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[1].CHARGE} «SAN CRISTÓBAL»`, 55, 145, {
+  doc.text(`${data.PEOPLE[1].CHARGE} «SAN CRISTÓBAL»`, 55, 140, {
     maxWidth: 60,
     align: "center",
   });
-  doc.text("____________________________________________________", 10, 165);
+  doc.text("____________________________________________________", 10, 160);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[1].NAME}`, 28, 170, {
+  doc.text(`${data.PEOPLE[1].NAME}`, 28, 165, {
     maxWidth: 87,
   });
 
   // Responsable 2
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[2].CHARGE} «SAN CRISTÓBAL»`, 155, 145, {
+  doc.text(`${data.PEOPLE[2].CHARGE} «SAN CRISTÓBAL»`, 155, 140, {
     maxWidth: 50,
     align: "center",
   });
-  doc.text("____________________________________________________", 110, 165);
+  doc.text("____________________________________________________", 110, 160);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[2].NAME}`, 115, 170, {
+  doc.text(`${data.PEOPLE[2].NAME}`, 115, 165, {
     maxWidth: 87,
   });
 
   // Responsable 3
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[3].CHARGE}`, 55, 195, {
+  doc.text(`${data.PEOPLE[3].CHARGE}`, 55, 190, {
     maxWidth: 60,
     align: "center",
   });
-  doc.text("____________________________________________________", 10, 215);
+  doc.text("____________________________________________________", 10, 210);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[3].NAME}`, 18, 220, {
+  doc.text(`${data.PEOPLE[3].NAME}`, 18, 215, {
     maxWidth: 87,
   });
 
   // Responsable 4
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[4].CHARGE}`, 155, 195, {
+  doc.text(`${data.PEOPLE[4].CHARGE}`, 155, 190, {
     maxWidth: 50,
     align: "center",
   });
-  doc.text("____________________________________________________", 110, 215);
+  doc.text("____________________________________________________", 110, 210);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[4].NAME}`, 126, 220, {
+  doc.text(`${data.PEOPLE[4].NAME}`, 126, 215, {
     maxWidth: 87,
   });
 
   // Tabla de servicio escolare
-  doc.addImage(schoolarServicesTableBase64, "PNG", 10, 235, 60, 95);
+  doc.addImage(schoolarServicesTableBase64, "PNG", 10, 230, 60, 95);
   doc.setFont("Arial", "normal");
   doc.setFontSize(8.5);
-  doc.text("REGISTRADO EN EL DEPARTAMENTO DE SERVICIOS ESCOLARES", 40, 240.5, {
+  doc.text("REGISTRADO EN EL DEPARTAMENTO DE SERVICIOS ESCOLARES", 40, 235.5, {
     maxWidth: 60,
     align: "center",
   });
   doc.setFontSize(10);
-  doc.text("CON Nº:", 12, 257);
-  doc.text("EN EL LIBRO:", 12, 267);
-  doc.text("FOJA:", 12, 277);
-  doc.text("FECHA:", 12, 287);
-  doc.text("_____________", 40, 257);
-  doc.text("_____________", 40, 267);
-  doc.text("_____________", 40, 277);
-  doc.text("_____________", 40, 287);
+  doc.text("CON Nº:", 12, 252);
+  doc.text("EN EL LIBRO:", 12, 262);
+  doc.text("FOJA:", 12, 272);
+  doc.text("FECHA:", 12, 282);
+  doc.text("_____________", 40, 252);
+  doc.text("_____________", 40, 262);
+  doc.text("_____________", 40, 272);
+  doc.text("_____________", 40, 282);
   doc.setFont("Arial", "bold");
-  doc.text("C O T E J Ó:", 30, 298);
+  doc.text("C O T E J Ó:", 30, 293);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(8);
-  doc.text(`${data.PEOPLE[7].NAME}`, 17, 307);
+  doc.text(`${data.PEOPLE[7].NAME}`, 17, 302);
   doc.setFont("Arial", "normal");
-  doc.text(`${data.PEOPLE[5].CHARGE}`, 27, 317);
+  doc.text(`${data.PEOPLE[5].CHARGE}`, 27, 312);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(8);
-  doc.text(`${data.PEOPLE[5].NAME}`, 15, 325);
+  doc.text(`${data.PEOPLE[5].NAME}`, 15, 320);
 
   // Parrafo legal
   doc.setFont("Arial", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.LEGAL_1}`, 110, 240, { maxWidth: 95 });
-  doc.text(`${data.LEGAL_2}`, 110, 2657, { maxWidth: 95 });
+  doc.text(`${data.LEGAL_1}`, 110, 235, { maxWidth: 95 });
+  doc.text(`${data.LEGAL_2}`, 110, 260, { maxWidth: 95 });
 
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[4].NAME}`, 126, 290, {
+  doc.text(`${data.PEOPLE[4].NAME}`, 126, 281, {
     maxWidth: 87,
   });
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text("____________________________________________________", 110, 291);
+  doc.text("____________________________________________________", 110, 282);
   doc.setFont("Arial", "normal");
   doc.setFontSize(8);
-  doc.text("TUXTLA GUTIÉRREZ, CHIAPAS; A", 110, 301);
+  doc.text("TUXTLA GUTIÉRREZ, CHIAPAS; A", 110, 296);
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text("__________________________", 157, 301);
+  doc.text("__________________________", 157, 296);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[6].CHARGE}`, 156, 311, {
+  doc.text(`${data.PEOPLE[6].CHARGE}`, 156, 306, {
     maxWidth: 100,
     align: "center",
   });
-  doc.text("____________________________________________________", 110, 325);
+  doc.text("____________________________________________________", 110, 320);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.PEOPLE[6].NAME}`, 125, 330, {
+  doc.text(`${data.PEOPLE[6].NAME}`, 125, 325, {
     maxWidth: 87,
   });
 
