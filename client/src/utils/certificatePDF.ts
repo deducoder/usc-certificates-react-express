@@ -192,6 +192,20 @@ export const certificatePDF = async (data: Data) => {
     // Puedes agregar más números según sea necesario
   };
 
+  // Funicion para centrar palabras
+  function getCenteredX(
+    doc: jsPDF,
+    text: string,
+    xStart: number,
+    xEnd: number
+  ): number {
+    // Calcular el ancho del texto
+    const textWidth = doc.getTextWidth(text);
+
+    // Calcular la coordenada X para centrar el texto dentro del rango
+    return xStart + (xEnd - xStart - textWidth) / 2;
+  }
+
   // Funcion para convertir promedio a texto
   const translateAverageToWords = (numStr: string): string => {
     const [wholePart, decimalPart] = numStr.split("."); // Divide el número en parte entera y decimal
@@ -581,14 +595,25 @@ export const certificatePDF = async (data: Data) => {
   doc.text("DE", 100, 64);
 
   const vigenciaMM = convertDate(data.VIGENCIA);
+  // Estableciendo fuentes
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text(`${vigenciaMM.monthName}`, 106, 64);
 
-  /*doc.setFont("Arial", "normal");
-  doc.setFontSize(9);
-  doc.text("____________", 106, 64);*/
-  addTextWithUnderscores(doc, vigenciaMM.monthName, 106, 64, 0);
+  // Coordenadas de inicio y fin
+  const xStart3 = 106;
+  const xEnd3 = 125;
+
+  // Obteniendo coordenada x centrada
+  const centeredX3 = getCenteredX(
+    doc,
+    `${vigenciaMM.monthName}`,
+    xStart3,
+    xEnd3
+  );
+
+  // Imprimiendo texto y subrayado
+  doc.text(`${vigenciaMM.monthName}`, centeredX3, 64);
+  addTextWithUnderscores(doc, vigenciaMM.monthName, centeredX3, 64, 0);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
@@ -657,14 +682,25 @@ export const certificatePDF = async (data: Data) => {
   doc.text("PERÍODO DE", 55, 101);
 
   const inicioPeriodoMM = convertDate(data.STUDENT_START_PERIOD);
+  // Estableciendo fuentes
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(11);
-  doc.text(`${inicioPeriodoMM.monthName}`, 76, 101);
 
-  /*doc.setFont("Arial", "normal");
-  doc.setFontSize(9);
-  doc.text("________", 76, 101);*/
-  addTextWithUnderscores(doc, inicioPeriodoMM.monthName, 76, 101, 0);
+  // Coordenadas de inicio y fin
+  const xStart1 = 76;
+  const xEnd1 = 100;
+
+  // Obteniendo coordenada x centrada
+  const centeredX1 = getCenteredX(
+    doc,
+    `${inicioPeriodoMM.monthName}`,
+    xStart1,
+    xEnd1
+  );
+
+  // Imprimiendo texto y subrayado
+  doc.text(`${inicioPeriodoMM.monthName}`, centeredX1, 101);
+  addTextWithUnderscores(doc, inicioPeriodoMM.monthName, centeredX1, 101, 0);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
@@ -684,16 +720,25 @@ export const certificatePDF = async (data: Data) => {
   doc.text("A", 121, 101);
 
   const finPeriodoMM = convertDate(data.STUDENT_END_PERIOD);
+  // Estableciendo fuentes
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(11);
-  doc.text(`${finPeriodoMM.monthName}`, 125, 101);
 
-  /*doc.setFont("Arial", "normal");
-  doc.setFontSize(9);
-  doc.text("_____________", 125, 101);*/
+  // Coordenadas de inicio y fin
+  const xStart2 = 125;
+  const xEnd2 = 150;
 
-  // Add underscores below the text
-  addTextWithUnderscores(doc, finPeriodoMM.monthName, 125, 101, 0);
+  // Obteniendo coordenada x centrada
+  const centeredX2 = getCenteredX(
+    doc,
+    `${finPeriodoMM.monthName}`,
+    xStart2,
+    xEnd2
+  );
+
+  // Imprimiendo texto y subrayado
+  doc.text(`${finPeriodoMM.monthName}`, centeredX2, 101);
+  addTextWithUnderscores(doc, finPeriodoMM.monthName, centeredX2, 101, 0);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
