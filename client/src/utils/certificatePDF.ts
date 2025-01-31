@@ -920,37 +920,37 @@ export const certificatePDF = async (data: Data) => {
   doc.text(
     "La  escala  oficial   de calificaciones  de  0 (CERO)  a",
     111.5,
-    78
+    78, { maxWidth: 95, align: "justify" }
   );
-  doc.text("10 (DIEZ), considerando como mínima aprobatoria  6", 111.5, 82.5);
+  doc.text("10 (DIEZ), considerando como mínima aprobatoria  6", 111.5, 82.5, { maxWidth: 95, align: "justify" });
   doc.text(
     `(SEIS).  Este certificado ampara ${totalSubjects} (${totalSubjectsText})`,
     111.5,
-    88
+    88, { maxWidth: 96, align: "justify" }
   );
   doc.text(
     "materias     del   plan   de   estudios   vigente    y    en",
     111.5,
-    93
+    93, { maxWidth: 96, align: "justify" }
   );
-  doc.text("cumplimiento a las prescripciones legales, se extiende", 111.5, 98);
+  doc.text("cumplimiento a las prescripciones legales, se extiende", 111.5, 98, { maxWidth: 95, align: "justify" });
   doc.text(
     "el  presente,  en   la ciudad  de  San  Cristóbal de Las",
     111.5,
-    103
+    103, { maxWidth: 95, align: "justify" }
   );
   doc.text(
-    `Casas, Chiapas, a los ${certificateDate.dd} días del mes de ${certificateDate.monthName}`,
+    `Casas, Chiapas, a los ${certificateDate.dd} días del mes de ${certificateDate.monthName} de`,
     111.5,
-    108
+    108, { maxWidth: 95, align: "justify" }
   );
   doc.text("__", 150, 108);
   //doc.text("_________", 184, 113);
   addTextWithUnderscores(doc, certificateDate.monthName, 184, 108, 0);
   doc.setFont("Arial", "normal");
   doc.setFontSize(11);
-  doc.text(`de ${certificateDate.yyyy}`, 111.5, 113);
-  doc.text("_____", 116, 113);
+  doc.text(`${certificateDate.yyyy}`, 111.5, 113);
+  doc.text("_____", 111, 113);
 
   // Responsable 1
   doc.setFont("Arial", "bold");
@@ -1107,8 +1107,8 @@ export const certificatePDF = async (data: Data) => {
   // Parrafo legal
   doc.setFont("Arial", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.LEGAL_1}`, 110, 235, { maxWidth: 95 });
-  doc.text(`${data.LEGAL_2}`, 110, 260, { maxWidth: 95 });
+  doc.text(`${data.LEGAL_1}`, 110, 235, { maxWidth: 95, align: "justify" });
+  doc.text(`${data.LEGAL_2}`, 110, 260, { maxWidth: 95, align: "justify" });
 
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
