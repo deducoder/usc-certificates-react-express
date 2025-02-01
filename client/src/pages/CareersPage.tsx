@@ -38,7 +38,7 @@ function Careers() {
   useEffect(() => {
     const fetchCareers = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/careers");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/careers`);
         const data = await response.json();
         setCareers(data);
       } catch (error) {
@@ -136,7 +136,7 @@ function Careers() {
         CAREER_ID: updatedRow.id, // Renaming 'id' to 'STUDENT_ID'
         CAREER_NAME: updatedRow.CAREER_NAME,
       };
-      const url = `http://localhost:8000/api/careers/${dataToSend.CAREER_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/careers/${dataToSend.CAREER_ID}`;
       //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
@@ -185,7 +185,7 @@ function Careers() {
         CAREER_ID: deletedRow.id,
         CAREER_STATUS: 0,
       };
-      const url = `http://localhost:8000/api/careers/${dataToSend.CAREER_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/careers/${dataToSend.CAREER_ID}`;
       //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
@@ -232,7 +232,7 @@ function Careers() {
         CAREER_ID: activatedRow.id,
         CAREER_STATUS: 1,
       };
-      const url = `http://localhost:8000/api/careers/${dataToSend.CAREER_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/careers/${dataToSend.CAREER_ID}`;
       //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {

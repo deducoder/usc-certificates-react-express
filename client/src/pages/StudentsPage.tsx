@@ -57,7 +57,7 @@ function Students() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/students");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/students`);
         const data = await response.json();
         //console.log(data);
         setStudents(data);
@@ -198,7 +198,7 @@ function Students() {
         STUDENT_PA_LAST_NAME: updatedRow.STUDENT_PA_LAST_NAME,
         STUDENT_MA_LAST_NAME: updatedRow.STUDENT_MA_LAST_NAME,
       };
-      const url = `http://localhost:8000/api/students/${dataToSend.STUDENT_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/students/${dataToSend.STUDENT_ID}`;
       //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
@@ -247,7 +247,7 @@ function Students() {
         STUDENT_ID: deletedRow.id,
         STUDENT_STATUS: 0,
       };
-      const url = `http://localhost:8000/api/students/${dataToSend.STUDENT_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/students/${dataToSend.STUDENT_ID}`;
       //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
@@ -295,7 +295,7 @@ function Students() {
         STUDENT_ID: activatedRow.id,
         STUDENT_STATUS: 1,
       };
-      const url = `http://localhost:8000/api/students/${dataToSend.STUDENT_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/students/${dataToSend.STUDENT_ID}`;
       //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {

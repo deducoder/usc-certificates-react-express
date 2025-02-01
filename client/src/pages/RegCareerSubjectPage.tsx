@@ -44,7 +44,7 @@ const RegCareerSubjectPage: React.FC = () => {
       CAREER_NAME: careerName,
     };
     try {
-      const careerResponse = await fetch("http://localhost:8000/api/careers", {
+      const careerResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/careers`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -71,7 +71,7 @@ const RegCareerSubjectPage: React.FC = () => {
   useEffect(() => {
     const fetchCareers = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/careers");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/careers`);
         if (!response.ok) throw new Error("Network response was not ok");
         const data = await response.json();
         setCareers(data);
@@ -131,15 +131,15 @@ const RegCareerSubjectPage: React.FC = () => {
     //console.log(subjectData);
     try {
       const subjectResponse = await fetch(
-        "http://localhost:8000/api/subjects",
+        `${import.meta.env.VITE_API_URL}/api/subjects`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(subjectData),
+          body: JSON.stringify(subjectData), // Asegúrate de que `subjectData` contiene los datos correctos.
         }
-      );
+      );      
       if (!subjectResponse.ok) throw new Error("Failed to register subject");
       // datos de la alertra
       setAlertMessage("Materia creada correctamente");
