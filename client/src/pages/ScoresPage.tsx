@@ -70,8 +70,8 @@ function ScoresPage() {
     const fetchStudent = async () => {
       try {
         const studentResponse = await fetch(
-          `http://localhost:8000/api/students/${studentId}`
-        );
+          `${import.meta.env.VITE_API_URL}/api/students/${studentId}`
+        );        
         const studentData = await studentResponse.json();
         //console.log(studentData);
         setStudent(studentData);
@@ -84,8 +84,8 @@ function ScoresPage() {
     const fetchStudentCareer = async () => {
       try {
         const studentCareerResponse = await fetch(
-          `http://localhost:8000/api/students-careers/${studentId}`
-        );
+          `${import.meta.env.VITE_API_URL}/api/students-careers/${studentId}`
+        );        
         const studentCareerData = await studentCareerResponse.json();
         //console.log(studentCareerData);
         setStudentCareer(studentCareerData); // This will set the studentCareer with the data
@@ -105,8 +105,8 @@ function ScoresPage() {
     const fetchCareer = async (careerId: number) => {
       try {
         const careerResponse = await fetch(
-          `http://localhost:8000/api/careers/${careerId}`
-        );
+          `${import.meta.env.VITE_API_URL}/api/careers/${careerId}`
+        );        
         const careerData = await careerResponse.json();
         //console.log(careerData);
         setCareer(careerData);
@@ -119,8 +119,8 @@ function ScoresPage() {
     const fetchSubjects = async (careerId: number) => {
       try {
         const subjectResponse = await fetch(
-          `http://localhost:8000/api/subjects/career/${careerId}`
-        );
+          `${import.meta.env.VITE_API_URL}/api/subjects/career/${careerId}`
+        );        
         const subjectData = await subjectResponse.json();
         //console.log(subjectData);
         setSubjects(subjectData);
@@ -132,8 +132,8 @@ function ScoresPage() {
     const fetchScores = async (studentId: number) => {
       try {
         const scoreResponse = await fetch(
-          `http://localhost:8000/api/scores/student/${studentId}`
-        );
+          `${import.meta.env.VITE_API_URL}/api/scores/student/${studentId}`
+        );        
         const scoreData = await scoreResponse.json();
 
         // Ensure scoreData is an array before setting it
@@ -214,11 +214,15 @@ function ScoresPage() {
         SCORE_OBSERVATION: score.SCORE_OBSERVATION,
       };
 
-      const response = await fetch("http://localhost:8000/api/scores", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dataToSend),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/scores`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dataToSend), // Asegúrate de que `dataToSend` contiene los datos correctos.
+        }
+      );
+      
 
       if (!response.ok) {
         throw new Error(`Failed to add score: ${response.statusText}`);
@@ -272,7 +276,7 @@ function ScoresPage() {
         SCORE_OBSERVATION: score.SCORE_OBSERVATION,
       };
 
-      const url = `http://localhost:8000/api/scores/${score.SCORE_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/scores/${score.SCORE_ID}`;
       const response = await fetch(url, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

@@ -49,7 +49,7 @@ const RegStudentPage: React.FC = () => {
   useEffect(() => {
     const fetchCareers = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/careers");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/careers`);
         if (!response.ok) throw new Error("Network response was not ok");
         const data = await response.json();
         setCareers(data);
@@ -70,7 +70,7 @@ const RegStudentPage: React.FC = () => {
   // Generate the tuition number based on the latest one
   const generateTuitionNumber = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/students/latest");
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/students/latest`);
       if (!response.ok) throw new Error("Network response was not ok");
       const latestTuition: number = await response.json();
       if (latestTuition) {
@@ -106,7 +106,7 @@ const RegStudentPage: React.FC = () => {
     try {
       // Register the student
       const studentResponse = await fetch(
-        "http://localhost:8000/api/students",
+        `${import.meta.env.VITE_API_URL}/api/students`,
         {
           method: "POST",
           headers: {
@@ -132,15 +132,15 @@ const RegStudentPage: React.FC = () => {
 
       // Register the student career
       const careerResponse = await fetch(
-        "http://localhost:8000/api/students-careers",
+        `${import.meta.env.VITE_API_URL}/api/students-careers`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(studentCareerData),
+          body: JSON.stringify(studentCareerData), // Asegúrate de que `studentCareerData` contiene los datos correctos.
         }
-      );
+      );      
 
       if (!careerResponse.ok)
         throw new Error("Failed to register student career");

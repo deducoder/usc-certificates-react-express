@@ -95,8 +95,8 @@ const CertificatePage: React.FC = () => {
     const fetchStudent = async () => {
       try {
         const studentResponse = await fetch(
-          `http://localhost:8000/api/students/${studentId}`
-        );
+          `${import.meta.env.VITE_API_URL}/api/students/${studentId}`
+        );        
         const studentData = await studentResponse.json();
         //console.log(studentData);
         setStudent(studentData);
@@ -109,8 +109,8 @@ const CertificatePage: React.FC = () => {
     const fetchStudentCareer = async () => {
       try {
         const studentCareerResponse = await fetch(
-          `http://localhost:8000/api/students-careers/${studentId}`
-        );
+          `${import.meta.env.VITE_API_URL}/api/students-careers/${studentId}`
+        );        
         const studentCareerData = await studentCareerResponse.json();
         //console.log(studentCareerData);
         setStudentCareer(studentCareerData);
@@ -126,8 +126,8 @@ const CertificatePage: React.FC = () => {
     const fetchCareer = async (careerId: number) => {
       try {
         const careerResponse = await fetch(
-          `http://localhost:8000/api/careers/${careerId}`
-        );
+          `${import.meta.env.VITE_API_URL}/api/careers/${careerId}`
+        );        
         const careerData = await careerResponse.json();
         //console.log(careerData);
         setCareer(careerData);
@@ -144,7 +144,7 @@ const CertificatePage: React.FC = () => {
   useEffect(() => {
     const fetchPeople = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/people");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/people`);
         const data = await response.json();
         //console.log(data);
         setPeople(data);
@@ -210,7 +210,7 @@ const CertificatePage: React.FC = () => {
     const fetchFields = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8000/api/certificate-fields"
+          `${import.meta.env.VITE_API_URL}/api/certificate-fields`
         );
         const data = await response.json();
         //console.log(data);
@@ -232,7 +232,7 @@ const CertificatePage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/certificate-fields/${fieldId}`,
+        `${import.meta.env.VITE_API_URL}/api/certificate-fields/${fieldId}`,
         {
           method: "PUT", // Método para actualizar
           headers: {
@@ -240,7 +240,7 @@ const CertificatePage: React.FC = () => {
           },
           body: JSON.stringify({ FIELD_VALUE: updatedValue }), // Envía el valor actualizado
         }
-      );
+      );      
 
       if (!response.ok) {
         throw new Error("Error en la actualización del campo");
@@ -277,7 +277,7 @@ const CertificatePage: React.FC = () => {
         PEOPLE_CHARGE: updatedRow.PEOPLE_CHARGE,
         PEOPLE_GENDER: updatedRow.PEOPLE_GENDER,
       };
-      const url = `http://localhost:8000/api/people/${dataToSend.PEOPLE_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/people/${dataToSend.PEOPLE_ID}`;
 
       const response = await fetch(url, {
         method: "PUT",

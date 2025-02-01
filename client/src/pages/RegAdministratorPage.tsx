@@ -41,7 +41,7 @@ function RegAdministrator() {
 
     try {
       // Primero, registrar el usuario
-      const userResponse = await fetch("http://localhost:8000/api/users", {
+      const userResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,7 +62,7 @@ function RegAdministrator() {
       const userId = userData.USER_ID; // Obtén el ID del usuario registrado
 
       // Luego, registrar el administrador
-      const adminResponse = await fetch("http://localhost:8000/api/admins", {
+      const adminResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/admins`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

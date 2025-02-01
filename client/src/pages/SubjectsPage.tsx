@@ -50,7 +50,7 @@ function Subjects() {
     // Fetch subjects
     const fetchSubjects = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/subjects");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/subjects`);
         const data = await response.json();
         setSubjects(data);
       } catch (error) {
@@ -61,7 +61,7 @@ function Subjects() {
     // Fetch careers
     const fetchCareers = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/careers");
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/careers`);
         if (!response.ok) throw new Error("Network response was not ok");
         const data = await response.json();
 
@@ -229,7 +229,7 @@ function Subjects() {
         SUBJECT_PERIOD: selectedPeriod, // Periodo seleccionado
       };
 
-      const url = `http://localhost:8000/api/subjects/${dataToSend.SUBJECT_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/subjects/${dataToSend.SUBJECT_ID}`;
 
       const response = await fetch(url, {
         method: "PUT",
@@ -275,7 +275,7 @@ function Subjects() {
         SUBJECT_ID: deletedRow.id,
         SUBJECT_STATUS: 0,
       };
-      const url = `http://localhost:8000/api/subjects/${dataToSend.SUBJECT_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/subjects/${dataToSend.SUBJECT_ID}`;
       //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
@@ -323,7 +323,7 @@ function Subjects() {
         SUBJECT_ID: activatedRow.id,
         SUBJECT_STATUS: 1,
       };
-      const url = `http://localhost:8000/api/subjects/${dataToSend.SUBJECT_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/subjects/${dataToSend.SUBJECT_ID}`;
       //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
