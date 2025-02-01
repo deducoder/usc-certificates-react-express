@@ -132,8 +132,8 @@ export const certificatePDF = async (data: Data) => {
   const fetchSubjects = async (): Promise<Subject[]> => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/subjects/career/${data.CAREER_ID}`
-      );
+        `${import.meta.env.VITE_API_URL}/api/subjects/career/${data.CAREER_ID}`
+      );      
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
