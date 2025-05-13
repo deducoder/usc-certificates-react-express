@@ -53,7 +53,7 @@ class Server {
   // Method to set middlewares
   middlewares() {
     this.app.use(cors({
-      origin: "*", // Permitir acceso desde cualquier origen (puedes restringirlo si es necesario)
+      origin: "*",
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "Authorization"],
     }));

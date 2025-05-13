@@ -28,7 +28,7 @@ interface Career {
   CAREER_NAME: string;
 }
 
-// Component definition
+// definition
 const RegStudentPage: React.FC = () => {
   const [careers, setCareers] = useState<Career[]>([]);
   const [selectedCareer, setSelectedCareer] = useState<number | "">("");
@@ -45,7 +45,7 @@ const RegStudentPage: React.FC = () => {
     "success"
   );
 
-  // Fetch careers from the backend on component mount
+  // Fetch careers 
   useEffect(() => {
     const fetchCareers = async () => {
       try {
@@ -60,14 +60,14 @@ const RegStudentPage: React.FC = () => {
     fetchCareers();
   }, []);
 
-  // Handle career selection change
+  // Handle career change
   const handleCareerChange = (e: React.ChangeEvent<{ value: unknown }>) => {
     const careerId = e.target.value as number;
     setSelectedCareer(careerId);
     //console.log("Selected Career ID:", careerId);
   };
 
-  // Generate the tuition number based on the latest one
+  // Generate the tuition
   const generateTuitionNumber = async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/students/latest`);
@@ -118,11 +118,11 @@ const RegStudentPage: React.FC = () => {
 
       if (!studentResponse.ok) throw new Error("Failed to register student");
 
-      // Retrieve the student ID from the response
+      // ID del estudiante de la respuesta
       const newStudent = await studentResponse.json();
       const studentId = newStudent.STUDENT_ID;
 
-      // Create the student career object
+      // Nuevo estudiante carrera
       const studentCareerData = {
         STUDENT_ID: studentId,
         CAREER_ID: selectedCareer,
@@ -130,7 +130,7 @@ const RegStudentPage: React.FC = () => {
         END_DATE: endDate,
       };
 
-      // Register the student career
+      // student career
       const careerResponse = await fetch(
         `${import.meta.env.VITE_API_URL}/api/students-careers`,
         {
@@ -138,7 +138,7 @@ const RegStudentPage: React.FC = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(studentCareerData), // Asegúrate de que `studentCareerData` contiene los datos correctos.
+          body: JSON.stringify(studentCareerData),
         }
       );      
 
@@ -152,7 +152,7 @@ const RegStudentPage: React.FC = () => {
         window.location.reload();
       }, 1000);
 
-      //console.log("Student and career registered successfully!");
+      //console.log("Student and career registered!");
     } catch (error) {
       console.error("Error during registration: ", error);
       // datos de la alertra

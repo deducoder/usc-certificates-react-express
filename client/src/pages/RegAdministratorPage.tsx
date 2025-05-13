@@ -40,7 +40,7 @@ function RegAdministrator() {
     event.preventDefault();
 
     try {
-      // Primero, registrar el usuario
+      // registrar el usuario
       const userResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/users`, {
         method: "POST",
         headers: {
@@ -59,9 +59,9 @@ function RegAdministrator() {
 
       const userData = await userResponse.json();
       console.log(userData.USER_ID);
-      const userId = userData.USER_ID; // Obtén el ID del usuario registrado
+      const userId = userData.USER_ID; // ID 
 
-      // Luego, registrar el administrador
+      // registrar el administrador
       const adminResponse = await fetch(`${import.meta.env.VITE_API_URL}/api/admins`, {
         method: "POST",
         headers: {
@@ -71,7 +71,7 @@ function RegAdministrator() {
           ADMIN_NAME: name,
           ADMIN_PA_LAST_NAME: paternalLastName,
           ADMIN_MA_LAST_NAME: maternalLastName,
-          USER_ID: userId, // Usa el ID del usuario registrado
+          USER_ID: userId, // ID del usuario registrado
         }),
       });
 

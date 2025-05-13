@@ -131,9 +131,8 @@ function Careers() {
   const handleEditSubmit = async (updatedRow: Row) => {
     //console.log(updatedRow.id);
     try {
-      // Create a new object with the required structure
       const dataToSend = {
-        CAREER_ID: updatedRow.id, // Renaming 'id' to 'STUDENT_ID'
+        CAREER_ID: updatedRow.id, // Renaming id to STUDENT_ID
         CAREER_NAME: updatedRow.CAREER_NAME,
       };
       const url = `${import.meta.env.VITE_API_URL}/api/careers/${dataToSend.CAREER_ID}`;
@@ -144,7 +143,7 @@ function Careers() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend), // Send the new object
+        body: JSON.stringify(dataToSend), 
       });
 
       if (!response.ok) {
@@ -193,7 +192,7 @@ function Careers() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend), // Send the new object
+        body: JSON.stringify(dataToSend),
       });
       if (!response.ok) {
         throw new Error(`Failed to delete career: ${response.statusText}`);
@@ -240,7 +239,7 @@ function Careers() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend), // Send the new object
+        body: JSON.stringify(dataToSend), // envia nuevo objeto
       });
       if (!response.ok) {
         throw new Error(`Failed to activate career: ${response.statusText}`);

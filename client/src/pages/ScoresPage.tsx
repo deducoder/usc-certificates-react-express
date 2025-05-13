@@ -45,14 +45,14 @@ interface Subject {
 }
 
 function ScoresPage() {
-  const { studentId } = useParams(); // Capture the student ID from the URL
+  const { studentId } = useParams(); // Obtiene ID del estudiante de la URL
   const [student, setStudent] = useState<Student | null>(null); // Changed to null initially
   const [studentCareer, setStudentCareer] = useState<StudentCareer | null>(
     null
   ); // Changed to null initially
   const [career, setCareer] = useState<Career | null>(null); // Changed to null initially
   const [subjects, setSubjects] = useState<subject[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState<number | "">(1); // Default period is set to 1
+  const [selectedPeriod, setSelectedPeriod] = useState<number | "">(1); // Default period is 1
   const [scores, setScores] = useState<Score[]>([]);
   const [selectedRowAdd, setSelectedRowAdd] = useState<Student | null>(null);
   // alerta
@@ -88,11 +88,10 @@ function ScoresPage() {
         );        
         const studentCareerData = await studentCareerResponse.json();
         //console.log(studentCareerData);
-        setStudentCareer(studentCareerData); // This will set the studentCareer with the data
+        setStudentCareer(studentCareerData); 
 
-        // Check if studentCareerData contains CAREER_ID before fetching career
         if (studentCareerData.CAREER_ID) {
-          fetchCareer(studentCareerData.CAREER_ID); // Pass the career ID to fetchCareer
+          fetchCareer(studentCareerData.CAREER_ID); // Envía el ID de carrera
           fetchSubjects(studentCareerData.CAREER_ID);
           fetchScores(studentCareerData.STUDENT_ID);
         }
@@ -136,23 +135,23 @@ function ScoresPage() {
         );        
         const scoreData = await scoreResponse.json();
 
-        // Ensure scoreData is an array before setting it
+        // Asegura que scoreData es un array
         if (Array.isArray(scoreData)) {
           //console.log(scores);
           setScores(scoreData);
         } else {
           console.error("Scores data is not an array", scoreData);
-          setScores([]); // or handle it as needed
+          setScores([]); 
         }
       } catch (error) {
         console.error(error);
-        setScores([]); // Ensure scores is reset on error
+        setScores([]); 
       }
     };
 
     fetchStudent();
     fetchStudentCareer();
-  }, [studentId]); // Add studentId as a dependency
+  }, [studentId]);
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 70 },
@@ -219,7 +218,7 @@ function ScoresPage() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(dataToSend), // Asegúrate de que `dataToSend` contiene los datos correctos.
+          body: JSON.stringify(dataToSend),
         }
       );
       
@@ -291,7 +290,6 @@ function ScoresPage() {
       setAlertSeverity("success");
       setAlertOpen(true);
 
-      // Update local scores array with edited score
       setScores((prevScores) =>
         prevScores.map((item) =>
           item.SCORE_ID === score.SCORE_ID
@@ -323,14 +321,13 @@ function ScoresPage() {
   );
 
   const rows = filteredRows.map((subject) => {
-    // Find the score for the current subject
     const score = scores.find((s) => s.SUBJECT_ID === subject.SUBJECT_ID);
 
     return {
       id: subject.SUBJECT_ID,
       SUBJECT_NAME: subject.SUBJECT_NAME,
       SUBJECT_PERIOD: subject.SUBJECT_PERIOD,
-      SCORE: score ? score.SCORE : null, // Set SCORE_VALUE or null if not found
+      SCORE: score ? score.SCORE : null,
       SCORE_OBSERVATION: score ? score.SCORE_OBSERVATION : null,
       SCORE_ID: score ? score.SCORE_ID : null,
     };

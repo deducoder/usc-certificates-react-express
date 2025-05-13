@@ -29,7 +29,7 @@ function Administrators() {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDelDialog, setOpenDelDialog] = useState(false);
   const [openActivateDialog, setOpenActivateDialog] = useState(false);
-  // alerta
+  // alert values
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
@@ -166,7 +166,7 @@ function Administrators() {
 
   const paginationModel = { page: 0, pageSize: 10 };
 
-  //edit
+  // Edit
   const handleEditRow = (row: admin) => {
     setSelectedRowEdit(row);
     setOpenEditDialog(true);
@@ -205,7 +205,6 @@ function Administrators() {
         USER_PASSWORD: updatedRow.USER_PASSWORD,
       };
 
-      // Aquí suponemos que el ADMIN_ID es igual al USER_ID
       const userResponse = await fetch(
         `http://localhost:8000/api/users/${adminDataToSend.ADMIN_ID}`,
         {
@@ -220,7 +219,7 @@ function Administrators() {
       if (!userResponse.ok) {
         throw new Error(`Failed to update user: ${userResponse.statusText}`);
       }
-      // datos de la alertra
+      // datos de la alertra enviados
       setAlertMessage("Administrator actualizado correctamente");
       setAlertSeverity("success");
       setAlertOpen(true);
@@ -257,7 +256,7 @@ function Administrators() {
       const adminUrl = `http://localhost:8000/api/admins/${adminDataToSend.ADMIN_ID}`;
 
       const adminResponse = await fetch(adminUrl, {
-        method: "PUT", // Cambia a PUT ya que estamos actualizando el status, no eliminando
+        method: "PUT", 
         headers: {
           "Content-Type": "application/json",
         },
@@ -270,7 +269,6 @@ function Administrators() {
         );
       }
 
-      // Actualizar el estado del usuario a 0 (asumiendo que ADMIN_ID = USER_ID)
       const userDataToSend = {
         USER_STATUS: 0,
       };
@@ -340,7 +338,6 @@ function Administrators() {
         );
       }
 
-      // Actualizar el estado del usuario relacionado a 1 (asumiendo que ADMIN_ID = USER_ID)
       const userDataToSend = {
         USER_STATUS: 1,
       };

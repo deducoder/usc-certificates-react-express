@@ -53,7 +53,7 @@ function Students() {
   //score
   const [selectedStuent, setSelectedStudent] = useState<Student | null>(null);
 
-  //fetching students list from server
+  //fetching students 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
@@ -68,7 +68,6 @@ function Students() {
     fetchStudents();
   }, []);
   //students table
-  //function to correct format dates
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
     return date.toLocaleDateString();
@@ -191,15 +190,14 @@ function Students() {
   const handleEditSubmit = async (updatedRow: Row) => {
     //console.log(updatedRow.id);
     try {
-      // Create a new object with the required structure
       const dataToSend = {
-        STUDENT_ID: updatedRow.id, // Renaming 'id' to 'STUDENT_ID'
+        STUDENT_ID: updatedRow.id,
         STUDENT_NAME: updatedRow.STUDENT_NAME,
         STUDENT_PA_LAST_NAME: updatedRow.STUDENT_PA_LAST_NAME,
         STUDENT_MA_LAST_NAME: updatedRow.STUDENT_MA_LAST_NAME,
+        STUDENT_TUITION: updatedRow.STUDENT_TUITION,
       };
       const url = `${import.meta.env.VITE_API_URL}/api/students/${dataToSend.STUDENT_ID}`;
-      //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
         method: "PUT",
@@ -222,7 +220,6 @@ function Students() {
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
-      // Handle successful update, e.g., refresh the list or update local state
     } catch (error) {
       console.error("Error updating student:", error);
       setAlertMessage("Error al actualizar el estudiante");
@@ -248,7 +245,6 @@ function Students() {
         STUDENT_STATUS: 0,
       };
       const url = `${import.meta.env.VITE_API_URL}/api/students/${dataToSend.STUDENT_ID}`;
-      //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
         method: "DELETE",
@@ -270,7 +266,6 @@ function Students() {
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
-      // Handle successful update, e.g., refresh the list or update local state
     } catch (error) {
       console.error("Error deleting student:", error);
       setAlertMessage("Error al eliminar el estudiante");
@@ -318,7 +313,6 @@ function Students() {
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
-      // Handle successful update, e.g., refresh the list or update local state
     } catch (error) {
       console.error("Error activating student:", error);
       setAlertMessage("Error al reactivar el estudiante");
@@ -434,6 +428,19 @@ function Students() {
                     setSelectedRowEdit({
                       ...selectedRowEdit,
                       STUDENT_MA_LAST_NAME: e.target.value,
+                    })
+                  }
+                />
+                                <TextField
+                  margin="dense"
+                  label="Matrícula"
+                  fullWidth
+                  variant="outlined"
+                  value={selectedRowEdit.STUDENT_TUITION}
+                  onChange={(e) =>
+                    setSelectedRowEdit({
+                      ...selectedRowEdit,
+                      STUDENT_TUITION: e.target.value,
                     })
                   }
                 />

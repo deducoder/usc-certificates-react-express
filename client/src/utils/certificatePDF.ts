@@ -176,7 +176,6 @@ export const certificatePDF = async (data: Data) => {
       8: "Ocho",
       9: "Nueve",
       10: "Diez",
-      // Agrega más números si es necesario
     };
 
     return words[num] || ""; // Devuelve una cadena vacía si no hay correspondencia
@@ -194,7 +193,6 @@ export const certificatePDF = async (data: Data) => {
     8: "ocho",
     9: "nueve",
     10: "diez",
-    // Puedes agregar más números según sea necesario
   };
 
   // Funicion para centrar palabras
@@ -223,16 +221,15 @@ export const certificatePDF = async (data: Data) => {
       words += "número fuera de rango"; // Mensaje de error si no se encuentra
     }
 
-    // Si hay parte decimal, convertirla
     if (decimalPart) {
-      words += " punto "; // Agrega "punto"
+      words += " punto "; 
       for (const digit of decimalPart) {
         words += numberToWords[parseInt(digit)] + " "; // Agrega cada dígito
       }
     }
 
     // Hacer que la primera letra sea mayúscula
-    return words.charAt(0).toUpperCase() + words.slice(1).trim(); // Devuelve la cadena resultante sin espacios extra
+    return words.charAt(0).toUpperCase() + words.slice(1).trim();
   };
 
   // Funcion que convierte total de materias a texto
@@ -272,39 +269,32 @@ export const certificatePDF = async (data: Data) => {
       "noventa",
     ];
 
-    // Si el número está fuera del rango
     if (num < 0 || num > 99) {
       return "número fuera de rango";
     }
 
-    // Si el número es 0
     if (num === 0) {
       return unidades[0]; // "cero"
     }
 
-    // Si el número está entre 1 y 9
     if (num >= 1 && num <= 9) {
       return unidades[num];
     }
 
-    // Si el número es un número especial entre 10 y 19
     if (num >= 10 && num <= 19) {
       return especiales[num - 10];
     }
-
-    // Si el número es un múltiplo de 10 entre 20 y 90
     if (num % 10 === 0 && num <= 90) {
       return decenas[Math.floor(num / 10) - 2];
     }
 
-    // Si el número está entre 21 y 99
     if (num >= 21 && num <= 99) {
       const decena = decenas[Math.floor(num / 10) - 2];
       const unidad = unidades[num % 10];
       return decena + " y " + unidad;
     }
 
-    return ""; // En caso de que no se cumpla ninguna condición, aunque no debería llegar aquí.
+    return ""; 
   };
 
   let averageScore: string = "0.0";
@@ -378,9 +368,9 @@ export const certificatePDF = async (data: Data) => {
           // Imprimir el `SCORE` y el `SCORE_OBSERVATION`
           if (scoreText) {
             const scoreTextWidth = doc.getTextWidth(scoreText); // Obtener el ancho del texto
-            const xCentered = x + 58 - scoreTextWidth / 2; // Calcular el valor de `x` para centrar el texto
+            const xCentered = x + 58 - scoreTextWidth / 2;
             console.log(scoreText);
-            doc.text(scoreText, xCentered, currentY - 4); // Imprimir el `SCORE` centrado
+            doc.text(scoreText, xCentered, currentY - 4); // Imprimir el SCOR centrado
           }
           if (observationText) {
             doc.text(observationText, x + 82, currentY - 4); // Columna de OBSERVATION
@@ -431,7 +421,7 @@ export const certificatePDF = async (data: Data) => {
       "DICIEMBRE",
     ];
 
-    const monthName = monthNames[parseInt(mm) - 1]; // Convertir mm a número y obtener el nombre del mes
+    const monthName = monthNames[parseInt(mm) - 1]; 
 
     return { yyyy, mm, dd, monthName };
   };
@@ -454,7 +444,7 @@ export const certificatePDF = async (data: Data) => {
       "Diciembre",
     ];
 
-    const monthName = monthNames[parseInt(mm) - 1]; // Convertir mm a número y obtener el nombre del mes
+    const monthName = monthNames[parseInt(mm) - 1];
 
     return { yyyy, mm, dd, monthName };
   };

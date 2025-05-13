@@ -90,7 +90,7 @@ const CertificatePage: React.FC = () => {
   const [currentDate, setCurrenteDate] = useState<Date | null>(null);
   const [certificateNumber, setCertificateNumber] = useState<string>("");
 
-  //fetching student information
+  //fetching student
   useEffect(() => {
     const fetchStudent = async () => {
       try {
@@ -105,7 +105,7 @@ const CertificatePage: React.FC = () => {
       }
     };
 
-    //fetching student-career information
+    //fetching student-career
     const fetchStudentCareer = async () => {
       try {
         const studentCareerResponse = await fetch(
@@ -122,7 +122,7 @@ const CertificatePage: React.FC = () => {
       }
     };
 
-    //fetching career information
+    //fetching career
     const fetchCareer = async (careerId: number) => {
       try {
         const careerResponse = await fetch(
@@ -234,11 +234,11 @@ const CertificatePage: React.FC = () => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/certificate-fields/${fieldId}`,
         {
-          method: "PUT", // Método para actualizar
+          method: "PUT", // update
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ FIELD_VALUE: updatedValue }), // Envía el valor actualizado
+          body: JSON.stringify({ FIELD_VALUE: updatedValue }), 
         }
       );      
 
@@ -246,13 +246,12 @@ const CertificatePage: React.FC = () => {
         throw new Error("Error en la actualización del campo");
       }
 
-      const data = await response.json(); // Procesa la respuesta si es necesario
+      const data = await response.json(); 
       console.log("Campo actualizado exitosamente:", data);
       setAlertMessage("Campo actualizado exitosamente");
       setAlertSeverity("success");
       setAlertOpen(true);
 
-      // Aquí puedes hacer algo con la respuesta si es necesario, como actualizar el estado o mostrar un mensaje de éxito
     } catch (error) {
       console.error("Error al actualizar el campo:", error);
       setAlertMessage("Error al actualizar el campo");
@@ -300,15 +299,14 @@ const CertificatePage: React.FC = () => {
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
-      // Handle successful update, e.g., refresh the list or update local state
     } catch (error) {
       console.error("Error updating student:", error);
       setAlertMessage("Error al actualizar el responsable");
       setAlertSeverity("error");
       setAlertOpen(true);
     } finally {
-      setOpenEditDialog(false); //close dialog
-      setSelectedRowEdit(null); //return row value to null
+      setOpenEditDialog(false); 
+      setSelectedRowEdit(null); 
     }
   };
 
@@ -449,7 +447,7 @@ const CertificatePage: React.FC = () => {
                 .filter((field) => renderFieldIds.includes(field.FIELD_ID))
                 .map((field) => (
                   <TextField
-                    key={field.FIELD_ID} // Añadido key para cada TextField
+                    key={field.FIELD_ID} 
                     label={field.FIELD_NAME}
                     value={
                       selectedFieldEdit?.[field.FIELD_ID] || field.FIELD_VALUE
@@ -463,7 +461,6 @@ const CertificatePage: React.FC = () => {
                         [field.FIELD_ID]: updatedValue, // Actualiza solo el campo editado
                       });
 
-                      // Llama a handleEditField con el FIELD_ID y el nuevo valor
                       handleEditField(field.FIELD_ID, updatedValue); // Esto debería funcionar
                     }}
                     variant="outlined"
@@ -496,11 +493,11 @@ const CertificatePage: React.FC = () => {
                       // Actualiza el estado local
                       setSelectedFieldEdit({
                         ...selectedFieldEdit,
-                        [field.FIELD_ID]: updatedValue, // Actualiza solo el campo editado
+                        [field.FIELD_ID]: updatedValue, 
                       });
 
                       // Llama a handleEditField con el FIELD_ID y el nuevo valor
-                      handleEditField(field.FIELD_ID, updatedValue); // Esto debería funcionar
+                      handleEditField(field.FIELD_ID, updatedValue); 
                     }}
                     variant="outlined"
                     fullWidth

@@ -143,7 +143,7 @@ function Subjects() {
       field: "CAREER_ID",
       headerName: "CARRERA ASOCIADA",
       width: 400,
-      renderCell: (params) => careerDictionary[params.value] || "Unknown", // Map CAREER_ID to CAREER_NAME
+      renderCell: (params) => careerDictionary[params.value] || "Unknown",
     },
     {
       field: "SUBJECT_PERIOD",
@@ -221,7 +221,6 @@ function Subjects() {
   const handleEditSubmit = async (updatedRow: Row) => {
     //console.log(updatedRow.id);
     try {
-      // Crear un nuevo objeto con la estructura requerida
       const dataToSend = {
         SUBJECT_ID: updatedRow.id, // ID de la materia
         SUBJECT_NAME: updatedRow.SUBJECT_NAME, // Nombre de la materia
@@ -276,14 +275,13 @@ function Subjects() {
         SUBJECT_STATUS: 0,
       };
       const url = `${import.meta.env.VITE_API_URL}/api/subjects/${dataToSend.SUBJECT_ID}`;
-      //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend), // Send the new object
+        body: JSON.stringify(dataToSend),
       });
       if (!response.ok) {
         throw new Error(`Failed to delete subjects: ${response.statusText}`);
@@ -298,7 +296,6 @@ function Subjects() {
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
-      // Handle successful update, e.g., refresh the list or update local state
     } catch (error) {
       console.error("Error deleting subject:", error);
       setAlertMessage("Error al eliminar la materia");
@@ -324,7 +321,6 @@ function Subjects() {
         SUBJECT_STATUS: 1,
       };
       const url = `${import.meta.env.VITE_API_URL}/api/subjects/${dataToSend.SUBJECT_ID}`;
-      //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
         method: "PUT",
@@ -346,7 +342,7 @@ function Subjects() {
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
-      // Handle successful update, e.g., refresh the list or update local state
+
     } catch (error) {
       console.error("Error activating subject:", error);
       setAlertMessage("Error al eliminar la materia");
@@ -441,7 +437,7 @@ function Subjects() {
                     labelId="career-label"
                     label="CARRERA"
                     value={selectedCareer} // Valor de la carrera seleccionada
-                    onChange={handleCareerChange} // Función que cambia el valor de selectedCareer
+                    onChange={handleCareerChange}
                   >
                     {careers.map((career) => (
                       <MenuItem key={career.CAREER_ID} value={career.CAREER_ID}>

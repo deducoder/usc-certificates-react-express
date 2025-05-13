@@ -137,9 +137,9 @@ const RegCareerSubjectPage: React.FC = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(subjectData), // Asegúrate de que `subjectData` contiene los datos correctos.
+          body: JSON.stringify(subjectData),
         }
-      );      
+      );  
       if (!subjectResponse.ok) throw new Error("Failed to register subject");
       // datos de la alertra
       setAlertMessage("Materia creada correctamente");
