@@ -34,13 +34,16 @@ interface student {
   STUDENT_STATUS: boolean;
 }
 
+// Row type definition for DataGrid
+interface Row extends student {
+  id: number;
+}
+
 function Students() {
-  const [students, setStudents] = useState<student[]>([]);
-  const [selectedRowEdit, setSelectedRowEdit] = useState<Student | null>(null);
-  const [selectedRowDel, setSelectedRowDel] = useState<Student | null>(null);
-  const [selectedRowActive, setSelectedRowActive] = useState<Student | null>(
-    null
-  );
+  const [students, setStudents] = useState<Row[]>([]);
+  const [selectedRowEdit, setSelectedRowEdit] = useState<Row | null>(null);
+  const [selectedRowDel, setSelectedRowDel] = useState<Row | null>(null);
+  const [selectedRowActive, setSelectedRowActive] = useState<Row | null>(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDelDialog, setOpenDelDialog] = useState(false);
   const [openActivateDialog, setOpenActivateDialog] = useState(false);
@@ -51,16 +54,24 @@ function Students() {
     "success"
   );
   //score
-  const [selectedStuent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedStudent, setSelectedStudent] = useState<Row | null>(null);
+  // Nuevos estados para las fechas
+  const [startDate, setStartDate] = useState<string>("");
+  const [endDate, setEndDate] = useState<string>("");
 
-  //fetching students 
+  //fetching students
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/students`);
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/students`
+        );
         const data = await response.json();
-        //console.log(data);
-        setStudents(data);
+        const studentsWithId = data.map((student: student) => ({
+          ...student,
+          id: student.STUDENT_ID,
+        }));
+        setStudents(studentsWithId);
       } catch (error) {
         console.error("error fetching students: ", error);
       }
@@ -157,7 +168,7 @@ function Students() {
           </IconButton>
           <IconButton
             color="success"
-            onClick={() => handleActivateRow(params.row, 1)}
+            onClick={() => handleActivateRow(params.row)}
             disabled={params.row.STUDENT_STATUS === 1}
           >
             <ReplayIcon></ReplayIcon>
@@ -182,57 +193,139 @@ function Students() {
   const paginationModel = { page: 0, pageSize: 10 };
 
   //edit
-  const handleEditRow = (row: student) => {
+  const handleEditRow = (row: Row) => {
     setSelectedRowEdit(row);
+    // Fetch student career dates
+    const fetchStudentCareerDates = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/students-careers/${row.id}` // Usamos row.id que es igual a STUDENT_ID
+        );
+        const data = await response.json();
+        console.log("Career dates response:", data); // Para debugging
+        if (data && data.START_DATE && data.END_DATE) {
+          // Convertir las fechas al formato YYYY-MM-DD para el input type="date"
+          const startDateFormatted = new Date(data.START_DATE)
+            .toISOString()
+            .split("T")[0];
+          const endDateFormatted = new Date(data.END_DATE)
+            .toISOString()
+            .split("T")[0];
+          setStartDate(startDateFormatted);
+          setEndDate(endDateFormatted);
+        }
+      } catch (error) {
+        console.error("Error fetching student career dates:", error);
+        setAlertMessage("Error al obtener las fechas de la carrera");
+        setAlertSeverity("error");
+        setAlertOpen(true);
+      }
+    };
+
+    fetchStudentCareerDates();
     setOpenEditDialog(true);
   };
 
+  const validateDates = () => {
+    if (!startDate || !endDate) {
+      setAlertMessage("Las fechas son obligatorias");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      return false;
+    }
+
+    if (new Date(startDate) >= new Date(endDate)) {
+      setAlertMessage("La fecha de inicio debe ser anterior a la fecha de fin");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      return false;
+    }
+
+    return true;
+  };
+
   const handleEditSubmit = async (updatedRow: Row) => {
-    //console.log(updatedRow.id);
+    if (!validateDates()) {
+      return;
+    }
+
     try {
       const dataToSend = {
         STUDENT_ID: updatedRow.id,
         STUDENT_NAME: updatedRow.STUDENT_NAME,
         STUDENT_PA_LAST_NAME: updatedRow.STUDENT_PA_LAST_NAME,
         STUDENT_MA_LAST_NAME: updatedRow.STUDENT_MA_LAST_NAME,
-        STUDENT_TUITION: updatedRow.STUDENT_TUITION,
+        STUDENT_TUITION: Number(updatedRow.STUDENT_TUITION), // Convertir a número
+        START_DATE: startDate,
+        END_DATE: endDate,
       };
-      const url = `${import.meta.env.VITE_API_URL}/api/students/${dataToSend.STUDENT_ID}`;
 
-      const response = await fetch(url, {
+      // Primero actualizamos los datos del estudiante
+      const studentUrl = `${import.meta.env.VITE_API_URL}/api/students/${
+        dataToSend.STUDENT_ID
+      }`;
+      const studentResponse = await fetch(studentUrl, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend), // Send the new object
+        body: JSON.stringify({
+          STUDENT_ID: dataToSend.STUDENT_ID,
+          STUDENT_NAME: dataToSend.STUDENT_NAME,
+          STUDENT_PA_LAST_NAME: dataToSend.STUDENT_PA_LAST_NAME,
+          STUDENT_MA_LAST_NAME: dataToSend.STUDENT_MA_LAST_NAME,
+          STUDENT_TUITION: dataToSend.STUDENT_TUITION,
+        }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Failed to update student: ${response.statusText}`);
+      if (!studentResponse.ok) {
+        throw new Error(
+          `Failed to update student: ${studentResponse.statusText}`
+        );
       }
 
-      const data = await response.json();
-      //console.log("Update response:", data);
-      // datos de la alertra
-      setAlertMessage("Estudiante actualizado correctamente");
+      // Luego actualizamos las fechas en students-careers
+      const careerUrl = `${import.meta.env.VITE_API_URL}/api/students-careers/${
+        dataToSend.STUDENT_ID
+      }`;
+      const careerResponse = await fetch(careerUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          START_DATE: dataToSend.START_DATE,
+          END_DATE: dataToSend.END_DATE,
+        }),
+      });
+
+      if (!careerResponse.ok) {
+        throw new Error(
+          `Failed to update student career: ${careerResponse.statusText}`
+        );
+      }
+
+      setAlertMessage("Estudiante y períodos actualizados correctamente");
       setAlertSeverity("success");
       setAlertOpen(true);
       setTimeout(() => {
         window.location.reload();
-      }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
+      }, 1000);
     } catch (error) {
-      console.error("Error updating student:", error);
-      setAlertMessage("Error al actualizar el estudiante");
+      console.error("Error updating student and career:", error);
+      setAlertMessage("Error al actualizar el estudiante y los períodos");
       setAlertSeverity("error");
       setAlertOpen(true);
     } finally {
-      setOpenEditDialog(false); //close dialog
-      setSelectedRowEdit(null); //return row value to null
+      setOpenEditDialog(false);
+      setSelectedRowEdit(null);
+      setStartDate("");
+      setEndDate("");
     }
   };
 
   //delete
-  const handleDeleteRow = (row: student) => {
+  const handleDeleteRow = (row: Row) => {
     setSelectedRowDel(row);
     setOpenDelDialog(true);
   };
@@ -244,7 +337,9 @@ function Students() {
         STUDENT_ID: deletedRow.id,
         STUDENT_STATUS: 0,
       };
-      const url = `${import.meta.env.VITE_API_URL}/api/students/${dataToSend.STUDENT_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/students/${
+        dataToSend.STUDENT_ID
+      }`;
 
       const response = await fetch(url, {
         method: "DELETE",
@@ -278,7 +373,7 @@ function Students() {
   };
 
   //activate
-  const handleActivateRow = (row: student) => {
+  const handleActivateRow = (row: Row) => {
     setSelectedRowActive(row);
     setOpenActivateDialog(true);
   };
@@ -290,7 +385,9 @@ function Students() {
         STUDENT_ID: activatedRow.id,
         STUDENT_STATUS: 1,
       };
-      const url = `${import.meta.env.VITE_API_URL}/api/students/${dataToSend.STUDENT_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/students/${
+        dataToSend.STUDENT_ID
+      }`;
       //console.log("Fetching URL:", url); // Log the full URL
 
       const response = await fetch(url, {
@@ -352,9 +449,21 @@ function Students() {
   const handleAlertClose = () => setAlertOpen(false);
 
   //scores
-  const handleSelectedStudent = (row: Student) => {
-    setSelectedStudent(row.id);
+  const handleSelectedStudent = (row: Row) => {
+    setSelectedStudent(row);
     console.log(row.id);
+  };
+
+  // Función para limpiar las fechas
+  const cleanupDates = () => {
+    setStartDate("");
+    setEndDate("");
+  };
+
+  // Modificar el cierre del diálogo para limpiar las fechas
+  const handleCloseDialog = () => {
+    setOpenEditDialog(false);
+    cleanupDates();
   };
 
   return (
@@ -387,7 +496,7 @@ function Students() {
           open={alertOpen}
           onClose={handleAlertClose}
         />
-        <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
+        <Dialog open={openEditDialog} onClose={handleCloseDialog}>
           <DialogTitle>Editar Estudiante</DialogTitle>
           <DialogContent>
             {selectedRowEdit && (
@@ -431,7 +540,7 @@ function Students() {
                     })
                   }
                 />
-                                <TextField
+                <TextField
                   margin="dense"
                   label="Matrícula"
                   fullWidth
@@ -440,16 +549,40 @@ function Students() {
                   onChange={(e) =>
                     setSelectedRowEdit({
                       ...selectedRowEdit,
-                      STUDENT_TUITION: e.target.value,
+                      STUDENT_TUITION: Number(e.target.value),
                     })
                   }
+                />
+                <TextField
+                  margin="dense"
+                  label="Fecha de Inicio"
+                  type="date"
+                  fullWidth
+                  variant="outlined"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                />
+                <TextField
+                  margin="dense"
+                  label="Fecha de Fin"
+                  type="date"
+                  fullWidth
+                  variant="outlined"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
                 />
               </>
             )}
           </DialogContent>
           <DialogActions>
             <Button
-              onClick={() => setOpenEditDialog(false)}
+              onClick={handleCloseDialog}
               variant="contained"
               color="error"
             >

@@ -9,14 +9,19 @@ export const getStudentsCareers = async (req: Request, res: Response) => {
 
 // function to get one DB student-career relation
 export const getStudentCareer = async (req: Request, res: Response) => {
-  const { id } = req.params; //gettin ID
-  const studentCareer = await StudentCareer.findByPk(id); //searching for one relation by ID
+  const { id } = req.params; //getting STUDENT_ID
+  const studentCareer = await StudentCareer.findOne({
+    where: {
+      STUDENT_ID: id,
+      RELATION_STATUS: 1, // Solo relaciones activas
+    },
+  }); //searching for one relation by STUDENT_ID
   if (studentCareer) {
     //validate if relation exist
     res.json(studentCareer); //sending json with relation as object
   } else {
     res.status(404).json({
-      msg: `don't exist a relation with id: ${id}`,
+      msg: `No existe una relación activa para el estudiante con id: ${id}`,
     });
   }
 };
