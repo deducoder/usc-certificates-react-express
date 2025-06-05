@@ -71,7 +71,7 @@ function ScoresPage() {
       try {
         const studentResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/api/students/${studentId}`
-        );        
+        );
         const studentData = await studentResponse.json();
         //console.log(studentData);
         setStudent(studentData);
@@ -85,10 +85,10 @@ function ScoresPage() {
       try {
         const studentCareerResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/api/students-careers/${studentId}`
-        );        
+        );
         const studentCareerData = await studentCareerResponse.json();
         //console.log(studentCareerData);
-        setStudentCareer(studentCareerData); 
+        setStudentCareer(studentCareerData);
 
         if (studentCareerData.CAREER_ID) {
           fetchCareer(studentCareerData.CAREER_ID); // Envía el ID de carrera
@@ -105,7 +105,7 @@ function ScoresPage() {
       try {
         const careerResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/api/careers/${careerId}`
-        );        
+        );
         const careerData = await careerResponse.json();
         //console.log(careerData);
         setCareer(careerData);
@@ -119,7 +119,7 @@ function ScoresPage() {
       try {
         const subjectResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/api/subjects/career/${careerId}`
-        );        
+        );
         const subjectData = await subjectResponse.json();
         //console.log(subjectData);
         setSubjects(subjectData);
@@ -132,7 +132,7 @@ function ScoresPage() {
       try {
         const scoreResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/api/scores/student/${studentId}`
-        );        
+        );
         const scoreData = await scoreResponse.json();
 
         // Asegura que scoreData es un array
@@ -141,11 +141,11 @@ function ScoresPage() {
           setScores(scoreData);
         } else {
           console.error("Scores data is not an array", scoreData);
-          setScores([]); 
+          setScores([]);
         }
       } catch (error) {
         console.error(error);
-        setScores([]); 
+        setScores([]);
       }
     };
 
@@ -221,7 +221,6 @@ function ScoresPage() {
           body: JSON.stringify(dataToSend),
         }
       );
-      
 
       if (!response.ok) {
         throw new Error(`Failed to add score: ${response.statusText}`);
@@ -275,7 +274,9 @@ function ScoresPage() {
         SCORE_OBSERVATION: score.SCORE_OBSERVATION,
       };
 
-      const url = `${import.meta.env.VITE_API_URL}/api/scores/${score.SCORE_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/scores/${
+        score.SCORE_ID
+      }`;
       const response = await fetch(url, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -355,7 +356,7 @@ function ScoresPage() {
         <Paper sx={{ padding: "2rem", margin: "2rem" }}>
           <Typography variant="h6">CALIFICACIONES</Typography>
           <Typography variant="body1">
-            OBSERVACIONES PERMITIDAS: TS, EQ, EX
+            OBSERVACIONES PERMITIDAS: TS, EQ, EX y REC
           </Typography>
           <FormControl sx={{ mt: 4, mb: 4 }} fullWidth>
             <InputLabel id="period-select-label">CUATRIMESTRE</InputLabel>
