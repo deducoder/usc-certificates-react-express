@@ -58,11 +58,16 @@ export const putStudentCareer = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { body } = req;
   try {
-    const studentCareer = await StudentCareer.findByPk(id);
-    //validate if exist a relation with the ID
+    const studentCareer = await StudentCareer.findOne({
+      where: {
+        STUDENT_ID: id,
+        RELATION_STATUS: 1,
+      },
+    });
+    //validate if exist a relation with the STUDENT_ID
     if (!studentCareer) {
       return res.status(404).json({
-        msg: `don't exist a relation with id: ${id}`,
+        msg: `No existe una relación activa para el estudiante con id: ${id}`,
       });
     } else {
       //updating relation
@@ -72,7 +77,7 @@ export const putStudentCareer = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({
-      msg: `can't update relation with id: ${id}`,
+      msg: `No se puede actualizar la relación para el estudiante con id: ${id}`,
     });
   }
 };

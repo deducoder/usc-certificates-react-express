@@ -10,6 +10,10 @@ import {
   Typography,
   TextField,
   DialogActions,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
@@ -34,6 +38,13 @@ interface student {
   STUDENT_STATUS: boolean;
 }
 
+// Career interface
+interface Career {
+  CAREER_ID: number;
+  CAREER_NAME: string;
+  CAREER_STATUS: number;
+}
+
 // Row type definition for DataGrid
 interface Row extends student {
   id: number;
@@ -41,6 +52,8 @@ interface Row extends student {
 
 function Students() {
   const [students, setStudents] = useState<Row[]>([]);
+  const [careers, setCareers] = useState<Career[]>([]);
+  const [selectedCareer, setSelectedCareer] = useState<number>(0);
   const [selectedRowEdit, setSelectedRowEdit] = useState<Row | null>(null);
   const [selectedRowDel, setSelectedRowDel] = useState<Row | null>(null);
   const [selectedRowActive, setSelectedRowActive] = useState<Row | null>(null);
@@ -59,25 +72,34 @@ function Students() {
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
 
-  //fetching students
+  //fetching students and careers
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
+        // Fetch students
+        const studentsResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/api/students`
         );
-        const data = await response.json();
-        const studentsWithId = data.map((student: student) => ({
+        const studentsData = await studentsResponse.json();
+        const studentsWithId = studentsData.map((student: student) => ({
           ...student,
           id: student.STUDENT_ID,
         }));
         setStudents(studentsWithId);
+
+        // Fetch careers
+        const careersResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/careers`
+        );
+        const careersData = await careersResponse.json();
+        setCareers(careersData);
       } catch (error) {
-        console.error("error fetching students: ", error);
+        console.error("error fetching data: ", error);
       }
     };
-    fetchStudents();
+    fetchData();
   }, []);
+
   //students table
   const formatDate = (isoDate: string) => {
     const date = new Date(isoDate);
@@ -195,16 +217,15 @@ function Students() {
   //edit
   const handleEditRow = (row: Row) => {
     setSelectedRowEdit(row);
-    // Fetch student career dates
-    const fetchStudentCareerDates = async () => {
+    // Fetch student career dates and career
+    const fetchStudentCareerInfo = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/students-careers/${row.id}` // Usamos row.id que es igual a STUDENT_ID
+          `${import.meta.env.VITE_API_URL}/api/students-careers/${row.id}`
         );
         const data = await response.json();
-        console.log("Career dates response:", data); // Para debugging
+        console.log("Career info response:", data);
         if (data && data.START_DATE && data.END_DATE) {
-          // Convertir las fechas al formato YYYY-MM-DD para el input type="date"
           const startDateFormatted = new Date(data.START_DATE)
             .toISOString()
             .split("T")[0];
@@ -213,16 +234,17 @@ function Students() {
             .split("T")[0];
           setStartDate(startDateFormatted);
           setEndDate(endDateFormatted);
+          setSelectedCareer(data.CAREER_ID);
         }
       } catch (error) {
-        console.error("Error fetching student career dates:", error);
-        setAlertMessage("Error al obtener las fechas de la carrera");
+        console.error("Error fetching student career info:", error);
+        setAlertMessage("Error al obtener la información de la carrera");
         setAlertSeverity("error");
         setAlertOpen(true);
       }
     };
 
-    fetchStudentCareerDates();
+    fetchStudentCareerInfo();
     setOpenEditDialog(true);
   };
 
@@ -249,18 +271,26 @@ function Students() {
       return;
     }
 
+    if (!selectedCareer) {
+      setAlertMessage("Debe seleccionar una carrera");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      return;
+    }
+
     try {
       const dataToSend = {
         STUDENT_ID: updatedRow.id,
         STUDENT_NAME: updatedRow.STUDENT_NAME,
         STUDENT_PA_LAST_NAME: updatedRow.STUDENT_PA_LAST_NAME,
         STUDENT_MA_LAST_NAME: updatedRow.STUDENT_MA_LAST_NAME,
-        STUDENT_TUITION: Number(updatedRow.STUDENT_TUITION), // Convertir a número
+        STUDENT_TUITION: Number(updatedRow.STUDENT_TUITION),
         START_DATE: startDate,
         END_DATE: endDate,
+        CAREER_ID: selectedCareer,
       };
 
-      // Primero actualizamos los datos del estudiante
+      // Update student data
       const studentUrl = `${import.meta.env.VITE_API_URL}/api/students/${
         dataToSend.STUDENT_ID
       }`;
@@ -284,7 +314,7 @@ function Students() {
         );
       }
 
-      // Luego actualizamos las fechas en students-careers
+      // Update student career info
       const careerUrl = `${import.meta.env.VITE_API_URL}/api/students-careers/${
         dataToSend.STUDENT_ID
       }`;
@@ -296,6 +326,7 @@ function Students() {
         body: JSON.stringify({
           START_DATE: dataToSend.START_DATE,
           END_DATE: dataToSend.END_DATE,
+          CAREER_ID: dataToSend.CAREER_ID,
         }),
       });
 
@@ -305,7 +336,7 @@ function Students() {
         );
       }
 
-      setAlertMessage("Estudiante y períodos actualizados correctamente");
+      setAlertMessage("Estudiante y carrera actualizados correctamente");
       setAlertSeverity("success");
       setAlertOpen(true);
       setTimeout(() => {
@@ -313,7 +344,7 @@ function Students() {
       }, 1000);
     } catch (error) {
       console.error("Error updating student and career:", error);
-      setAlertMessage("Error al actualizar el estudiante y los períodos");
+      setAlertMessage("Error al actualizar el estudiante y la carrera");
       setAlertSeverity("error");
       setAlertOpen(true);
     } finally {
@@ -321,6 +352,7 @@ function Students() {
       setSelectedRowEdit(null);
       setStartDate("");
       setEndDate("");
+      setSelectedCareer(0);
     }
   };
 
@@ -454,16 +486,17 @@ function Students() {
     console.log(row.id);
   };
 
-  // Función para limpiar las fechas
-  const cleanupDates = () => {
+  // Función para limpiar las fechas y carrera
+  const cleanupForm = () => {
     setStartDate("");
     setEndDate("");
+    setSelectedCareer(0);
   };
 
-  // Modificar el cierre del diálogo para limpiar las fechas
+  // Modificar el cierre del diálogo para limpiar el formulario
   const handleCloseDialog = () => {
     setOpenEditDialog(false);
-    cleanupDates();
+    cleanupForm();
   };
 
   return (
@@ -553,6 +586,25 @@ function Students() {
                     })
                   }
                 />
+                <FormControl fullWidth margin="dense">
+                  <InputLabel id="career-select-label">Carrera</InputLabel>
+                  <Select
+                    labelId="career-select-label"
+                    value={selectedCareer}
+                    label="Carrera"
+                    onChange={(e) => setSelectedCareer(Number(e.target.value))}
+                  >
+                    {careers.map((career) => (
+                      <MenuItem
+                        key={career.CAREER_ID}
+                        value={career.CAREER_ID}
+                        disabled={career.CAREER_STATUS === 0}
+                      >
+                        {career.CAREER_NAME}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 <TextField
                   margin="dense"
                   label="Fecha de Inicio"
