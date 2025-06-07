@@ -50,7 +50,9 @@ function Subjects() {
     // Fetch subjects
     const fetchSubjects = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/subjects`);
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/subjects`
+        );
         const data = await response.json();
         setSubjects(data);
       } catch (error) {
@@ -61,7 +63,9 @@ function Subjects() {
     // Fetch careers
     const fetchCareers = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/careers`);
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/careers`
+        );
         if (!response.ok) throw new Error("Network response was not ok");
         const data = await response.json();
 
@@ -129,20 +133,20 @@ function Subjects() {
   };
 
   const columns: GridColDef[] = [
-    {
+    /*{
       field: "id",
       headerName: "ID",
       width: 70,
-    },
+    },*/
     {
       field: "SUBJECT_NAME",
       headerName: "NOMBRE",
-      width: 200,
+      width: 500,
     },
     {
       field: "CAREER_ID",
       headerName: "CARRERA ASOCIADA",
-      width: 400,
+      width: 500,
       renderCell: (params) => careerDictionary[params.value] || "Unknown",
     },
     {
@@ -155,7 +159,7 @@ function Subjects() {
       headerName: "CREADO",
       width: 130,
     },
-    {
+    /*{
       field: "SUBJECT_LAST_UPDATE",
       headerName: "EDITADO",
       width: 130,
@@ -165,7 +169,7 @@ function Subjects() {
       headerName: "ESTADO",
       width: 100,
       renderCell: (params) => (params.value ? "Activo" : "Inactivo"),
-    },
+    },*/
     {
       field: "ACTIONS",
       headerName: "ACCIONES",
@@ -228,7 +232,9 @@ function Subjects() {
         SUBJECT_PERIOD: selectedPeriod, // Periodo seleccionado
       };
 
-      const url = `${import.meta.env.VITE_API_URL}/api/subjects/${dataToSend.SUBJECT_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/subjects/${
+        dataToSend.SUBJECT_ID
+      }`;
 
       const response = await fetch(url, {
         method: "PUT",
@@ -274,7 +280,9 @@ function Subjects() {
         SUBJECT_ID: deletedRow.id,
         SUBJECT_STATUS: 0,
       };
-      const url = `${import.meta.env.VITE_API_URL}/api/subjects/${dataToSend.SUBJECT_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/subjects/${
+        dataToSend.SUBJECT_ID
+      }`;
 
       const response = await fetch(url, {
         method: "DELETE",
@@ -320,7 +328,9 @@ function Subjects() {
         SUBJECT_ID: activatedRow.id,
         SUBJECT_STATUS: 1,
       };
-      const url = `${import.meta.env.VITE_API_URL}/api/subjects/${dataToSend.SUBJECT_ID}`;
+      const url = `${import.meta.env.VITE_API_URL}/api/subjects/${
+        dataToSend.SUBJECT_ID
+      }`;
 
       const response = await fetch(url, {
         method: "PUT",
@@ -342,7 +352,6 @@ function Subjects() {
       setTimeout(() => {
         window.location.reload();
       }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
-
     } catch (error) {
       console.error("Error activating subject:", error);
       setAlertMessage("Error al eliminar la materia");

@@ -26,14 +26,14 @@ const cards: items[] = [
     caption: "Da de alta un alumno",
     path: "/alumno",
   },
-  {
+  /*{
     image:
       "https://plus.unsplash.com/premium_vector-1723628218419-3b9a74fbf88d?q=80&w=1954&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "students group",
     title: "ADMINISTRATIVO",
     caption: "Da de alta un administrativo",
     path: "/administrativo",
-  },
+  },*/
   {
     image:
       "https://plus.unsplash.com/premium_vector-1723628218425-ec5c4ad370c3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",

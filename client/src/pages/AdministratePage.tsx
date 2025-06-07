@@ -14,14 +14,14 @@ const cards: items[] = [
     alt: "students group",
     path: "alumnos",
   },
-  {
+  /*{
     title: "ADMINISTRATIVOS",
     caption: "Consulta, edita o elimina administrativos",
     image:
       "https://plus.unsplash.com/premium_vector-1723628218419-3b9a74fbf88d?q=80&w=1954&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     alt: "students group",
     path: "administrativos",
-  },
+  },*/
   {
     title: "CARRERAS",
     caption: "Consulta, edita o elimina carreras",

@@ -108,7 +108,7 @@ function Students() {
 
   //columns names
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 70 },
+    /*{ field: "id", headerName: "ID", width: 70 },*/
     { field: "STUDENT_TUITION", headerName: "MATRÍCULA", width: 130 },
     { field: "STUDENT_NAME", headerName: "NOMBRE/S", width: 200 },
     {
@@ -126,7 +126,7 @@ function Students() {
       headerName: "CREADO",
       width: 130,
     },
-    {
+    /*{
       field: "STUDENT_LAST_UPDATE",
       headerName: "MODIFICADO",
       width: 130,
@@ -136,7 +136,7 @@ function Students() {
       headerName: "ESTADO",
       width: 100,
       renderCell: (params) => (params.value ? "Activo" : "Inactivo"),
-    },
+    },*/
     {
       field: "SCHOOLAR",
       headerName: "ESCOLAR",
