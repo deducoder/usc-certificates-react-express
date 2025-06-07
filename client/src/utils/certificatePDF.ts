@@ -133,7 +133,7 @@ export const certificatePDF = async (data: Data) => {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}/api/subjects/career/${data.CAREER_ID}`
-      );      
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -149,7 +149,7 @@ export const certificatePDF = async (data: Data) => {
   const fetchScores = async (studentId: number): Promise<Score[]> => {
     try {
       const response = await fetch(
-        `http://localhost:8000/api/scores/student/${studentId}`
+        `${import.meta.env.VITE_API_URL}/api/scores/student/${studentId}`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -222,7 +222,7 @@ export const certificatePDF = async (data: Data) => {
     }
 
     if (decimalPart) {
-      words += " punto "; 
+      words += " punto ";
       for (const digit of decimalPart) {
         words += numberToWords[parseInt(digit)] + " "; // Agrega cada dígito
       }
@@ -294,7 +294,7 @@ export const certificatePDF = async (data: Data) => {
       return decena + " y " + unidad;
     }
 
-    return ""; 
+    return "";
   };
 
   let averageScore: string = "0.0";
@@ -421,7 +421,7 @@ export const certificatePDF = async (data: Data) => {
       "DICIEMBRE",
     ];
 
-    const monthName = monthNames[parseInt(mm) - 1]; 
+    const monthName = monthNames[parseInt(mm) - 1];
 
     return { yyyy, mm, dd, monthName };
   };
@@ -910,29 +910,42 @@ export const certificatePDF = async (data: Data) => {
   doc.text(
     "La  escala  oficial   de calificaciones  de  0 (CERO)  a",
     111.5,
-    78, { maxWidth: 95, align: "justify" }
+    78,
+    { maxWidth: 95, align: "justify" }
   );
-  doc.text("10 (DIEZ), considerando como mínima aprobatoria  6", 111.5, 82.5, { maxWidth: 95, align: "justify" });
+  doc.text("10 (DIEZ), considerando como mínima aprobatoria  6", 111.5, 82.5, {
+    maxWidth: 95,
+    align: "justify",
+  });
   doc.text(
     `(SEIS).  Este certificado ampara ${totalSubjects} (${totalSubjectsText})`,
     111.5,
-    88, { maxWidth: 96, align: "justify" }
+    88,
+    { maxWidth: 96, align: "justify" }
   );
   doc.text(
     "materias     del   plan   de   estudios   vigente    y    en",
     111.5,
-    93, { maxWidth: 96, align: "justify" }
+    93,
+    { maxWidth: 96, align: "justify" }
   );
-  doc.text("cumplimiento a las prescripciones legales, se extiende", 111.5, 98, { maxWidth: 95, align: "justify" });
+  doc.text(
+    "cumplimiento a las prescripciones legales, se extiende",
+    111.5,
+    98,
+    { maxWidth: 95, align: "justify" }
+  );
   doc.text(
     "el  presente,  en   la ciudad  de  San  Cristóbal de Las",
     111.5,
-    103, { maxWidth: 95, align: "justify" }
+    103,
+    { maxWidth: 95, align: "justify" }
   );
   doc.text(
     `Casas, Chiapas, a los ${certificateDate.dd} días del mes de ${certificateDate.monthName} de`,
     111.5,
-    108, { maxWidth: 95, align: "justify" }
+    108,
+    { maxWidth: 95, align: "justify" }
   );
   doc.text("__", 150, 108);
   //doc.text("_________", 184, 113);
