@@ -14,10 +14,11 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  SelectChangeEvent,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import NavBar from "../components/NavBar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { GridColDef } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
 import AlertMessage from "../components/AlertMessage";
@@ -27,11 +28,11 @@ interface Student {
   STUDENT_NAME: string;
   STUDENT_PA_LAST_NAME: string;
   STUDENT_MA_LAST_NAME: string;
-  SCORE_VALUE: number | null;
+  STUDENT_TUITION?: string;
 }
 
 interface StudentCareer {
-  CAREER_ID: number; // or string depending on your API
+  CAREER_ID: number;
 }
 
 interface Career {
@@ -41,7 +42,23 @@ interface Career {
 interface Subject {
   SUBJECT_ID: number;
   SUBJECT_NAME: string;
-  SUBJECT_PERIOD: Number;
+  SUBJECT_PERIOD: number;
+}
+
+interface Score {
+  SCORE_ID: number;
+  SUBJECT_ID: number;
+  SCORE: number | null;
+  SCORE_OBSERVATION: string | null;
+}
+
+interface Row {
+  id: number;
+  SUBJECT_NAME: string;
+  SUBJECT_PERIOD: number;
+  SCORE: number | null;
+  SCORE_OBSERVATION: string | null;
+  SCORE_ID?: number | null;
 }
 
 function ScoresPage() {
@@ -54,7 +71,7 @@ function ScoresPage() {
   const [subjects, setSubjects] = useState<subject[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<number | "">(1); // Default period is 1
   const [scores, setScores] = useState<Score[]>([]);
-  const [selectedRowAdd, setSelectedRowAdd] = useState<Student | null>(null);
+  const [selectedRowAdd, setSelectedRowAdd] = useState<Row | null>(null);
   // alerta
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -62,7 +79,7 @@ function ScoresPage() {
     "success"
   );
   //editar
-  const [selectedRowEdit, setSelectedRowEdit] = useState<Student | null>(null);
+  const [selectedRowEdit, setSelectedRowEdit] = useState<Row | null>(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
 
   useEffect(() => {
@@ -154,7 +171,7 @@ function ScoresPage() {
   }, [studentId]);
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 70 },
+    /*{ field: "id", headerName: "ID", width: 70 },*/
     {
       field: "SUBJECT_NAME",
       headerName: "MATERIA",
@@ -170,12 +187,21 @@ function ScoresPage() {
       headerName: "CALIFICACIÓN",
       width: 120,
       editable: true,
+      type: "number",
     },
     {
       field: "SCORE_OBSERVATION",
       headerName: "OBSERVACIÓN",
       width: 120,
       editable: true,
+      type: "singleSelect",
+      valueOptions: [
+        { value: "", label: "Ninguna" },
+        { value: "TS", label: "TS" },
+        { value: "EQ", label: "EQ" },
+        { value: "EX", label: "EX" },
+        { value: "REC", label: "REC" },
+      ],
     },
     {
       field: "ACTIONS",
@@ -205,12 +231,44 @@ function ScoresPage() {
 
   //add score
   const handleScoreSubmit = async (score: Row) => {
+    // Validate if a score already exists for this subject
+    const existingScore = scores.find((s) => s.SUBJECT_ID === score.id);
+    if (existingScore) {
+      setAlertMessage(
+        "Ya existe una calificación para esta materia. Use el botón de editar para modificarla."
+      );
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      return;
+    }
+
+    // Validate score value
+    if (score.SCORE === null || score.SCORE === undefined) {
+      setAlertMessage("Por favor ingrese una calificación válida");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      return;
+    }
+
+    // Validate score observation if provided
+    if (
+      score.SCORE_OBSERVATION &&
+      !["TS", "EQ", "EX", "REC"].includes(score.SCORE_OBSERVATION.toUpperCase())
+    ) {
+      setAlertMessage("Observación no válida. Use: TS, EQ, EX o REC");
+      setAlertSeverity("error");
+      setAlertOpen(true);
+      return;
+    }
+
     try {
       const dataToSend = {
         STUDENT_ID: studentId,
         SUBJECT_ID: score.id,
         SCORE: score.SCORE,
-        SCORE_OBSERVATION: score.SCORE_OBSERVATION,
+        SCORE_OBSERVATION: score.SCORE_OBSERVATION
+          ? score.SCORE_OBSERVATION.toUpperCase()
+          : null,
       };
 
       const response = await fetch(
@@ -223,60 +281,73 @@ function ScoresPage() {
       );
 
       if (!response.ok) {
-        throw new Error(`Failed to add score: ${response.statusText}`);
+        const errorData = await response.json();
+        throw new Error(
+          errorData.msg ||
+            `Error al agregar calificación: ${response.statusText}`
+        );
       }
 
       const newScore = await response.json();
+
+      // Update scores state with the new score
+      setScores((prevScores) => [
+        ...prevScores,
+        {
+          SCORE_ID: newScore.SCORE_ID,
+          SUBJECT_ID: score.id,
+          SCORE: score.SCORE,
+          SCORE_OBSERVATION: score.SCORE_OBSERVATION,
+        },
+      ]);
 
       // Display success message
       setAlertMessage("Calificación agregada correctamente");
       setAlertSeverity("success");
       setAlertOpen(true);
 
-      // Update scores state with the new score
-      setScores((prevScores) => [
-        ...prevScores,
-        {
-          ...newScore,
-          SUBJECT_ID: score.id,
-          SCORE: score.SCORE,
-          SCORE_OBSERVATION: score.SCORE_OBSERVATION,
-        },
-      ]);
+      // Refresh the scores from the server to ensure consistency
+      const refreshResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/scores/student/${studentId}`
+      );
+      if (refreshResponse.ok) {
+        const refreshedScores = await refreshResponse.json();
+        if (Array.isArray(refreshedScores)) {
+          setScores(refreshedScores);
+        }
+      }
     } catch (error) {
       console.error(error);
-      setAlertMessage("Error al agregar calificación");
+      setAlertMessage(
+        error instanceof Error ? error.message : "Error al agregar calificación"
+      );
       setAlertSeverity("error");
       setAlertOpen(true);
-    } finally {
-      setOpenEditDialog(false); // Close dialog if open
     }
   };
 
   //edit
-  const handleEditRow = (row: score) => {
+  const handleEditRow = (row: Row) => {
     setSelectedRowEdit(row);
     setOpenEditDialog(true);
   };
 
-  const handleEditSubmit = async (score: Score) => {
-    if (!score.SCORE_ID) {
+  const handleEditSubmit = async (row: Row) => {
+    if (!row.SCORE_ID) {
       console.error("SCORE_ID is not defined");
       return;
     }
 
     try {
       const dataToSend = {
-        SCORE_ID: score.SCORE_ID,
+        SCORE_ID: row.SCORE_ID,
         STUDENT_ID: studentId,
-        SUBJECT_ID: score.id,
-        SCORE: score.SCORE,
-        SCORE_OBSERVATION: score.SCORE_OBSERVATION,
+        SUBJECT_ID: row.id,
+        SCORE: row.SCORE,
+        SCORE_OBSERVATION: row.SCORE_OBSERVATION,
       };
 
-      const url = `${import.meta.env.VITE_API_URL}/api/scores/${
-        score.SCORE_ID
-      }`;
+      const url = `${import.meta.env.VITE_API_URL}/api/scores/${row.SCORE_ID}`;
       const response = await fetch(url, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -293,11 +364,11 @@ function ScoresPage() {
 
       setScores((prevScores) =>
         prevScores.map((item) =>
-          item.SCORE_ID === score.SCORE_ID
+          item.SCORE_ID === row.SCORE_ID
             ? {
                 ...item,
-                SCORE: score.SCORE,
-                SCORE_OBSERVATION: score.SCORE_OBSERVATION,
+                SCORE: row.SCORE,
+                SCORE_OBSERVATION: row.SCORE_OBSERVATION,
               }
             : item
         )
@@ -313,16 +384,18 @@ function ScoresPage() {
     }
   };
 
-  const handlePeriodChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handlePeriodChange = (event: SelectChangeEvent<number>) => {
     setSelectedPeriod(event.target.value as number);
   };
 
   const filteredRows = subjects.filter(
-    (subject) => subject.SUBJECT_PERIOD === selectedPeriod
+    (subject: Subject) => subject.SUBJECT_PERIOD === selectedPeriod
   );
 
-  const rows = filteredRows.map((subject) => {
-    const score = scores.find((s) => s.SUBJECT_ID === subject.SUBJECT_ID);
+  const rows = filteredRows.map((subject: Subject) => {
+    const score = scores.find(
+      (s: Score) => s.SUBJECT_ID === subject.SUBJECT_ID
+    );
 
     return {
       id: subject.SUBJECT_ID,
@@ -416,20 +489,31 @@ function ScoresPage() {
                   }
                   sx={{ minWidth: "30rem" }}
                 />
-                <TextField
-                  margin="dense"
-                  label="Observación"
-                  fullWidth
-                  variant="outlined"
-                  value={selectedRowEdit.SCORE_OBSERVATION}
-                  onChange={(e) =>
-                    setSelectedRowEdit({
-                      ...selectedRowEdit,
-                      SCORE_OBSERVATION: e.target.value,
-                    })
-                  }
-                  sx={{ minWidth: "30rem" }}
-                />
+                <FormControl fullWidth margin="dense">
+                  <InputLabel id="observation-select-label">
+                    Observación
+                  </InputLabel>
+                  <Select
+                    labelId="observation-select-label"
+                    label="Observación"
+                    value={selectedRowEdit.SCORE_OBSERVATION || ""}
+                    onChange={(e) =>
+                      setSelectedRowEdit({
+                        ...selectedRowEdit,
+                        SCORE_OBSERVATION: e.target.value,
+                      })
+                    }
+                    sx={{ minWidth: "30rem" }}
+                  >
+                    <MenuItem value="">
+                      <em>Ninguna</em>
+                    </MenuItem>
+                    <MenuItem value="TS">TS</MenuItem>
+                    <MenuItem value="EQ">EQ</MenuItem>
+                    <MenuItem value="EX">EX</MenuItem>
+                    <MenuItem value="REC">REC</MenuItem>
+                  </Select>
+                </FormControl>
               </>
             )}
           </DialogContent>
