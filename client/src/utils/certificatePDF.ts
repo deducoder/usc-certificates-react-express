@@ -891,22 +891,152 @@ export const certificatePDF = async (data: Data) => {
   await getSubjectsAndScores(data.STUDENT_ID, 7, 10, 25);
   await getSubjectsAndScores(data.STUDENT_ID, 8, 111, 25);
 
-  // Promedio
-  const averageScoreText = translateAverageToWords(averageScore);
-  doc.addImage(averageSquareBase64, "PNG", 9, 74, 96, 5);
-  doc.setFont("Arial", "bold");
-  doc.setFontSize(9);
-  doc.text("PROMEDIO GENERAL:", 10, 77.5);
-  doc.setFont("TimesNewRoman", "bold");
-  doc.setFontSize(9);
-  doc.text(`${averageScore}  ( ${averageScoreText} )`, 55, 77.5);
+  if (data.CAREER_ID === 7) {
+    // Tabla 9
+    doc.addImage(tableBase64, "PNG", 9, 74, 96, 60);
+    // Cabecera tabla 9
+    doc.setFont("ArialNarrow", "normal");
+    doc.setFontSize(10);
+    doc.text("NOVENO CUATRIMESTRE", 20, 81);
+    doc.setFontSize(9);
+    doc.text("CALIFICACIÓN", 65.5, 78);
+    doc.text("Cifra", 66.5, 83);
+    doc.text("Letra", 76.5, 83);
+    doc.setFontSize(10);
+    doc.text(`OBSERVA-\nCIONES`, 94, 79, { align: "center" });
+
+    // Cuerpo
+    await getSubjectsAndScores(data.STUDENT_ID, 9, 10, 90);
+
+    // Promedio
+    const averageScoreText = translateAverageToWords(averageScore);
+    doc.addImage(averageSquareBase64, "PNG", 9, 137, 96, 5);
+    doc.setFont("Arial", "bold");
+    doc.setFontSize(9);
+    doc.text("PROMEDIO GENERAL:", 10, 140.5);
+    doc.setFont("TimesNewRoman", "bold");
+    doc.setFontSize(9);
+    doc.text(`${averageScore}  ( ${averageScoreText} )`, 55, 140.5);
+
+    // Responsable 1
+    doc.setFont("Arial", "bold");
+    doc.setFontSize(9);
+    doc.text(`${data.PEOPLE[1].CHARGE} «SAN CRISTÓBAL»`, 55, 152, {
+      maxWidth: 60,
+      align: "center",
+    });
+    doc.text("____________________________________________________", 10, 174);
+    doc.setFont("TimesNewRoman", "normal");
+    // Estableciendo fuentes
+    doc.setFontSize(10);
+
+    // Coordenadas de inicio y fin
+    const xStart4 = 10;
+    const xEnd4 = 100;
+
+    // Obteniendo coordenada x centrada
+    const centeredX4 = getCenteredX(
+      doc,
+      `${data.PEOPLE[1].NAME}`,
+      xStart4,
+      xEnd4
+    );
+
+    // Imprimiendo nombre
+    doc.text(`${data.PEOPLE[1].NAME}`, centeredX4, 179);
+
+    // Responsable 2
+    doc.setFont("Arial", "bold");
+    doc.setFontSize(9);
+    doc.text(`${data.PEOPLE[2].CHARGE} «SAN CRISTÓBAL»`, 155, 152, {
+      maxWidth: 50,
+      align: "center",
+    });
+    doc.text("____________________________________________________", 110, 174);
+    doc.setFont("TimesNewRoman", "normal");
+    doc.setFontSize(10);
+
+    const xStart5 = 110;
+    const xEnd5 = 200;
+
+    // Obteniendo coordenada x centrada
+    const centeredX5 = getCenteredX(
+      doc,
+      `${data.PEOPLE[2].NAME}`,
+      xStart5,
+      xEnd5
+    );
+
+    doc.text(`${data.PEOPLE[2].NAME}`, centeredX5, 179);
+  } else {
+    // Promedio
+    const averageScoreText = translateAverageToWords(averageScore);
+    doc.addImage(averageSquareBase64, "PNG", 9, 74, 96, 5);
+    doc.setFont("Arial", "bold");
+    doc.setFontSize(9);
+    doc.text("PROMEDIO GENERAL:", 10, 77.5);
+    doc.setFont("TimesNewRoman", "bold");
+    doc.setFontSize(9);
+    doc.text(`${averageScore}  ( ${averageScoreText} )`, 55, 77.5);
+
+    // Responsable 1
+    doc.setFont("Arial", "bold");
+    doc.setFontSize(9);
+    doc.text(`${data.PEOPLE[1].CHARGE} «SAN CRISTÓBAL»`, 55, 140, {
+      maxWidth: 60,
+      align: "center",
+    });
+    doc.text("____________________________________________________", 10, 160);
+    doc.setFont("TimesNewRoman", "normal");
+    // Estableciendo fuentes
+    doc.setFontSize(10);
+
+    // Coordenadas de inicio y fin
+    const xStart4 = 10;
+    const xEnd4 = 100;
+
+    // Obteniendo coordenada x centrada
+    const centeredX4 = getCenteredX(
+      doc,
+      `${data.PEOPLE[1].NAME}`,
+      xStart4,
+      xEnd4
+    );
+
+    // Imprimiendo nombre
+    doc.text(`${data.PEOPLE[1].NAME}`, centeredX4, 165);
+
+    // Responsable 2
+    doc.setFont("Arial", "bold");
+    doc.setFontSize(9);
+    doc.text(`${data.PEOPLE[2].CHARGE} «SAN CRISTÓBAL»`, 155, 140, {
+      maxWidth: 50,
+      align: "center",
+    });
+    doc.text("____________________________________________________", 110, 160);
+    doc.setFont("TimesNewRoman", "normal");
+    doc.setFontSize(10);
+
+    const xStart5 = 110;
+    const xEnd5 = 200;
+
+    // Obteniendo coordenada x centrada
+    const centeredX5 = getCenteredX(
+      doc,
+      `${data.PEOPLE[2].NAME}`,
+      xStart5,
+      xEnd5
+    );
+
+    doc.text(`${data.PEOPLE[2].NAME}`, centeredX5, 165);
+  }
 
   // Legal
   const totalSubjectsText = numberToString(totalSubjects);
   const certificateDate = convertDateNoCaps(data.EXP);
   doc.addImage(squareBase64, "PNG", 110, 74, 96, 50);
   doc.setFont("Arial", "normal");
-  doc.setFontSize(11);
+  doc.setFontSize(10.7);
   doc.text(
     "La  escala  oficial   de calificaciones  de  0 (CERO)  a",
     111.5,
@@ -954,57 +1084,6 @@ export const certificatePDF = async (data: Data) => {
   doc.setFontSize(11);
   doc.text(`${certificateDate.yyyy}`, 111.5, 113);
   doc.text("_____", 111, 113);
-
-  // Responsable 1
-  doc.setFont("Arial", "bold");
-  doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[1].CHARGE} «SAN CRISTÓBAL»`, 55, 140, {
-    maxWidth: 60,
-    align: "center",
-  });
-  doc.text("____________________________________________________", 10, 160);
-  doc.setFont("TimesNewRoman", "normal");
-  // Estableciendo fuentes
-  doc.setFontSize(10);
-
-  // Coordenadas de inicio y fin
-  const xStart4 = 10;
-  const xEnd4 = 100;
-
-  // Obteniendo coordenada x centrada
-  const centeredX4 = getCenteredX(
-    doc,
-    `${data.PEOPLE[1].NAME}`,
-    xStart4,
-    xEnd4
-  );
-
-  // Imprimiendo nombre
-  doc.text(`${data.PEOPLE[1].NAME}`, centeredX4, 165);
-
-  // Responsable 2
-  doc.setFont("Arial", "bold");
-  doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[2].CHARGE} «SAN CRISTÓBAL»`, 155, 140, {
-    maxWidth: 50,
-    align: "center",
-  });
-  doc.text("____________________________________________________", 110, 160);
-  doc.setFont("TimesNewRoman", "normal");
-  doc.setFontSize(10);
-
-  const xStart5 = 110;
-  const xEnd5 = 200;
-
-  // Obteniendo coordenada x centrada
-  const centeredX5 = getCenteredX(
-    doc,
-    `${data.PEOPLE[2].NAME}`,
-    xStart5,
-    xEnd5
-  );
-
-  doc.text(`${data.PEOPLE[2].NAME}`, centeredX5, 165);
 
   // Responsable 3
   doc.setFont("Arial", "bold");
