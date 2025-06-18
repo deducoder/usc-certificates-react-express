@@ -439,7 +439,7 @@ function ScoresPage() {
               value={selectedPeriod}
               onChange={handlePeriodChange}
             >
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((period) => (
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((period) => (
                 <MenuItem key={period} value={period}>
                   {period}
                 </MenuItem>
