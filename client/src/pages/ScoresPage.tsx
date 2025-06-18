@@ -196,7 +196,7 @@ function ScoresPage() {
       editable: true,
       type: "singleSelect",
       valueOptions: [
-        { value: "", label: "Ninguna" },
+        { value: "", label: "" },
         { value: "TS", label: "TS" },
         { value: "EQ", label: "EQ" },
         { value: "EX", label: "EX" },
