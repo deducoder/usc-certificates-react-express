@@ -801,7 +801,7 @@ export const certificatePDF = async (data: Data) => {
   // Cabecera tabla 3
   doc.setFont("ArialNarrow", "normal");
   doc.setFontSize(10);
-  doc.text("TECER CUATRIMESTRE", 20, 197);
+  doc.text("TERCER CUATRIMESTRE", 20, 197);
   doc.setFontSize(9);
   doc.text("CALIFICACIÓN", 65.5, 194);
   doc.text("Cifra", 66.5, 199);
