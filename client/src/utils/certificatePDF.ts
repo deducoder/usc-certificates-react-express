@@ -297,6 +297,12 @@ export const certificatePDF = async (data: Data) => {
     return "";
   };
 
+  // Función para determinar el tamaño de fuente del nombre basado en su longitud
+  const getNameFontSize = (name: string): number => {
+    const referenceName = "SEBASTIAN ALEXANDER HERNANDEZ PANIAGUA";
+    return name.length >= referenceName.length ? 11 : 12;
+  };
+
   let averageScore: string = "0.0";
   let totalSubjects: number = 0;
 
@@ -633,7 +639,7 @@ export const certificatePDF = async (data: Data) => {
   doc.text("QUE EL (LA) C.", 89, 80);
 
   doc.setFont("TimesNewRoman", "normal");
-  doc.setFontSize(12);
+  doc.setFontSize(getNameFontSize(data.STUDENT_NAME));
   doc.text(`${data.STUDENT_NAME}`, 113, 80);
 
   doc.setFont("Arial", "normal");
