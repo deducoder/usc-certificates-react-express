@@ -342,7 +342,7 @@ export const certificatePDF = async (data: Data) => {
       filteredSubjects.forEach((filteredSubject) => {
         const splitText: string[] = doc.splitTextToSize(
           filteredSubject.SUBJECT_NAME,
-          55
+          53
         );
 
         if (splitText.length > 1) {
