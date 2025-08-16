@@ -1044,7 +1044,7 @@ export const certificatePDF = async (data: Data) => {
   doc.setFont("Arial", "normal");
   doc.setFontSize(10.7);
   doc.text(
-    "La  escala  oficial   de calificaciones  de  0 (CERO)  a",
+    "La  escala oficial de calificaciones  es  de  0 (CERO)  a",
     111.5,
     78,
     { maxWidth: 95, align: "justify" }
