@@ -1078,7 +1078,7 @@ export const certificatePDF = async (data: Data) => {
     { maxWidth: 95, align: "justify" }
   );
   doc.text(
-    `Casas, Chiapas, a los ${certificateDate.dd} días del mes de ${certificateDate.monthName} de`,
+    `Casas, Chiapas, a los ${certificateDate.dd} días del mes  de  ${certificateDate.monthName}  de`,
     111.5,
     108,
     { maxWidth: 95, align: "justify" }
