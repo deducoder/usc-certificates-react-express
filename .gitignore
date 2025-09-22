@@ -14,7 +14,7 @@ client/dist/
 server/dist/
 
 # Ignore environment variable files
-.env
+*.env
 
 # Ignore database connection files
 server/database/connection.ts
