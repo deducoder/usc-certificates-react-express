@@ -12,3 +12,10 @@ server/node_modules/
 # Ignore build files
 client/dist/
 server/dist/
+
+# Ignore environment variable files
+.env
+
+# Ignore database connection files
+server/database/connection.ts
+client/vite.config.ts
