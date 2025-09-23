@@ -6,7 +6,6 @@ import {
   CardActions,
   CardContent,
   CardMedia,
-  Container,
   Grid2,
   Typography,
 } from "@mui/material";
@@ -20,7 +19,7 @@ interface card {
   path: string;
 }
 
-function CardItem({ title, caption, image, alt, path }) {
+function CardItem({ title, caption, image, alt, path }: card) {
   return (
     <>
       <Grid2 size={4}>
@@ -33,6 +32,7 @@ function CardItem({ title, caption, image, alt, path }) {
               transform: "scale(1.05)",
             },
             borderRadius: "1rem",
+            boxShadow: 6, // Aumentamos la sombra para mayor profundidad
           }}
         >
           <CardActionArea>

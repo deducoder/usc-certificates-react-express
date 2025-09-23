@@ -1,26 +1,36 @@
+import { useMemo, useState } from "react";
 import { BrowserRouter } from "react-router-dom";
 import Router from "./routes/router";
-import { CssBaseline, ThemeProvider, Box } from "@mui/material";
-import Theme from "./components/Theme.tsx";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { ColorModeContext, lightTheme, darkTheme } from "./components/Theme";
 
 function App() {
-  return (
-    <ThemeProvider theme={Theme}>
-      {/* CssBaseline normalizes the default styles */}
-      <CssBaseline />
+  const [mode, setMode] = useState<"light" | "dark">("light");
 
-      {/* Box to apply background color to the whole page */}
-      <Box
-        sx={{
-          backgroundColor: (theme) => theme.palette.background.default, // Use background color from theme
-          minHeight: "100vh", // Ensures full-page height background
-        }}
-      >
+  const colorMode = useMemo(
+    () => ({
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
+      },
+    }),
+    []
+  );
+
+  // Seleccionamos el tema basándonos en el estado actual
+  const theme = useMemo(
+    () => (mode === "light" ? lightTheme : darkTheme),
+    [mode]
+  );
+
+  return (
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
         <BrowserRouter>
           <Router />
         </BrowserRouter>
-      </Box>
-    </ThemeProvider>
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 
