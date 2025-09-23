@@ -1,9 +1,3 @@
-import { useEffect, useState } from "react";
-import NavBar from "../components/NavBar";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import ReplayIcon from "@mui/icons-material/Replay";
 import {
   Button,
   Container,
@@ -15,161 +9,105 @@ import {
   Typography,
   TextField,
   DialogActions,
-  FormControl,
-  InputLabel,
   Select,
   MenuItem,
+  FormControl,
+  InputLabel,
+  Box,
 } from "@mui/material";
+import NavBar from "../components/NavBar";
+import { useEffect, useState } from "react";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ReplayIcon from "@mui/icons-material/Replay";
 import AlertMessage from "../components/AlertMessage";
 
+// Subject interface
+interface Subject {
+  SUBJECT_ID: number;
+  SUBJECT_NAME: string;
+  SUBJECT_PERIOD: string;
+  SUBJECT_QUARTER: string;
+  SUBJECT_STATUS: number;
+  CAREER_ID: number;
+  CAREER_NAME?: string; // Optional because it's added after fetching
+}
+
+// Career interface
+interface Career {
+  CAREER_ID: number;
+  CAREER_NAME: string;
+  CAREER_STATUS: number;
+}
+
+// Row type definition for DataGrid
+interface Row extends Subject {
+  id: number;
+}
+
 function Subjects() {
-  const [subjects, setSubjects] = useState<subject[]>([]);
-  const [selectedRowEdit, setSelectedRowEdit] = useState<Student | null>(null);
-  const [selectedRowDel, setSelectedRowDel] = useState<Student | null>(null);
-  const [selectedRowActive, setSelectedRowActive] = useState<Student | null>(
-    null
-  );
+  const [subjects, setSubjects] = useState<Row[]>([]);
+  const [careers, setCareers] = useState<Career[]>([]);
+  const [selectedRowEdit, setSelectedRowEdit] = useState<Row | null>(null);
+  const [selectedRowDel, setSelectedRowDel] = useState<Row | null>(null);
+  const [selectedRowActive, setSelectedRowActive] = useState<Row | null>(null);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDelDialog, setOpenDelDialog] = useState(false);
   const [openActivateDialog, setOpenActivateDialog] = useState(false);
-  //career fetch
-  const [selectedCareer, setSelectedCareer] = useState<number | "">("");
-  const [careers, setCareers] = useState<Career[]>([]);
-  const [selectedPeriod, setSelectedPeriod] = useState<number | "">("");
-  const [careerDictionary, setCareerDictionary] = useState<{
-    [key: number]: string;
-  }>({});
-  // alerta
+  // Alert state
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertSeverity, setAlertSeverity] = useState<"success" | "error">(
     "success"
   );
+  // Filter states
+  const [searchText, setSearchText] = useState("");
+  const [selectedCareerFilter, setSelectedCareerFilter] = useState<number | "">(
+    ""
+  );
+  const [selectedPeriodFilter, setSelectedPeriodFilter] = useState("");
 
+  // Fetching subjects and careers
   useEffect(() => {
-    // Fetch subjects
-    const fetchSubjects = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(
+        const subjectsResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/api/subjects`
         );
-        const data = await response.json();
-        setSubjects(data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+        const subjectsData = await subjectsResponse.json();
 
-    // Fetch careers
-    const fetchCareers = async () => {
-      try {
-        const response = await fetch(
+        const careersResponse = await fetch(
           `${import.meta.env.VITE_API_URL}/api/careers`
         );
-        if (!response.ok) throw new Error("Network response was not ok");
-        const data = await response.json();
+        const careersData = await careersResponse.json();
+        setCareers(careersData);
 
-        setCareers(data);
-
-        // Create a dictionary mapping CAREER_ID to CAREER_NAME
-        const careerDict: { [key: number]: string } = {};
-        data.forEach((career: Career) => {
-          careerDict[career.CAREER_ID] = career.CAREER_NAME;
+        const subjectsWithCareerNames = subjectsData.map((subject: Subject) => {
+          const career = careersData.find(
+            (c: Career) => c.CAREER_ID === subject.CAREER_ID
+          );
+          return {
+            ...subject,
+            id: subject.SUBJECT_ID,
+            CAREER_NAME: career ? career.CAREER_NAME : "N/A",
+          };
         });
 
-        setCareerDictionary(careerDict); // Set the dictionary
+        setSubjects(subjectsWithCareerNames);
       } catch (error) {
-        console.error("Error fetching careers: ", error);
+        console.error("error fetching data: ", error);
       }
     };
-
-    fetchSubjects();
-    fetchCareers();
+    fetchData();
   }, []);
 
-  //periodos
-  const periods: item[] = [
-    {
-      value: 1,
-    },
-    {
-      value: 2,
-    },
-    {
-      value: 3,
-    },
-    {
-      value: 4,
-    },
-    {
-      value: 5,
-    },
-    {
-      value: 6,
-    },
-    {
-      value: 7,
-    },
-    {
-      value: 8,
-    },
-  ];
-
-  const handleCareerChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    const careerId = e.target.value as number;
-    setSelectedCareer(careerId);
-    //console.log("Selected Career ID:", careerId);
-  };
-
-  const handlePeriodChange = (e: React.ChangeEvent<{ value: unknown }>) => {
-    const periodNum = e.target.value as number;
-    setSelectedPeriod(periodNum);
-    //console.log("Selected Period:", periodNum);
-  };
-
-  const formDate = (isoDate: string) => {
-    const date = new Date(isoDate);
-    return date.toLocaleDateString();
-  };
-
+  // Columns names
   const columns: GridColDef[] = [
-    /*{
-      field: "id",
-      headerName: "ID",
-      width: 70,
-    },*/
-    {
-      field: "SUBJECT_NAME",
-      headerName: "NOMBRE",
-      width: 500,
-    },
-    {
-      field: "CAREER_ID",
-      headerName: "CARRERA ASOCIADA",
-      width: 500,
-      renderCell: (params) => careerDictionary[params.value] || "Unknown",
-    },
-    {
-      field: "SUBJECT_PERIOD",
-      headerName: "PERIODO",
-      width: 80,
-    },
-    {
-      field: "SUBJECT_CREATION",
-      headerName: "CREADO",
-      width: 130,
-    },
-    /*{
-      field: "SUBJECT_LAST_UPDATE",
-      headerName: "EDITADO",
-      width: 130,
-    },
-    {
-      field: "SUBJECT_STATUS",
-      headerName: "ESTADO",
-      width: 100,
-      renderCell: (params) => (params.value ? "Activo" : "Inactivo"),
-    },*/
+    { field: "SUBJECT_NAME", headerName: "MATERIA", width: 300 },
+    { field: "CAREER_NAME", headerName: "CARRERA", width: 200 },
+    { field: "SUBJECT_PERIOD", headerName: "PERIODO", width: 130 },
+    { field: "SUBJECT_QUARTER", headerName: "CUATRIMESTRE", width: 130 },
     {
       field: "ACTIONS",
       headerName: "ACCIONES",
@@ -181,148 +119,109 @@ function Subjects() {
             onClick={() => handleEditRow(params.row)}
             disabled={params.row.SUBJECT_STATUS === 0}
           >
-            <EditIcon></EditIcon>
+            <EditIcon />
           </IconButton>
           <IconButton
             color="error"
             onClick={() => handleDeleteRow(params.row)}
             disabled={params.row.SUBJECT_STATUS === 0}
           >
-            <DeleteIcon></DeleteIcon>
+            <DeleteIcon />
           </IconButton>
           <IconButton
             color="success"
-            onClick={() => handleActivateRow(params.row, 1)}
+            onClick={() => handleActivateRow(params.row)}
             disabled={params.row.SUBJECT_STATUS === 1}
           >
-            <ReplayIcon></ReplayIcon>
+            <ReplayIcon />
           </IconButton>
         </>
       ),
     },
   ];
 
-  const rows = subjects.map((subject) => ({
-    id: subject.SUBJECT_ID,
-    SUBJECT_NAME: subject.SUBJECT_NAME,
-    CAREER_ID: subject.CAREER_ID,
-    SUBJECT_PERIOD: subject.SUBJECT_PERIOD,
-    SUBJECT_CREATION: formDate(subject.SUBJECT_CREATION),
-    SUBJECT_LAST_UPDATE: formDate(subject.SUBJECT_LAST_UPDATE),
-    SUBJECT_STATUS: subject.SUBJECT_STATUS,
-  }));
-
-  const paginationModel = { page: 0, pageSize: 10 };
-
-  //edit
-  const handleEditRow = (row: subject) => {
+  // Edit
+  const handleEditRow = (row: Row) => {
     setSelectedRowEdit(row);
-    setSelectedCareer(row.CAREER_ID); // Set the selected career
-    setSelectedPeriod(row.SUBJECT_PERIOD); // Set the selected period
     setOpenEditDialog(true);
   };
 
   const handleEditSubmit = async (updatedRow: Row) => {
-    //console.log(updatedRow.id);
     try {
       const dataToSend = {
-        SUBJECT_ID: updatedRow.id, // ID de la materia
-        SUBJECT_NAME: updatedRow.SUBJECT_NAME, // Nombre de la materia
-        CAREER_ID: selectedCareer, // Carrera seleccionada
-        SUBJECT_PERIOD: selectedPeriod, // Periodo seleccionado
+        ...updatedRow,
+        SUBJECT_ID: updatedRow.id,
       };
 
       const url = `${import.meta.env.VITE_API_URL}/api/subjects/${
         dataToSend.SUBJECT_ID
       }`;
-
       const response = await fetch(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend), // Enviar los datos actualizados
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
         throw new Error(`Failed to update subject: ${response.statusText}`);
       }
 
-      const data = await response.json();
-      // datos de la alertra
       setAlertMessage("Materia actualizada correctamente");
       setAlertSeverity("success");
       setAlertOpen(true);
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000); // Actualiza la página después de 1 segundo
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       console.error("Error updating subject:", error);
-      setAlertMessage("Error al eliminar la materia");
+      setAlertMessage("Error al actualizar la materia");
       setAlertSeverity("error");
       setAlertOpen(true);
     } finally {
-      setOpenEditDialog(false); // Cerrar el diálogo de edición
-      setSelectedRowEdit(null); // Restablecer el estado de la fila seleccionada
+      setOpenEditDialog(false);
+      setSelectedRowEdit(null);
     }
   };
 
-  //delete
-  const handleDeleteRow = (row: career) => {
+  // Delete
+  const handleDeleteRow = (row: Row) => {
     setSelectedRowDel(row);
     setOpenDelDialog(true);
   };
 
   const handleDeleteSubmit = async (deletedRow: Row) => {
-    //console.log(deletedRow.id);
     try {
-      const dataToSend = {
-        SUBJECT_ID: deletedRow.id,
-        SUBJECT_STATUS: 0,
-      };
       const url = `${import.meta.env.VITE_API_URL}/api/subjects/${
-        dataToSend.SUBJECT_ID
+        deletedRow.id
       }`;
+      const response = await fetch(url, { method: "DELETE" });
 
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSend),
-      });
       if (!response.ok) {
-        throw new Error(`Failed to delete subjects: ${response.statusText}`);
+        throw new Error(`Failed to delete subject: ${response.statusText}`);
       }
 
-      const data = await response.json();
-      //console.log("deleted response", data);
-      // datos de la alertra
       setAlertMessage("Materia eliminada correctamente");
       setAlertSeverity("error");
       setAlertOpen(true);
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       console.error("Error deleting subject:", error);
       setAlertMessage("Error al eliminar la materia");
       setAlertSeverity("error");
       setAlertOpen(true);
     } finally {
-      setOpenDelDialog(false); //close dialog
-      setSelectedRowDel(null); //return row value to null
+      setOpenDelDialog(false);
+      setSelectedRowDel(null);
     }
   };
 
-  //activate
-  const handleActivateRow = (row: career) => {
+  // Activate
+  const handleActivateRow = (row: Row) => {
     setSelectedRowActive(row);
     setOpenActivateDialog(true);
   };
 
   const handleActivateSubmit = async (activatedRow: Row) => {
-    //console.log(activatedRow.id);
     try {
       const dataToSend = {
         SUBJECT_ID: activatedRow.id,
@@ -331,75 +230,106 @@ function Subjects() {
       const url = `${import.meta.env.VITE_API_URL}/api/subjects/${
         dataToSend.SUBJECT_ID
       }`;
-
       const response = await fetch(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend), // Send the new object
+        body: JSON.stringify(dataToSend),
       });
+
       if (!response.ok) {
         throw new Error(`Failed to activate subject: ${response.statusText}`);
       }
 
-      const data = await response.json();
-      //console.log("deleted response", data);
-      // datos de la alertra
       setAlertMessage("Materia reactivada correctamente");
       setAlertSeverity("success");
       setAlertOpen(true);
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000); // 2000 milisegundos = 2 segundos //refresh students page
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       console.error("Error activating subject:", error);
-      setAlertMessage("Error al eliminar la materia");
+      setAlertMessage("Error al reactivar la materia");
       setAlertSeverity("error");
       setAlertOpen(true);
     } finally {
-      setOpenActivateDialog(false); //close dialog
-      setSelectedRowActive(null); //return row value to null
+      setOpenActivateDialog(false);
+      setSelectedRowActive(null);
     }
   };
 
-  useEffect(() => {
-    if (selectedRowEdit) {
-      //console.log("Selected row edited:", selectedRowEdit);
-    } else {
-      //console.log("Selected row is null.");
-    }
-  }, [selectedRowEdit]);
-
-  useEffect(() => {
-    if (selectedRowDel) {
-      //console.log("Selected row deleted:", selectedRowDel);
-    } else {
-      //console.log("Selected row is null.");
-    }
-  }, [selectedRowDel]);
-
-  useEffect(() => {
-    if (selectedRowActive) {
-      //console.log("Selected row deleted:", selectedRowDel);
-    } else {
-      //console.log("Selected row is null.");
-    }
-  }, [selectedRowActive]);
-
-  //cerrar alerta
   const handleAlertClose = () => setAlertOpen(false);
+
+  const filteredSubjects = subjects.filter((subject) => {
+    const matchesName = subject.SUBJECT_NAME.toLowerCase().includes(
+      searchText.toLowerCase()
+    );
+    const matchesCareer =
+      !selectedCareerFilter || subject.CAREER_ID === selectedCareerFilter;
+    const matchesPeriod = String(subject.SUBJECT_PERIOD)
+      .toLowerCase()
+      .includes(selectedPeriodFilter.toLowerCase());
+
+    return matchesName && matchesCareer && matchesPeriod;
+  });
 
   return (
     <>
-      <NavBar></NavBar>
+      <NavBar />
       <Container sx={{ padding: "2rem" }} disableGutters maxWidth={false}>
-        <Paper sx={{ padding: "2rem", margin: "2 rem" }}>
+        <Paper sx={{ padding: "2rem", margin: "2rem" }}>
           <Typography variant="h6">MATERIAS</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 2,
+              marginBottom: "1rem",
+              marginTop: "1rem",
+            }}
+          >
+            <TextField
+              label="Buscar por Nombre"
+              variant="outlined"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+            <FormControl>
+              <InputLabel>Filtrar por Carrera</InputLabel>
+              <Select
+                value={selectedCareerFilter}
+                onChange={(e) =>
+                  setSelectedCareerFilter(e.target.value as number | "")
+                }
+                label="Filtrar por Carrera"
+                sx={{ minWidth: 240 }}
+              >
+                <MenuItem value="">
+                  <em>Todas las Carreras</em>
+                </MenuItem>
+                {careers.map((career) => (
+                  <MenuItem
+                    key={career.CAREER_ID}
+                    value={career.CAREER_ID}
+                    disabled={career.CAREER_STATUS === 0}
+                  >
+                    {career.CAREER_NAME}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              label="Filtrar por Periodo"
+              variant="outlined"
+              value={selectedPeriodFilter}
+              onChange={(e) => setSelectedPeriodFilter(e.target.value)}
+            />
+          </Box>
           <DataGrid
-            rows={rows}
+            rows={filteredSubjects}
             columns={columns}
-            initialState={{ pagination: { paginationModel } }}
+            initialState={{
+              pagination: { paginationModel: { page: 0, pageSize: 10 } },
+            }}
             pageSizeOptions={[5, 10]}
             checkboxSelection
             getRowClassName={(params) =>
@@ -408,11 +338,11 @@ function Subjects() {
             sx={{
               border: 0,
               "& .inactive-row": {
-                backgroundColor: "#f0f0f0", // Color más oscuro para inactivos
-                color: "#999", // Color del texto
+                backgroundColor: "#f0f0f0",
+                color: "#999",
               },
             }}
-          ></DataGrid>
+          />
         </Paper>
         <AlertMessage
           message={alertMessage}
@@ -420,6 +350,7 @@ function Subjects() {
           open={alertOpen}
           onClose={handleAlertClose}
         />
+        {/* Edit Dialog */}
         <Dialog open={openEditDialog} onClose={() => setOpenEditDialog(false)}>
           <DialogTitle>Editar Materia</DialogTitle>
           <DialogContent>
@@ -427,7 +358,7 @@ function Subjects() {
               <>
                 <TextField
                   margin="dense"
-                  label="Nombre"
+                  label="Nombre de la Materia"
                   fullWidth
                   variant="outlined"
                   value={selectedRowEdit.SUBJECT_NAME}
@@ -437,16 +368,18 @@ function Subjects() {
                       SUBJECT_NAME: e.target.value,
                     })
                   }
-                  sx={{ minWidth: "30rem" }}
                 />
-
-                <FormControl sx={{ mt: 4 }} fullWidth>
-                  <InputLabel id="career-label">CARRERA</InputLabel>
+                <FormControl fullWidth margin="dense">
+                  <InputLabel>Carrera</InputLabel>
                   <Select
-                    labelId="career-label"
-                    label="CARRERA"
-                    value={selectedCareer} // Valor de la carrera seleccionada
-                    onChange={handleCareerChange}
+                    value={selectedRowEdit.CAREER_ID}
+                    label="Carrera"
+                    onChange={(e) =>
+                      setSelectedRowEdit({
+                        ...selectedRowEdit,
+                        CAREER_ID: e.target.value as number,
+                      })
+                    }
                   >
                     {careers.map((career) => (
                       <MenuItem key={career.CAREER_ID} value={career.CAREER_ID}>
@@ -455,22 +388,32 @@ function Subjects() {
                     ))}
                   </Select>
                 </FormControl>
-
-                <FormControl sx={{ mt: 4 }} fullWidth>
-                  <InputLabel id="period-label">PERIODO</InputLabel>
-                  <Select
-                    labelId="period-label"
-                    label="PERIODO"
-                    value={selectedPeriod} // Use the selectedPeriod state
-                    onChange={handlePeriodChange}
-                  >
-                    {periods.map((period) => (
-                      <MenuItem key={period.value} value={period.value}>
-                        {period.value}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                <TextField
+                  margin="dense"
+                  label="Periodo"
+                  fullWidth
+                  variant="outlined"
+                  value={selectedRowEdit.SUBJECT_PERIOD}
+                  onChange={(e) =>
+                    setSelectedRowEdit({
+                      ...selectedRowEdit,
+                      SUBJECT_PERIOD: e.target.value,
+                    })
+                  }
+                />
+                <TextField
+                  margin="dense"
+                  label="Cuatrimestre"
+                  fullWidth
+                  variant="outlined"
+                  value={selectedRowEdit.SUBJECT_QUARTER}
+                  onChange={(e) =>
+                    setSelectedRowEdit({
+                      ...selectedRowEdit,
+                      SUBJECT_QUARTER: e.target.value,
+                    })
+                  }
+                />
               </>
             )}
           </DialogContent>
@@ -493,6 +436,8 @@ function Subjects() {
             </Button>
           </DialogActions>
         </Dialog>
+
+        {/* Delete Dialog */}
         <Dialog open={openDelDialog} onClose={() => setOpenDelDialog(false)}>
           <DialogTitle>Eliminar Materia</DialogTitle>
           <DialogContent>
@@ -519,6 +464,8 @@ function Subjects() {
             </Button>
           </DialogActions>
         </Dialog>
+
+        {/* Activate Dialog */}
         <Dialog
           open={openActivateDialog}
           onClose={() => setOpenActivateDialog(false)}
