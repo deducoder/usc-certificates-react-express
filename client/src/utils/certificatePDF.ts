@@ -1211,24 +1211,24 @@ export const certificatePDF = async (data: Data) => {
     xStart10,
     xEnd10
   );
-  doc.text(`${data.PEOPLE[4].NAME}`, centeredX10, 281);
+  doc.text(`${data.PEOPLE[4].NAME}`, centeredX10, 285);
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text("____________________________________________________", 110, 282);
+  doc.text("____________________________________________________", 110, 286);
   doc.setFont("Arial", "normal");
   doc.setFontSize(8);
-  doc.text("TUXTLA GUTIÉRREZ, CHIAPAS; A", 110, 296);
+  doc.text("TUXTLA GUTIÉRREZ, CHIAPAS; A", 110, 298);
   doc.setFont("Arial", "bold");
   doc.setFontSize(9);
-  doc.text("__________________________", 157, 296);
+  doc.text("__________________________", 157, 298);
 
   doc.setFont("Arial", "normal");
   doc.setFontSize(9);
-  doc.text(`${data.PEOPLE[6].CHARGE}`, 156, 306, {
+  doc.text(`${data.PEOPLE[6].CHARGE}`, 156, 320, {
     maxWidth: 100,
     align: "center",
   });
-  doc.text("____________________________________________________", 110, 320);
+  doc.text("____________________________________________________", 110, 312);
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
   // Coordenadas de inicio y fin
@@ -1242,7 +1242,7 @@ export const certificatePDF = async (data: Data) => {
     xStart11,
     xEnd11
   );
-  doc.text(`${data.PEOPLE[6].NAME}`, centeredX11, 325, {
+  doc.text(`${data.PEOPLE[6].NAME}`, centeredX11, 316, {
     maxWidth: 87,
   });
 
