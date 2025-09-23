@@ -14,6 +14,7 @@ import {
   MenuItem,
   FormControl,
   InputLabel,
+  Box, // Import Box for layout
 } from "@mui/material";
 import NavBar from "../components/NavBar";
 import { useEffect, useState } from "react";
@@ -45,6 +46,12 @@ interface Career {
   CAREER_STATUS: number;
 }
 
+// Student-Career relationship interface
+interface StudentCareer {
+  STUDENT_ID: number;
+  CAREER_ID: number;
+}
+
 // Row type definition for DataGrid
 interface Row extends student {
   id: number;
@@ -53,6 +60,7 @@ interface Row extends student {
 function Students() {
   const [students, setStudents] = useState<Row[]>([]);
   const [careers, setCareers] = useState<Career[]>([]);
+  const [studentCareers, setStudentCareers] = useState<StudentCareer[]>([]);
   const [selectedCareer, setSelectedCareer] = useState<number>(0);
   const [selectedRowEdit, setSelectedRowEdit] = useState<Row | null>(null);
   const [selectedRowDel, setSelectedRowDel] = useState<Row | null>(null);
@@ -71,6 +79,10 @@ function Students() {
   // Nuevos estados para las fechas
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  const [searchText, setSearchText] = useState<string>("");
+  const [selectedCareerFilter, setSelectedCareerFilter] = useState<number | "">(
+    ""
+  );
 
   //fetching students and careers
   useEffect(() => {
@@ -93,6 +105,13 @@ function Students() {
         );
         const careersData = await careersResponse.json();
         setCareers(careersData);
+
+        // Fetch student-career relationships
+        const studentCareersResponse = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/students-careers`
+        );
+        const studentCareersData = await studentCareersResponse.json();
+        setStudentCareers(studentCareersData);
       } catch (error) {
         console.error("error fetching data: ", error);
       }
@@ -498,15 +517,71 @@ function Students() {
     setOpenEditDialog(false);
     cleanupForm();
   };
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(event.target.value);
+  };
 
+  const filteredStudents = students.filter((student) => {
+    const matchesTuition =
+      student.STUDENT_TUITION.toString().includes(searchText);
+
+    const matchesCareer =
+      !selectedCareerFilter ||
+      studentCareers.some(
+        (sc) =>
+          sc.STUDENT_ID === student.STUDENT_ID &&
+          sc.CAREER_ID === selectedCareerFilter
+      );
+
+    return matchesTuition && matchesCareer;
+  });
   return (
     <>
       <NavBar></NavBar>
       <Container sx={{ padding: "2rem" }} disableGutters maxWidth={false}>
         <Paper sx={{ padding: "2rem", margin: "2 rem" }}>
           <Typography variant="h6">ALUMNOS</Typography>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 2,
+              marginBottom: "1rem",
+              marginTop: "1rem",
+            }}
+          >
+            <TextField
+              label="Buscar por Matrícula"
+              variant="outlined"
+              value={searchText}
+              onChange={handleSearchChange}
+            />
+            <FormControl>
+              <InputLabel>Filtrar por Carrera</InputLabel>
+              <Select
+                value={selectedCareerFilter}
+                onChange={(e) =>
+                  setSelectedCareerFilter(e.target.value as number | "")
+                }
+                label="Filtrar por Carrera"
+                sx={{ minWidth: 240 }}
+              >
+                <MenuItem value="">
+                  <em>Todas las Carreras</em>
+                </MenuItem>
+                {careers.map((career) => (
+                  <MenuItem
+                    key={career.CAREER_ID}
+                    value={career.CAREER_ID}
+                    disabled={career.CAREER_STATUS === 0}
+                  >
+                    {career.CAREER_NAME}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
           <DataGrid
-            rows={rows}
+            rows={filteredStudents}
             columns={columns}
             initialState={{ pagination: { paginationModel } }}
             pageSizeOptions={[5, 10]}
