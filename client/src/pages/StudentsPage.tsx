@@ -79,7 +79,9 @@ function Students() {
   // Nuevos estados para las fechas
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
+  // Estados para los filtros
   const [searchText, setSearchText] = useState<string>("");
+  const [generalSearchText, setGeneralSearchText] = useState<string>("");
   const [selectedCareerFilter, setSelectedCareerFilter] = useState<number | "">(
     ""
   );
@@ -517,8 +519,15 @@ function Students() {
     setOpenEditDialog(false);
     cleanupForm();
   };
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(event.target.value);
+  };
+
+  const handleGeneralSearchChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setGeneralSearchText(event.target.value);
   };
 
   const filteredStudents = students.filter((student) => {
@@ -533,8 +542,15 @@ function Students() {
           sc.CAREER_ID === selectedCareerFilter
       );
 
-    return matchesTuition && matchesCareer;
+    const fullName =
+      `${student.STUDENT_NAME} ${student.STUDENT_PA_LAST_NAME} ${student.STUDENT_MA_LAST_NAME}`.toLowerCase();
+    const matchesGeneralText = fullName.includes(
+      generalSearchText.toLowerCase()
+    );
+
+    return matchesTuition && matchesCareer && matchesGeneralText;
   });
+
   return (
     <>
       <NavBar></NavBar>
@@ -544,11 +560,18 @@ function Students() {
           <Box
             sx={{
               display: "flex",
+              flexWrap: "wrap",
               gap: 2,
               marginBottom: "1rem",
               marginTop: "1rem",
             }}
           >
+            <TextField
+              label="Buscar por Nombre"
+              variant="outlined"
+              value={generalSearchText}
+              onChange={handleGeneralSearchChange}
+            />
             <TextField
               label="Buscar por Matrícula"
               variant="outlined"
