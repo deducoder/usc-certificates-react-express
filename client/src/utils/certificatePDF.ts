@@ -73,11 +73,7 @@ function addTextWithUnderscores(
   doc.text(underscores, x, y);
 }
 
-// NUEVA FUNCIÓN para dibujar texto con partes en negrita
-// Reemplaza la función anterior por esta nueva versión mejorada
-// Reemplaza la función anterior por esta nueva versión
-// Reemplaza la función anterior por esta versión corregida
-const drawJustifiedTextWithBold = (
+const drawFormattedText = (
   doc: jsPDF,
   text: string,
   x: number,
@@ -85,21 +81,27 @@ const drawJustifiedTextWithBold = (
   maxWidth: number,
   lineHeight: number
 ): number => {
-  // 1. Tokenizar el texto (sin cambios aquí)
+  // 1. Tokenizar el texto, reconociendo negrita (*) y subrayado (_)
   const parts = text
     .trim()
-    .split(/(\*.*?\*)/g)
+    .split(/(\*.*?\*)|(_.*?_)/g)
     .filter(Boolean);
   const allTokens: {
     text: string;
     width: number;
     isBold: boolean;
+    isUnderline: boolean;
     isSpace: boolean;
   }[] = [];
 
   parts.forEach((part) => {
     const isBold = part.startsWith("*") && part.endsWith("*");
-    const textContent = isBold ? part.slice(1, -1) : part;
+    const isUnderline = part.startsWith("_") && part.endsWith("_");
+    let textContent = part;
+    if (isBold || isUnderline) {
+      textContent = part.slice(1, -1);
+    }
+
     doc.setFont("Arial", isBold ? "bold" : "normal");
 
     const subTokens = textContent.split(/(\s+)/).filter(Boolean);
@@ -108,14 +110,14 @@ const drawJustifiedTextWithBold = (
         text: subToken,
         width: doc.getTextWidth(subToken),
         isBold: isBold,
+        isUnderline: isUnderline,
         isSpace: /^\s+$/.test(subToken),
       });
     });
   });
 
-  // 2. Lógica de renderizado de línea (CORREGIDA)
+  // 2. Lógica de renderizado de línea
   const renderLine = (lineToRender: typeof allTokens, justify: boolean) => {
-    // Eliminar espacios al final de la línea, no afectan la justificación
     while (
       lineToRender.length > 0 &&
       lineToRender[lineToRender.length - 1].isSpace
@@ -126,43 +128,42 @@ const drawJustifiedTextWithBold = (
     if (words.length === 0) return;
 
     let currentX = x;
+    const renderToken = (token: (typeof allTokens)[0], posX: number) => {
+      doc.setFont("Arial", token.isBold ? "bold" : "normal");
+      doc.text(token.text, posX, currentY);
+      if (token.isUnderline) {
+        // Dibuja la línea de subrayado un poco por debajo del texto
+        const lineY = currentY + 1;
+        doc.line(posX, lineY, posX + token.width, lineY);
+      }
+    };
 
-    // Para la última línea o líneas con una sola palabra, imprimir secuencialmente
     if (!justify || words.length <= 1) {
       lineToRender.forEach((token) => {
-        doc.setFont("Arial", token.isBold ? "bold" : "normal");
-        doc.text(token.text, currentX, currentY);
+        renderToken(token, currentX);
         currentX += token.width;
       });
       return;
     }
 
-    // Lógica de justificación MEJORADA
     const totalWordWidth = words.reduce((acc, w) => acc + w.width, 0);
     const spaceSlots = lineToRender.filter((t) => t.isSpace).length;
 
-    // Si no hay espacios (ej. una palabra muy larga), no justificar
     if (spaceSlots === 0) {
-      renderLine(lineToRender, false); // Re-llama en modo no justificado
+      renderLine(lineToRender, false);
       return;
     }
 
     const totalSpacing = maxWidth - totalWordWidth;
-    const spaceWidth = totalSpacing / spaceSlots; // Distribuir el espacio entre los "slots" de espacio originales
+    const spaceWidth = totalSpacing / spaceSlots;
 
     lineToRender.forEach((token) => {
-      doc.setFont("Arial", token.isBold ? "bold" : "normal");
-      doc.text(token.text, currentX, currentY);
-
-      if (token.isSpace) {
-        currentX += spaceWidth; // Un token de espacio se expande al tamaño calculado
-      } else {
-        currentX += token.width; // Un token de palabra mantiene su tamaño original
-      }
+      renderToken(token, currentX);
+      currentX += token.isSpace ? spaceWidth : token.width;
     });
   };
 
-  // 3. Construcción de líneas (sin cambios aquí)
+  // 3. Construcción de líneas
   let line: typeof allTokens = [];
   let currentY = y;
   let currentWidth = 0;
@@ -196,6 +197,7 @@ interface Data {
   RVOE: string;
   VIGENCIA: string;
   SECL: string;
+  LEGAL_TOP: string;
   LEGAL_1: string;
   LEGAL_2: string;
   // Informacion del estudiante
@@ -1154,56 +1156,23 @@ export const certificatePDF = async (data: Data) => {
   // Legal
   const totalSubjectsText = numberToString(totalSubjects);
   const certificateDate = convertDateNoCaps(data.EXP);
+
+  // Reemplaza las variables en el texto que viene de la base de datos
+  const processedLegalTop = data.LEGAL_TOP.replace(
+    "{totalSubjects}",
+    totalSubjects.toString()
+  )
+    .replace("{totalSubjectsText}", totalSubjectsText)
+    .replace("{dd}", certificateDate.dd)
+    .replace("{monthName}", certificateDate.monthName)
+    .replace("{yyyy}", certificateDate.yyyy);
+
   doc.addImage(squareBase64, "PNG", 110, 74, 96, 50);
   doc.setFont("Arial", "normal");
   doc.setFontSize(10.7);
-  doc.text(
-    "La  escala oficial de calificaciones  es  de  0 (CERO)  a",
-    111.5,
-    78,
-    { maxWidth: 95, align: "justify" }
-  );
-  doc.text("10 (DIEZ), considerando como mínima aprobatoria  6", 111.5, 82.5, {
-    maxWidth: 95,
-    align: "justify",
-  });
-  doc.text(
-    `(SEIS).  Este certificado ampara ${totalSubjects} (${totalSubjectsText})`,
-    111.5,
-    88,
-    { maxWidth: 96, align: "justify" }
-  );
-  doc.text(
-    "materias     del   plan   de   estudios   vigente    y    en",
-    111.5,
-    93,
-    { maxWidth: 96, align: "justify" }
-  );
-  doc.text(
-    "cumplimiento a las prescripciones legales, se extiende",
-    111.5,
-    98,
-    { maxWidth: 95, align: "justify" }
-  );
-  doc.text(
-    "el  presente,  en   la ciudad  de  San  Cristóbal de Las",
-    111.5,
-    103,
-    { maxWidth: 95, align: "justify" }
-  );
-  doc.text(
-    `Casas, Chiapas, a los ${certificateDate.dd} días del mes  de  ${certificateDate.monthName}  de`,
-    111.5,
-    108,
-    { maxWidth: 95, align: "justify" }
-  );
-  doc.text("__", 150, 108);
-  //doc.text("_________", 184, 113);
-  addTextWithUnderscores(doc, certificateDate.monthName, 184, 108, 0);
-  doc.setFont("Arial", "normal");
-  doc.setFontSize(11);
-  doc.text(`${certificateDate.yyyy}`, 111.5, 113);
-  doc.text("_____", 111, 113);
+
+  // Llama a la nueva función con el texto procesado
+  drawFormattedText(doc, processedLegalTop, 111.5, 78, 93, 5);
 
   // Responsable 3
   doc.setFont("Arial", "bold");
@@ -1307,16 +1276,11 @@ export const certificatePDF = async (data: Data) => {
   doc.text(`${data.PEOPLE[5].NAME}`, centeredX9, 320);
 
   // Parrafo legal
-  // client/src/utils/certificatePDF.ts
-
-  // ... (resto del código)
-
-  // Parrafo legal
   doc.setFont("Arial", "normal");
   doc.setFontSize(10);
 
   // Dibuja el primer párrafo y guarda la posición 'y' donde termina.
-  const finalYOfLegal1 = drawJustifiedTextWithBold(
+  const finalYOfLegal1 = drawFormattedText(
     doc,
     data.LEGAL_1,
     110,
@@ -1326,12 +1290,10 @@ export const certificatePDF = async (data: Data) => {
   );
 
   // Calcula la posición para el segundo párrafo: donde terminó el primero + un salto de línea.
-  const yForLegal2 = finalYOfLegal1 + 4.5 * 1.5; // Multiplicamos por 2 para un espacio más notorio
+  const yForLegal2 = finalYOfLegal1 + 4.5 * 2; // Multiplicamos por 2 para un espacio más notorio
 
   // Dibuja el segundo párrafo en la nueva posición calculada.
-  drawJustifiedTextWithBold(doc, data.LEGAL_2, 110, yForLegal2, 95, 4.5);
-
-  // ... (resto del código)
+  drawFormattedText(doc, data.LEGAL_2, 110, yForLegal2, 95, 4.5);
 
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
