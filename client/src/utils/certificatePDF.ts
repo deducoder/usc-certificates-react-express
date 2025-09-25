@@ -73,6 +73,120 @@ function addTextWithUnderscores(
   doc.text(underscores, x, y);
 }
 
+// NUEVA FUNCIÓN para dibujar texto con partes en negrita
+// Reemplaza la función anterior por esta nueva versión mejorada
+// Reemplaza la función anterior por esta nueva versión
+// Reemplaza la función anterior por esta versión corregida
+const drawJustifiedTextWithBold = (
+  doc: jsPDF,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number
+): number => {
+  // 1. Tokenizar el texto (sin cambios aquí)
+  const parts = text
+    .trim()
+    .split(/(\*.*?\*)/g)
+    .filter(Boolean);
+  const allTokens: {
+    text: string;
+    width: number;
+    isBold: boolean;
+    isSpace: boolean;
+  }[] = [];
+
+  parts.forEach((part) => {
+    const isBold = part.startsWith("*") && part.endsWith("*");
+    const textContent = isBold ? part.slice(1, -1) : part;
+    doc.setFont("Arial", isBold ? "bold" : "normal");
+
+    const subTokens = textContent.split(/(\s+)/).filter(Boolean);
+    subTokens.forEach((subToken) => {
+      allTokens.push({
+        text: subToken,
+        width: doc.getTextWidth(subToken),
+        isBold: isBold,
+        isSpace: /^\s+$/.test(subToken),
+      });
+    });
+  });
+
+  // 2. Lógica de renderizado de línea (CORREGIDA)
+  const renderLine = (lineToRender: typeof allTokens, justify: boolean) => {
+    // Eliminar espacios al final de la línea, no afectan la justificación
+    while (
+      lineToRender.length > 0 &&
+      lineToRender[lineToRender.length - 1].isSpace
+    ) {
+      lineToRender.pop();
+    }
+    const words = lineToRender.filter((t) => !t.isSpace);
+    if (words.length === 0) return;
+
+    let currentX = x;
+
+    // Para la última línea o líneas con una sola palabra, imprimir secuencialmente
+    if (!justify || words.length <= 1) {
+      lineToRender.forEach((token) => {
+        doc.setFont("Arial", token.isBold ? "bold" : "normal");
+        doc.text(token.text, currentX, currentY);
+        currentX += token.width;
+      });
+      return;
+    }
+
+    // Lógica de justificación MEJORADA
+    const totalWordWidth = words.reduce((acc, w) => acc + w.width, 0);
+    const spaceSlots = lineToRender.filter((t) => t.isSpace).length;
+
+    // Si no hay espacios (ej. una palabra muy larga), no justificar
+    if (spaceSlots === 0) {
+      renderLine(lineToRender, false); // Re-llama en modo no justificado
+      return;
+    }
+
+    const totalSpacing = maxWidth - totalWordWidth;
+    const spaceWidth = totalSpacing / spaceSlots; // Distribuir el espacio entre los "slots" de espacio originales
+
+    lineToRender.forEach((token) => {
+      doc.setFont("Arial", token.isBold ? "bold" : "normal");
+      doc.text(token.text, currentX, currentY);
+
+      if (token.isSpace) {
+        currentX += spaceWidth; // Un token de espacio se expande al tamaño calculado
+      } else {
+        currentX += token.width; // Un token de palabra mantiene su tamaño original
+      }
+    });
+  };
+
+  // 3. Construcción de líneas (sin cambios aquí)
+  let line: typeof allTokens = [];
+  let currentY = y;
+  let currentWidth = 0;
+
+  for (let i = 0; i < allTokens.length; i++) {
+    const token = allTokens[i];
+    if (currentWidth + token.width > maxWidth && !token.isSpace) {
+      renderLine(line, true);
+      line = [token];
+      currentWidth = token.width;
+      currentY += lineHeight;
+    } else {
+      line.push(token);
+      currentWidth += token.width;
+    }
+  }
+
+  if (line.length > 0) {
+    renderLine(line, false);
+  }
+
+  return currentY;
+};
+
 interface Data {
   // Informacion de la escuela
   REGIMEN: string;
@@ -1193,10 +1307,31 @@ export const certificatePDF = async (data: Data) => {
   doc.text(`${data.PEOPLE[5].NAME}`, centeredX9, 320);
 
   // Parrafo legal
+  // client/src/utils/certificatePDF.ts
+
+  // ... (resto del código)
+
+  // Parrafo legal
   doc.setFont("Arial", "normal");
   doc.setFontSize(10);
-  doc.text(`${data.LEGAL_1}`, 110, 235, { maxWidth: 95, align: "justify" });
-  doc.text(`${data.LEGAL_2}`, 110, 260, { maxWidth: 95, align: "justify" });
+
+  // Dibuja el primer párrafo y guarda la posición 'y' donde termina.
+  const finalYOfLegal1 = drawJustifiedTextWithBold(
+    doc,
+    data.LEGAL_1,
+    110,
+    235,
+    95,
+    4.5
+  );
+
+  // Calcula la posición para el segundo párrafo: donde terminó el primero + un salto de línea.
+  const yForLegal2 = finalYOfLegal1 + 4.5 * 1.5; // Multiplicamos por 2 para un espacio más notorio
+
+  // Dibuja el segundo párrafo en la nueva posición calculada.
+  drawJustifiedTextWithBold(doc, data.LEGAL_2, 110, yForLegal2, 95, 4.5);
+
+  // ... (resto del código)
 
   doc.setFont("TimesNewRoman", "normal");
   doc.setFontSize(10);
